@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body{
+    padding: auto;
+    font-family: "Neue", sans-serif;
+}
+
+@layer base {
+    @font-face {
+      font-family: 'Neue';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url(../src/fonts/NeueMachina-Medium_d0jNuroW9.ttf) format('ttf');
+    }
+
+  }
