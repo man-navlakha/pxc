@@ -1,14 +1,23 @@
-import React, { useState } from "react"; 
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import '../App.css';
 import { useNavigate } from 'react-router-dom';
+import '../App.css';
 
 const Login = () => {
   const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
-
+  const [loading, setLoading] = useState(false); // Loading state
   const navigate = useNavigate(); // hook for redirecting
+
+  // Check if the user is already logged in (status cookie is true)
+  useEffect(() => {
+    const statusCookie = Cookies.get('status');
+    if (statusCookie === 'true') {
+      // If the user is already logged in, redirect to the home page
+      navigate('/');
+    }
+  }, [navigate]); // This runs once when the component is mounted
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -18,24 +27,29 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(""); // Reset error
-  
+    setLoading(true); // Start loading
+
     try {
       const response = await axios.post("https://pixel-classes.onrender.com/api/login/", credentials, {
         headers: { "Content-Type": "application/json" },
+        withCredentials: true, // Ensure cookies are sent/received
       });
-  
+
+      console.log(response.data); // Log backend response for debugging
+
       if (response.data.message === "Login successful!") {
-        Cookies.set("authToken", "your-token-here", { expires: 7 });
+        // Redirect to the home page after successful login
         navigate('/');
       } else {
         setError("Invalid credentials. Please try again.");
       }
     } catch (err) {
       console.error("Login error:", err); // Log the error to see the full response
-      setError("An error occurred. Please try again later.");
+      setError("An error occurred. Please try again later. either recheck username or password");
+    } finally {
+      setLoading(false); // End loading
     }
   };
-  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -46,7 +60,7 @@ const Login = () => {
             <img src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png" alt="Pixel Class logo" className="mr-2 w-full h-fit" />
           </div>
         </div>
-        <form className="space-y-4" onSubmit={handleSubmit}> {/* Form submit handler */}
+        <form className="space-y-4" onSubmit={handleSubmit}>
           {error && <p className="error-message">{error}</p>}
 
           <div>
@@ -80,11 +94,18 @@ const Login = () => {
               I want new password
             </button>
             <button
-              type="submit" // Correcting this to trigger form submission
+              type="submit"
               className="flex items-center px-4 py-2 bg-green-700 text-white rounded-md hover:bg-green-800"
+              disabled={loading} // Disable button while loading
             >
-              Log in
-              <i className="fas fa-arrow-right ml-2"></i>
+              {loading ? (
+                <div className="loader"></div> // Loading spinner
+              ) : (
+                <>
+                  Log in
+                  <i className="fas fa-arrow-right ml-2"></i>
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -100,6 +121,6 @@ const Login = () => {
       </div>
     </div>
   );
-}
+};
 
 export default Login;
