@@ -20,11 +20,11 @@ const Login = () => {
     setError(""); // Reset error
   
     try {
-      const response = await axios.post("http://localhost:5000/login", credentials, {
+      const response = await axios.post("https://pixel-classes.onrender.com/api/login/", credentials, {
         headers: { "Content-Type": "application/json" },
       });
   
-      if (response.data.message === "Login successful") {
+      if (response.data.message === "Login successful!") {
         Cookies.set("authToken", "your-token-here", { expires: 7 });
         navigate('/');
       } else {
