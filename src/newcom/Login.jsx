@@ -65,7 +65,7 @@ const Login = () => {
           </div>
         </div>
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {error && <p className="error-message">{error}</p>}
+          {error && <p className="error-message font-bold text-red-600">{error}</p>}
 
           <div>
             <label className="block text-sm font-medium text-gray-700">Username</label>

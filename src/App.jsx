@@ -12,7 +12,7 @@ function App() {
 
   return (
     <div className="App">
-    <nav className="sticky top-0 z-40 w-full backdrop-blur transition-colors duration-500 border-b-2 bg-[#e8e8e8ba]/50 supports-backdrop-blur:bg-black/10 p-2 flex justify-between items-center">
+    {/* <nav className="sticky top-0 z-40 w-full backdrop-blur transition-colors duration-500 border-b-2 bg-[#e8e8e8ba]/50 supports-backdrop-blur:bg-black/10 p-2 flex justify-between items-center">
      
     <div className="text-white text-5xl font-bold">
      <Link to={'/'}>
@@ -22,7 +22,7 @@ function App() {
     <div className="flex items-center">
         <img src="https://ik.imagekit.io/pxc/def.jpg" alt="Profile photo of a person with short hair and glasses" className="h-10 w-10 rounded-full border-2"/>
     </div>
-</nav>
+</nav> */}
       <Routes>
         <Route path='/' element={<Home />}/>
         <Route path='/sub' element={<Sub />}/>

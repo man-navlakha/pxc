@@ -11,7 +11,7 @@ const Sign = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-    <div className=" p-3 w-full max-w-sm">
+    <div className=" p-6 w-full max-w-sm">
       <div className=" mb-6">
         <h1 className="text-2xl font-bold">Welcome to the,</h1>
         <div className="flex items-center justify-center mt-2">
