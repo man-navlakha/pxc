@@ -1,5 +1,5 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useNavigate,Link } from 'react-router-dom';
 
 
 const Sign = () => {
@@ -13,9 +13,11 @@ const Sign = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
     <div className=" p-6 w-full max-w-sm">
       <div className=" mb-6">
-        <h1 className="text-2xl font-bold">Welcome to the,</h1>
+        <h1 className="text-2xl font-ff font-bold">Welcome to the,</h1>
         <div className="flex items-center justify-center mt-2">
+        <Link to={'/'}>
           <img src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png" alt="Pixel Class logo" className="mr-2 w-full h-fit" />
+          </Link>
          
         </div>
       </div>

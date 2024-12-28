@@ -1,20 +1,23 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-
-body{
-    padding: auto;
-    font-family: "Neue", sans-serif;
+/* filepath: /c:/Users/navla/Documents/web/PC/first/pxc/src/index.css */
+@font-face {
+  font-family: 'CustomFont';
+  src: url('./fonts/nm2d.woff2') format('woff2'),
+       url('./fonts/nm.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
 }
 
-@layer base {
-    @font-face {
-      font-family: 'Neue';
-      font-style: normal;
-      font-weight: 400;
-      font-display: swap;
-      src: url(../src/fonts/NeueMachina-Medium_d0jNuroW9.ttf) format('ttf');
-    }
+body {
+  font-family: 'CustomFont', sans-serif;
+}
+@font-face {
+  font-family: 'ff';
+  src: url('./fonts/jur.woff2') format('woff2'),
+       url('../fonts/jur.woff2') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
 
-  }
+.font-ff {
+  font-family: 'ff', sans-serif;
+}
