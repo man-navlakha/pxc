@@ -2,9 +2,10 @@ import { useState } from 'react'
 import './App.css'
 import Home from './newcom/home'
 import Sub from './newcom/Sub'
-import Login from './newcom/login'
+import Login from './newcom/Login'
 import Open from './newcom/open'
 import { Routes, Route, Link } from 'react-router-dom'
+import Sign from './newcom/Sign'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -27,6 +28,7 @@ function App() {
         <Route path='/sub' element={<Sub />}/>
         <Route path='/login' element={<Login />}/>
         <Route path='/open' element={<Open />}/>
+        <Route path='/signup' element={<Sign />}/>
         {/* <Route path='/about' element={<About />}/>
         <Route path='/user/:userId' element={<UserDetail />}/>
         <Route path='/profile' element={<UserProfile />}/> */}

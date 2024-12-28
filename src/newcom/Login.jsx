@@ -51,6 +51,10 @@ const Login = () => {
     }
   };
 
+  const handleSignUpClick = () => {
+    navigate('/signup');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="p-6 w-full max-w-sm">
@@ -116,6 +120,15 @@ const Login = () => {
           >
             <img src="https://ik.imagekit.io/pxc/g-logo.png" alt="Google logo" className="mr-2 h-6 w-6" />
             Sign in with Google
+          </button>
+        </div>
+        <div className="mt-6">
+            <p className="text-emerald-600 text-center m-2">Don't have an account?</p>
+          <button 
+           onClick={handleSignUpClick}
+            className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm hover:text-md font-medium text-white hover:text-gray-700 bg-emerald-900 hover:bg-emerald-50"
+          >
+           Sign Up
           </button>
         </div>
       </div>

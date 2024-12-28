@@ -1,6 +1,14 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom';
+
 
 const Sign = () => {
+  const navigate = useNavigate(); // hook for redirecting
+
+  const handleClick = () => {
+    navigate('/Login');
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
     <div className=" p-3 w-full max-w-sm">
@@ -21,6 +29,14 @@ const Sign = () => {
           />
         </div>
         <div>
+          <label className="block text-sm font-medium text-gray-700">E-mail</label>
+          <input
+            type="email"
+            placeholder="Enter email"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+          />
+        </div>
+        <div>
           <label className="block text-sm font-medium text-gray-700">Password</label>
           <input
             type="password"
@@ -28,8 +44,18 @@ const Sign = () => {
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
           />
         </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Conformation Password</label>
+          <input
+            type="password"
+            placeholder="Enter Conformation Password"
+            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+          />
+        </div>
         <div className="flex items-center justify-between">
-          <button type="button" className="text-blue-600 hover:underline">
+          <button 
+           onClick={handleClick}
+           type="button" className="text-blue-600 hover:underline">
             I have an account 
           </button>
           <button
