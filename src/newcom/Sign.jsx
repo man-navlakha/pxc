@@ -23,7 +23,7 @@ const Sign = () => {
       </div>
       <form className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700">Username</label>
+          <label className="block text-sm font-medium font-ff text-gray-700">Username</label>
           <input
             type="text"
             placeholder="Enter username"
@@ -31,7 +31,7 @@ const Sign = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">E-mail</label>
+          <label className="block text-sm font-medium font-ff text-gray-700">Email</label>
           <input
             type="email"
             placeholder="Enter email"
@@ -39,7 +39,7 @@ const Sign = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Password</label>
+          <label className="block text-sm font-medium font-ff text-gray-700">Password</label>
           <input
             type="password"
             placeholder="Enter Password"
@@ -47,7 +47,7 @@ const Sign = () => {
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700">Conformation Password</label>
+          <label className="block text-sm font-medium font-ff text-gray-700">Conformation Password</label>
           <input
             type="password"
             placeholder="Enter Conformation Password"
@@ -57,16 +57,15 @@ const Sign = () => {
         <div className="flex items-center justify-between">
           <button 
            onClick={handleClick}
-           type="button" className="text-blue-600 hover:underline">
+           type="button" className="text-blue-600  hover:underline">
             I have an account 
           </button>
           <button
-            type="submit"
-            className="flex items-center px-4 py-2 bg-green-700 text-white rounded-md hover:bg-green-800"
-          >
-            Sign up
-            <i className="fas fa-arrow-right ml-2"></i>
-          </button>
+  type="submit"
+  className="w-lg flex items-center px-4 py-2 bg-green-700 text-white font-ff rounded-md hover:bg-green-800"
+>
+  Sign up 
+</button>
         </div>
       </form>
       <div className="mt-6">

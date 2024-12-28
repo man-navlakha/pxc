@@ -70,7 +70,7 @@ const Login = () => {
           {error && <p className="error-message font-bold text-red-600">{error}</p>}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Username</label>
+            <label className=" font-ff block text-sm font-medium text-gray-700">Username</label>
             <input
               type="text"
               id="username"
@@ -83,7 +83,7 @@ const Login = () => {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">Password</label>
+            <label className=" font-ff block text-sm font-medium text-gray-700">Password</label>
             <input
               type="password"
               id="password"
@@ -101,7 +101,7 @@ const Login = () => {
             </button>
             <button
               type="submit"
-              className="flex items-center px-4 py-2 bg-green-700 text-white rounded-md hover:bg-green-800"
+              className="w-lg flex items-center px-4 py-2 bg-green-700 text-white font-ff rounded-md hover:bg-green-800"
               disabled={loading} // Disable button while loading
             >
               {loading ? (
@@ -128,7 +128,7 @@ const Login = () => {
             <p className="text-emerald-600 text-center m-2">Don't have an account?</p>
           <button 
            onClick={handleSignUpClick}
-            className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm hover:text-md font-medium text-white hover:text-gray-700 bg-emerald-900 hover:bg-emerald-50"
+            className="font-ff w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm hover:text-md font-medium text-white hover:text-gray-700 bg-emerald-900 hover:bg-emerald-50"
           >
            Sign Up
           </button>

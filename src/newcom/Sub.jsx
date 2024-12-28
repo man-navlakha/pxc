@@ -18,9 +18,8 @@ const Sub = () => {
     </div>
     <p className="mt-4 text-left pl-3 text-lg">Select your subject</p>
     <div className="mt-6 space-y-4 p-4">
-        <div className="flex items-center p-4 hover:shadow-md hover:border-emerald-500 border-emerald-800 border-2 bg-white rounded-full">
+        <div className="flex items-center p-4 bg-gray-200 rounded-full shadow-md">
             <img src="https://placehold.co/50x50" alt="Icon for Data Structure & Algorithm" className="rounded-lg w-12 h-12 mr-4"/>
-              <div className="circle absolute h-[5em] w-[5em]  -bottom-[2.5em] border-emerald-800 border-2 blur-[15px] -left-[1.5em] rounded-full bg-emerald-100 group-hover:scale-[800%] duration-700 z-[-1] op" />
 
             <span className="text-lg font-medium">Data Structure & Algorithm</span>
         </div>
