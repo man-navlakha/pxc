@@ -30,9 +30,7 @@ const Home = () => {
 
     <div className="text-left w-full mb:max-w-mb lg:max-w-full p-4">
         <p className="text-lg ">Welcome,</p>
-        <h1 className="text-3xl font-ff font-bold text-emerald-700">Man Navlakha
-          {/* {response.data} */}
-          </h1>
+        <h1 className="text-3xl font-ff font-bold text-emerald-700">Man Navlakha</h1>
         
         <p className="mt-4 text-sm font-bold">Favorite Cource</p>
         <div style={scrollableStyle}  className="fav overflow-x-scroll -mx-4 mt-4 md:max-w-full md:h-full p-4 lg:max-w-full flex gap-4">
