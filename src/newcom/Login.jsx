@@ -52,7 +52,7 @@ const Login = () => {
   };
 
   const handleSignUpClick = () => {
-    navigate('/verification');
+    navigate('/signup');
   };
 
   return (
