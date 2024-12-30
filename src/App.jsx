@@ -9,6 +9,7 @@ import Sign from './newcom/Sign';
 import Verify from './newcom/veri';
 import NotFound from './NotFound';
 import './index.css';
+import Logout from './newcom/Logout';
 
 function App() {
 
@@ -23,6 +24,7 @@ function App() {
           <Route path='/open' element={<Open />}/>
           <Route path='/signup' element={<Sign />}/>
           <Route path='/verification' element={<Verify />}/>
+          <Route path='/logout' element={<Logout />}/>
       </Routes>
     </div>
   )

@@ -5,39 +5,34 @@ import { useNavigate, Link} from 'react-router-dom';
 import '../App.css';
 
 const Login = () => {
-  const [credentials, setCredentials] = useState({ username: "", password: "" });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); // Loading state
-  const navigate = useNavigate(); // hook for redirecting
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
-  // Check if the user is already logged in (status cookie is true)
   useEffect(() => {
-    const statusCookie = Cookies.get('status');
-    if (statusCookie === 'true') {
-      // If the user is already logged in, redirect to the home page
-      navigate('/');
+    const token = Cookies.get('access_token');
+    if (token) {
+      navigate('/'); // Redirect to home if already logged in
     }
-  }, [navigate]); // This runs once when the component is mounted
+  }, [navigate]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setCredentials({ ...credentials, [name]: value });
-  };
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setError(""); // Reset error
-    setLoading(true); // Start loading
+    setLoading(true);
+    setError('');
 
     try {
-      const response = await axios.post("https://pixel-classes.onrender.com/api/login/", credentials, {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true, // Ensure cookies are sent/received
+      const response = await axios.post('/api/login', {
+        username: e.target.username.value,
+        password: e.target.password.value,
       });
 
       console.log(response.data); // Log backend response for debugging
 
       if (response.data.message === "Login successful!") {
+        // Save access_token to cookies
+        Cookies.set('access_token', response.data.access_token, { expires: 7 }); // Expires in 7 days
+
         // Redirect to the home page after successful login
         navigate('/');
       } else {
@@ -45,7 +40,45 @@ const Login = () => {
       }
     } catch (err) {
       console.error("Login error:", err); // Log the error to see the full response
-      setError("An error occurred. Please try again later. either recheck username or password");
+
+      if (err.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        switch (err.response.status) {
+          case 400:
+            setError("Invalid input data. Please check your input and try again.");
+            break;
+          case 401:
+            setError("Authentication required. Please log in.");
+            break;
+          case 403:
+            setError("Access denied. You do not have permission to access this resource.");
+            break;
+          case 404:
+            setError("Resource not found. The requested resource does not exist.");
+            break;
+          case 409:
+            setError("Resource conflict. There is a conflict with the current state of the resource.");
+            break;
+          case 500:
+            setError("An unexpected error occurred. Please try again later.");
+            break;
+          case 502:
+            setError("Bad Gateway. Please try again later.");
+            break;
+          case 503:
+            setError("Service temporarily unavailable. Please try again later.");
+            break;
+          default:
+            setError(`Error: ${err.response.status}. Please try again later.`);
+        }
+      } else if (err.request) {
+        // The request was made but no response was received
+        setError("No response from server. Please try again later.");
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        setError("An error occurred. Please try again later.");
+      }
     } finally {
       setLoading(false); // End loading
     }
@@ -53,6 +86,10 @@ const Login = () => {
 
   const handleSignUpClick = () => {
     navigate('/signup');
+  };
+
+  const handleSubmit = (e) => {
+    handleLogin(e);
   };
 
   return (
@@ -70,29 +107,13 @@ const Login = () => {
           {error && <p className="error-message font-bold text-red-600">{error}</p>}
 
           <div>
-            <label className=" font-ff block text-sm font-medium text-gray-700">Username</label>
-            <input
-              type="text"
-              id="username"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-              name="username"
-              value={credentials.username}
-              onChange={handleInputChange}
-              required
-            />
+            <label className="font-ff block text-sm font-medium text-gray-700">Username</label>
+            <input type="text" name="username" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required />
           </div>
 
           <div>
-            <label className=" font-ff block text-sm font-medium text-gray-700">Password</label>
-            <input
-              type="password"
-              id="password"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-              name="password"
-              value={credentials.password}
-              onChange={handleInputChange}
-              required
-            />
+            <label className="font-ff block text-sm font-medium text-gray-700">Password</label>
+            <input type="password" name="password" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required />
           </div>
 
           <div className="flex items-center justify-between">
