@@ -6,6 +6,7 @@ import Login from './newcom/Login'
 import Open from './newcom/open'
 import { Routes, Route, Link } from 'react-router-dom'
 import Sign from './newcom/Sign'
+import Verify from './newcom/veri'
 import './index.css'
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path='/login' element={<Login />}/>
         <Route path='/open' element={<Open />}/>
         <Route path='/signup' element={<Sign />}/>
+        <Route path='/verification' element={<Verify />}/>
       </Routes>
     </div>
   )

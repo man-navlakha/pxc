@@ -1,9 +1,10 @@
+
 import React from 'react'
 import { Document } from 'react-pdf'
 
 const open = () => {
-  return (
-    <div className="">
+            return (
+                   <div className="">
     <h1 className="text-4xl font-bold mb-4">Python</h1>
     <div className="bg-gray-200 p-4 rounded-lg shadow-inner">
         {Array(7).fill().map((_, index) => (
@@ -14,7 +15,7 @@ const open = () => {
         ))}
     </div>
 </div>
-  )
+            );
 }
 
 export default open
