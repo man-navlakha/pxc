@@ -22,7 +22,7 @@ const Login = () => {
     setError('');
 
     try {
-      const response = await axios.post('/api/login', {
+      const response = await axios.post('https://pixel-classes.onrender.com/api/login/', {
         username: e.target.username.value,
         password: e.target.password.value,
       });
