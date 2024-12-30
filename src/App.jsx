@@ -16,14 +16,14 @@ function App() {
     <div className="App">
 
       <Routes>
-      <Switch>
-        <Route component={NotFound} />
-        <Route path='/' element={<Home />}/>
-        <Route path='/sub' element={<Sub />}/>
-        <Route path='/login' element={<Login />}/>
-        <Route path='/open' element={<Open />}/>
-        <Route path='/signup' element={<Sign />}/>
-        <Route path='/verification' element={<Verify />}/>
+        <Switch>
+          <Route component={NotFound} />
+          <Route path='/' element={<Home />}/>
+          <Route path='/sub' element={<Sub />}/>
+          <Route path='/login' element={<Login />}/>
+          <Route path='/open' element={<Open />}/>
+          <Route path='/signup' element={<Sign />}/>
+          <Route path='/verification' element={<Verify />}/>
         </Switch>
       </Routes>
     </div>
