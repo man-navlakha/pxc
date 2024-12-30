@@ -1,5 +1,6 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom';
+import GoBack from './GoBack';
 
 
 
@@ -12,6 +13,7 @@ const Sub = () => {
   
   return (
     <div className="text-center">
+        <GoBack />
         <div className="bg-white p-4 w-full">
     <h1 className="text-4xl text-left font-bold">{courseName}</h1>
     <h2 className="text-3xl text-left font-bold">Collations</h2>

@@ -28,22 +28,7 @@ const Navbar = () => {
             </div>
           )}
     </div>
-    {/* <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="text-white text-lg font-bold">Home</Link>
-        <div className="relative">
-          <div className="flex items-center" onClick={toggleDropdown}>
-            <img src="https://ik.imagekit.io/pxc/def.jpg" alt="Profile photo of a person with short hair and glasses" className="h-10 w-10 rounded-full border-2 cursor-pointer" />
-          </div>
-          {dropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20">
-              <Link to="/profile" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profile</Link>
-              <Link to="/login" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Login</Link>
-              <Link to="/signup" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Signup</Link>
-              <Link to="/logout" className="block px-4 py-2 text-gray-800 hover:bg-gray-100">Logout</Link>
-            </div>
-          )}
-        </div>
-      </div> */}
+  
 </nav> 
   )
 }
