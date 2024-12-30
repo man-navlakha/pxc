@@ -35,7 +35,7 @@ const Sign = () => {
       const data = await response.json();
       console.log('Signup successful:', data);
       // Redirect to another page or show a success message
-      navigate('/home'); // Example redirect
+      navigate('/'); // Example redirect
     } catch (error) {
       console.error('There was a problem with the signup request:', error);
     } finally {
