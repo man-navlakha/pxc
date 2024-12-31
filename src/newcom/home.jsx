@@ -49,24 +49,7 @@ const Home = () => {
           {userName}
         </h1>
 
-        {/* Conditionally render login, signup, and logout options */}
-        {!isLoggedIn ? (
-          <div className="mt-4">
-            <Link to="/login" className="text-blue-500 hover:underline">
-              Login
-            </Link>
-            <span className="mx-2">|</span>
-            <Link to="/signup" className="text-blue-500 hover:underline">
-              Signup
-            </Link>
-          </div>
-        ) : (
-          <div className="mt-4">
-            <button onClick={handleLogout} className="text-blue-500 hover:underline">
-              Logout
-            </button>
-          </div>
-        )}
+      
 
         <p className="mt-4 text-sm font-bold">Favorite Course</p>
         <div className="fav overflow-x-scroll -mx-4 mt-4 md:max-w-full md:h-full p-4 lg:max-w-full flex gap-4 scrollable-courses">
