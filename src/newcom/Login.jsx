@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useNavigate, Link} from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../App.css';
 
 const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState(Cookies.get('username') || ''); // Get username from cookies or default to ''
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,8 +31,11 @@ const Login = () => {
       console.log(response.data); // Log backend response for debugging
 
       if (response.data.message === "Login successful!") {
-        // Save access_token to cookies
+        // Save access_token and username to cookies
         Cookies.set('access_token', response.data.access_token, { expires: 7 }); // Expires in 7 days
+        Cookies.set('username', e.target.username.value, { expires: 7 }); // Save username to cookies
+
+        setUsername(e.target.username.value); // Update username state
 
         // Redirect to the home page after successful login
         navigate('/');
@@ -92,14 +96,17 @@ const Login = () => {
     handleLogin(e);
   };
 
+  // Check if the user is logged in by seeing if the token exists in cookies
+  const token = Cookies.get('access_token');
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="p-6 w-full max-w-sm">
         <div className="mb-6">
-          <h1 className="text-2xl font-ff font-bold">Welcome back to,</h1>
+          <h1 className="text-2xl font-ff font-bold">Welcome back, {username || 'to'}</h1>
           <div className="flex items-center justify-center mt-2">
-          <Link to={'/'}>
-            <img src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png" alt="Pixel Class logo" className="mr-2 w-full h-fit" />
+            <Link to={'/'}>
+              <img src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png" alt="Pixel Class logo" className="mr-2 w-full h-fit" />
             </Link>
           </div>
         </div>
@@ -137,23 +144,28 @@ const Login = () => {
           </div>
         </form>
 
-        <div className="mt-6">
-          <button
-            className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
-          >
-            <img src="https://ik.imagekit.io/pxc/g-logo.png" alt="Google logo" className="mr-2 h-6 w-6" />
-            Sign in with Google
-          </button>
-        </div>
-        <div className="mt-6">
+        {!token && (
+          <div className="mt-6">
+            <button
+              className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            >
+              <img src="https://ik.imagekit.io/pxc/g-logo.png" alt="Google logo" className="mr-2 h-6 w-6" />
+              Sign in with Google
+            </button>
+          </div>
+        )}
+
+        {!token && (
+          <div className="mt-6">
             <p className="text-emerald-600 text-center m-2">Don't have an account?</p>
-          <button 
-           onClick={handleSignUpClick}
-            className="font-ff w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm hover:text-md font-medium text-white hover:text-gray-700 bg-emerald-900 hover:bg-emerald-50"
-          >
-           Sign Up
-          </button>
-        </div>
+            <button 
+              onClick={handleSignUpClick}
+              className="font-ff w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm hover:text-md font-medium text-white hover:text-gray-700 bg-emerald-900 hover:bg-emerald-50"
+            >
+              Sign Up
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

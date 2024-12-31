@@ -17,6 +17,19 @@ const Sign = () => {
       return;
     }
 
+    // Basic email validation
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(email)) {
+      alert('Please enter a valid email');
+      return;
+    }
+
+    // Basic password validation
+    if (password.length < 6) {
+      alert('Password must be at least 6 characters long');
+      return;
+    }
+
     setLoading(true); // Start loading
 
     try {
@@ -34,8 +47,9 @@ const Sign = () => {
 
       const data = await response.json();
       console.log('Signup successful:', data);
-      // Redirect to another page or show a success message
-      navigate('/'); // Example redirect
+      
+      // Redirect to the /verification page and pass the API data
+      navigate('/verification', { state: { user: { email: data.email } } });
     } catch (error) {
       console.error('There was a problem with the signup request:', error);
     } finally {
