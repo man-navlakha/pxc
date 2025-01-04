@@ -50,8 +50,8 @@ const Sign = () => {
       console.log('Signup successful:', data);
       Cookies.set('username', username); // Save username to cookies
       
-          // Redirect to the /verification page and pass the username via state
-          navigate('/verification', { state: { user: { username } } });
+      // Redirect to the /verification page and pass the username via state
+      navigate('/verification', { state: { user: { username } } });
 
     } catch (error) {
       console.error('There was a problem with the signup request:', error);

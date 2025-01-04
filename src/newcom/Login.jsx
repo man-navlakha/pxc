@@ -40,11 +40,14 @@ const Login = () => {
         // Redirect to the home page after successful login
         navigate('/');
       } else {
-        setError("Invalid credentials. Please try again.");
+        setError(err.response.data.error);
+        console.error("Login error:", err.response.data.message);
       }
     } catch (err) {
       console.error("Login error:", err); // Log the error to see the full response
-
+      
+      setError(err.response.data.error);
+      console.error("Login error:", err.response.data.error);
       if (err.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
