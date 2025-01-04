@@ -48,44 +48,7 @@ const Login = () => {
       
       setError(err.response.data.error);
       console.error("Login error:", err.response.data.error);
-      if (err.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        switch (err.response.status) {
-          case 400:
-            setError("Invalid input data. Please check your input and try again.");
-            break;
-          case 404:
-            setError("Resource not found. The requested resource does not exist.");
-            break;
-          case 401:
-            setError("Username either password is wrong.");
-            break;
-          case 403:
-            setError("Password is wrong.");
-            break;
-          case 409:
-            setError("Resource conflict. There is a conflict with the current state of the resource.");
-            break;
-          case 500:
-            setError("An unexpected error occurred. Please try again later.");
-            break;
-          case 502:
-            setError("Bad Gateway. Please try again later.");
-            break;
-          case 503:
-            setError("Service temporarily unavailable. Please try again later.");
-            break;
-          default:
-            setError(`Error: ${err.response.status}. Please try again later.`);
-        }
-      } else if (err.request) {
-        // The request was made but no response was received
-        setError("No response from server. Please try again later.");
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        setError("An error occurred. Please try again later.");
-      }
+     
     } finally {
       setLoading(false); // End loading
     }
