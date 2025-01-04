@@ -57,6 +57,9 @@ const Login = () => {
   const handleSignUpClick = () => {
     navigate('/signup');
   };
+  const fgpass = () => {
+    navigate('/fgpassword');
+  };
 
   const handleSubmit = (e) => {
     handleLogin(e);
@@ -90,7 +93,7 @@ const Login = () => {
           </div>
 
           <div className="flex items-center justify-between">
-            <button type="button" className="text-blue-600 hover:underline">
+            <button type="button" className="text-blue-600 hover:underline" onClick={fgpass}>
               I want new password
             </button>
             <button
