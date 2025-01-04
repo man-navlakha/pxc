@@ -6,7 +6,7 @@ const Veri = () => {
   const [otp, setOtp] = useState(new Array(6).fill(''));
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [timer, setTimer] = useState(10); // 300 seconds = 5 minutes
+  const [timer, setTimer] = useState(280); // 300 seconds = 5 minutes
   const [expired, setExpired] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();

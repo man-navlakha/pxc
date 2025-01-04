@@ -24,7 +24,7 @@ const Login = () => {
 
     try {
       const response = await axios.post('https://pixel-classes.onrender.com/api/login/', {
-        username: e.target.username.value,
+        username: e.target.username.value.toLowerCase(),
         password: e.target.password.value,
       });
 
@@ -35,7 +35,7 @@ const Login = () => {
         Cookies.set('access_token', response.data.access_token, { expires: 7 }); // Expires in 7 days
         Cookies.set('username', e.target.username.value, { expires: 7 }); // Save username to cookies
 
-        setUsername(e.target.username.value); // Update username state
+        setUsername(e.target.username.value.toLowerCase()); // Update username state
 
         // Redirect to the home page after successful login
         navigate('/');
@@ -81,7 +81,7 @@ const Login = () => {
 
           <div>
             <label className="font-ff block text-sm font-medium text-gray-700">Username</label>
-            <input type="text" name="username" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required />
+            <input type="text" name="username" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" onChange={(e) => e.target.value = e.target.value.toLowerCase()} required />
           </div>
 
           <div>
