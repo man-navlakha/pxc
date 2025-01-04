@@ -17,9 +17,9 @@ function App() {
 
   return (
     <div className="App">
-
       <Routes>
-          <Route component={NotFound} />
+        
+          <Route path='*' element={<NotFound />} />
           <Route path='/' element={<Home />}/>
           <Route path='/sub' element={<Sub />}/>
           <Route path='/login' element={<Login />}/>
