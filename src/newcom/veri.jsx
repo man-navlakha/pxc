@@ -6,7 +6,7 @@ const Veri = () => {
   const [otp, setOtp] = useState(new Array(6).fill(''));
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [timer, setTimer] = useState(300); // 300 seconds = 5 minutes
+  const [timer, setTimer] = useState(10); // 300 seconds = 5 minutes
   const [expired, setExpired] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -71,7 +71,7 @@ const Veri = () => {
         alert('Verification successful!');
         navigate('/login');
       } else {
-        alert(data.message || 'Verification failed. Please try again.');
+        alert(data.error);
       }
     } catch (error) {
       console.error('Error submitting OTP:', error);
@@ -85,7 +85,7 @@ const Veri = () => {
   const handleResendOTP = async () => {
     setExpired(false);
     setTimer(300); // Reset timer to 5 minutes
-
+  
     try {
       const response = await fetch('https://pixel-classes.onrender.com/api/resend-otp/', {
         method: 'POST',
@@ -94,17 +94,16 @@ const Veri = () => {
         },
         body: JSON.stringify({ username: username }),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
-        alert('OTP has been resent to your email!');
+        console.log('OTP has been resent to your email!');
       } else {
-        alert(data.message || 'Failed to resend OTP.');
+        console.error('Error resending OTP:', data.error);
       }
     } catch (error) {
-      console.error('Error resending OTP:', error);
-      alert('An error occurred while resending the OTP. Please try again.');
+      console.error('There was a problem with the resend OTP request:', error);
     }
   };
 

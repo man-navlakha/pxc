@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import { useNavigate, Link } from 'react-router-dom';
 
 const Sign = () => {
+  const [error, setError] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -10,8 +11,12 @@ const Sign = () => {
   const [loading, setLoading] = useState(false); // Define loading state
   const navigate = useNavigate(); // hook for redirecting
 
+  
   const handleSignUpClick = async (e) => {
     e.preventDefault();
+    
+    setError(''); // Clear any previous error
+    
 
     if (password !== confirmPassword) {
       alert('Passwords do not match');
@@ -32,6 +37,7 @@ const Sign = () => {
     }
 
     setLoading(true); // Start loading
+    
 
     try {
       const response = await fetch('https://pixel-classes.onrender.com/api/register/', {
@@ -41,21 +47,25 @@ const Sign = () => {
         },
         body: JSON.stringify({ username, email, password }),
       });
-
+    
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Network response was not ok');
       }
-
+    
       const data = await response.json();
       console.log('Signup successful:', data);
       Cookies.set('username', username); // Save username to cookies
       
       // Redirect to the /verification page and pass the username via state
       navigate('/verification', { state: { user: { username } } });
-
+    
     } catch (error) {
       console.error('There was a problem with the signup request:', error);
+      setError(error.message);
+      setLoading(false); // End loading
     } finally {
+      // Any cleanup code if necessary
       setLoading(false); // End loading
     }
   };
@@ -76,6 +86,7 @@ const Sign = () => {
           </div>
         </div>
         <form className="space-y-4" onSubmit={handleSignUpClick}>
+        {error && <p className="error-message font-bold text-red-600">{error}</p>}
           <div>
             <label className="block text-sm font-medium font-ff text-gray-700">Username</label>
             <input
