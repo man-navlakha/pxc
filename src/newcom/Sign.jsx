@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Cookies from "js-cookie";
 import { useNavigate, Link } from 'react-router-dom';
 
 const Sign = () => {
@@ -47,9 +48,11 @@ const Sign = () => {
 
       const data = await response.json();
       console.log('Signup successful:', data);
+      Cookies.set('username', username); // Save username to cookies
       
-      // Redirect to the /verification page and pass the API data
-      navigate('/verification', { state: { user: { email: data.email } } });
+          // Redirect to the /verification page and pass the username via state
+          navigate('/verification', { state: { user: { username } } });
+
     } catch (error) {
       console.error('There was a problem with the signup request:', error);
     } finally {

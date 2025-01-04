@@ -52,14 +52,14 @@ const Login = () => {
           case 400:
             setError("Invalid input data. Please check your input and try again.");
             break;
-          case 401:
-            setError("Authentication required. Please log in.");
-            break;
-          case 403:
-            setError("Access denied. You do not have permission to access this resource.");
-            break;
           case 404:
             setError("Resource not found. The requested resource does not exist.");
+            break;
+          case 401:
+            setError("Username either password is wrong.");
+            break;
+          case 403:
+            setError("Password is wrong.");
             break;
           case 409:
             setError("Resource conflict. There is a conflict with the current state of the resource.");
