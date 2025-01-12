@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import Cookies from "js-cookie";
+
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 
 const NewPassword = () => {
@@ -11,7 +13,8 @@ const NewPassword = () => {
 
   // Get query parameters from URL
   const params = new URLSearchParams(location.search);
-  const userId = params.get("id"); // Use 'id' if that's what Django is sending
+  // const userId = params.get("id"); // Use 'id' if that's what Django is sending
+  const userId =  Cookies.get('user_id'); 
 
   // If userId is not found, handle error gracefully
   useEffect(() => {

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from 'react-router-dom';
+import Cookies from "js-cookie";
+
 
 const Forgetpassword = () => {
   const [email, setEmail] = useState('');
