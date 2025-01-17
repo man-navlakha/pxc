@@ -14,8 +14,8 @@ const NewPassword = () => {
   // Get query parameters from URL
   const params = new URLSearchParams(location.search);
   // const userId = params.get("id"); // Use 'id' if that's what Django is sending
-  const userId =  Cookies.get('user_id'); 
-  const token = Cookies.get('token'); // Get token from cookies
+  const userId =  Cookies.get('user_id');
+  console.log(userId);
   // If userId is not found, handle error gracefully
   useEffect(() => {
     if (!userId) {
