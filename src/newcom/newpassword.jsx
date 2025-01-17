@@ -10,12 +10,12 @@ const NewPassword = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
-  Cookies.set('user_id', user_id, { expires: 7 }); // Cookie expires in 7 days
-
+  
   // Get query parameters from URL
   const params = new URLSearchParams(location.search);
   // const userId = params.get("id"); // Use 'id' if that's what Django is sending
   const userId =  Cookies.get('user_id'); 
+  Cookies.set('user_id', user_id, { expires: 7 }); // Cookie expires in 7 days
               
   // Set a cookie
 
