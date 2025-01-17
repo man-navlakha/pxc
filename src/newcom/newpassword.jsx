@@ -15,6 +15,9 @@ const NewPassword = () => {
   const params = new URLSearchParams(location.search);
   // const userId = params.get("id"); // Use 'id' if that's what Django is sending
   const userId =  Cookies.get('user_id'); 
+              
+  // Set a cookie
+  Cookies.set('user_id', user_id, { expires: 7 }); // Cookie expires in 7 days
 
   // If userId is not found, handle error gracefully
   useEffect(() => {
@@ -62,6 +65,8 @@ const NewPassword = () => {
         const data = JSON.parse(text);  // Try parsing the JSON if the response is valid
         // On success, redirect to login page
         navigate('/login');
+
+ 
       } else {
         setError(text);  // Show the error text if it's not valid JSON
       }

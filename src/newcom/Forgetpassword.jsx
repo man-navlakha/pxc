@@ -39,9 +39,7 @@ const Forgetpassword = () => {
         setIsEmailSent(true); // Set this to true after email is sent
         setEmail(''); // Clear the email input field
 
-        
-  // Set a cookie
-  Cookies.set('email', email, { expires: 7 }); // Cookie expires in 7 days
+   
       } else {
         // If there's an error, show the error message
         const data = await response.json();
