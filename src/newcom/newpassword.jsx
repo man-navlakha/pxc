@@ -10,6 +10,7 @@ const NewPassword = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
+  Cookies.set('user_id', user_id, { expires: 7 }); // Cookie expires in 7 days
 
   // Get query parameters from URL
   const params = new URLSearchParams(location.search);
@@ -17,7 +18,6 @@ const NewPassword = () => {
   const userId =  Cookies.get('user_id'); 
               
   // Set a cookie
-  Cookies.set('user_id', user_id, { expires: 7 }); // Cookie expires in 7 days
 
   // If userId is not found, handle error gracefully
   useEffect(() => {
