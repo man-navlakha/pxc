@@ -8,6 +8,13 @@ const Logout = () => {
   useEffect(() => {
     // Remove the access_token from cookies
     Cookies.remove('access_token');
+    Cookies.remove('username');
+        Cookies.remove('access_token');
+        
+        // Set the login status to false and reset the username to 'Guest'
+        setIsLoggedIn(false);
+        setUserName('Guest');
+    
 
     // Redirect to the login page
     navigate('/login');

@@ -17,7 +17,17 @@ body {
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: 'f-black';
+  src: url('./fonts/NeueMachina-Black_Jq-BOUQTx.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
 
 .font-ff {
   font-family: 'ff', sans-serif;
+}
+
+.f-black {
+  font-family: 'f-black', sans-serif;
 }

@@ -2,11 +2,9 @@ import React from 'react'
 
 const LastF = () => {
   return (
-    <div className='opacity-40 mix-blend-multiply font-black font-sans uppercase text-5xl text-right text-emerald-700'>
-      <span>Made</span><br />
-      <span>With</span><br />
-      <span>❤️</span><br />
-      <span>INDIA</span><br />
+    <div className="text-left p-0 opacity-50">
+      <h1 className="text-6xl f-black text-gray-700">Notes for<br />All.</h1>
+      <p className="mt-4 text-gray-600 text-lg">Crafted with <span style={{ color: 'red' }}>❤</span> in Gujarat, India</p>
     </div>
   )
 }
