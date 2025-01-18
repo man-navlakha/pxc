@@ -2,7 +2,7 @@ import React from 'react'
 
 const Footer = () => {
     return (
-        <div className='bg-gradient-to-t from-emerald-700  to-transparent  bottom-0  text-white text-center -mb-12 mt-10 p-4 '>
+        <div className='bg-gradient-to-t from-emerald-500 hover:text-emerald-700  to-transparent  bottom-0  text-white text-center -mb-12 mt-10 p-4 '>
 
 
 
@@ -18,9 +18,8 @@ const Footer = () => {
                                 />
                             </div>
 
-                            <p className="mt-4 backdrop-blur-none text-gray-500 flex items-center justify-center">
-                                Lorem ipsum dolor, sit amet consectetur adipisicing elit. Esse non cupiditate quae nam
-                                molestias.
+                            <p className="mt-4 backdrop-blur-none text-emerald-700 flex items-center justify-center">
+                                A education notes sharing platform there you can share your notes and get notes of your course.
                             </p>
 
                             <ul className=" mt-8 flex items-center justify-center p-4 gap-6">
@@ -29,7 +28,7 @@ const Footer = () => {
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-gray-700 transition hover:opacity-75"
+                                        className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">Facebook</span>
 
@@ -48,7 +47,7 @@ const Footer = () => {
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-gray-700 transition hover:opacity-75"
+                                        className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">Instagram</span>
 
@@ -67,7 +66,7 @@ const Footer = () => {
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-gray-700 transition hover:opacity-75"
+                                        className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">Twitter</span>
 
@@ -84,7 +83,7 @@ const Footer = () => {
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-gray-700 transition hover:opacity-75"
+                                        className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">GitHub</span>
 
@@ -103,92 +102,77 @@ const Footer = () => {
 
                         <div className="grid grid-cols-1  gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
                             <div>
-                                <p className="font-medium text-gray-900">Services</p>
+                                <p className="font-medium font-ff text-emerald-700">Top cources</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> 1on1 Coaching </a>
+                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> MSCIT </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> Company Review </a>
+                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> BCA </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> Accounts Review </a>
+                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> BCOM </a>
+                                    </li>
+
+                                </ul>
+                            </div>
+
+                            <div>
+                                <p className="font-medium font-ff text-emerald-700">Company</p>
+
+                                <ul className="mt-6 space-y-4 text-sm">
+                                    <li>
+                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> About </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> HR Consulting </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> SEO Optimisation </a>
+                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Meet the Team </a>
                                     </li>
                                 </ul>
                             </div>
 
                             <div>
-                                <p className="font-medium text-gray-900">Company</p>
+                                <p className="font-medium font-ff text-emerald-700">Helpful Links</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> About </a>
+                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Contact </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> Meet the Team </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> Accounts Review </a>
+                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> FAQs </a>
                                     </li>
                                 </ul>
                             </div>
 
                             <div>
-                                <p className="font-medium text-gray-900">Helpful Links</p>
+                                <p className="font-medium font-ff text-emerald-700">Legal</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> Contact </a>
+                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Accessibility </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> FAQs </a>
+                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Returns Policy </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> Live Chat </a>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div>
-                                <p className="font-medium text-gray-900">Legal</p>
-
-                                <ul className="mt-6 space-y-4 text-sm">
-                                    <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> Accessibility </a>
+                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Refund Policy </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> Returns Policy </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> Refund Policy </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="#" className="text-gray-700 transition hover:opacity-75"> Hiring Statistics </a>
+                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Hiring Statistics </a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
 
-                    <p className="text-xs text-gray-500">&copy; 2025. <b>Dhuv & Man</b>. All rights reserved.</p>
+                    <p className="text-xs text-gray-500">&copy; 2025. <span className='text-emerald-700 font-bold font-ff' >Dhuv ✌️ Man</span>. All rights reserved.</p>
                 </div>
             </footer>
         </div>

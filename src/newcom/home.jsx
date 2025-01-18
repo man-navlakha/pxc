@@ -45,7 +45,7 @@ const Home = () => {
       <Navbar className="sticky top-0 " />
 
       <div className="text-left w-full mb:max-w-mb lg:max-w-full p-4">
-        <p className="text-lg">Welcome,</p>
+        <p className="text-lg">Welcome 👋,</p>
         <h1 className="text-3xl font-ff font-bold text-emerald-700">
           {userName}
         </h1>
@@ -74,7 +74,7 @@ const Home = () => {
       <LastF />
         
       </div>
-      <div className="">
+      <div className="mt-6">
         
       <Footer />
       </div>
