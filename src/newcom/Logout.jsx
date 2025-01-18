@@ -4,6 +4,8 @@ import Cookies from 'js-cookie';
 
 const Logout = () => {
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
+  const [userName, setUserName] = useState(''); // To store username from cookie
 
   useEffect(() => {
     // Remove the access_token from cookies
