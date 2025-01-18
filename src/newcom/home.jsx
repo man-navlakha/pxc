@@ -6,6 +6,7 @@ import Card from './Card';
 import Cbtn from './Cbtn';
 import Cookies from 'js-cookie'; // Importing js-cookie library
 import '../index.css'; // Import css file
+import Footer from './Footer';
 
 const Home = () => {
   const [userName, setUserName] = useState('');
@@ -69,7 +70,14 @@ const Home = () => {
           ))}
         </div>
       </div>
+      <div className="lg:hidden md:block block">
       <LastF />
+        
+      </div>
+      <div className="">
+        
+      <Footer />
+      </div>
     </div>
   );
 };

@@ -68,12 +68,18 @@ const Navbar = () => {
                 >
                   Profile
                 </Link>
-                <button
+                <Link
+                  to="/logout"
+                  className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                >
+                  Logout
+                </Link>
+                {/* <button
                   onClick={handleLogout}
                   className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
                 >
                   Logout
-                </button>
+                </button> */}
               </>
             ) : (
               // If not logged in, show Login and Signup options

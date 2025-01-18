@@ -12,6 +12,7 @@ import './index.css';
 import Logout from './newcom/Logout';
 import Forgetpassword from './newcom/Forgetpassword';
 import Newpassword from './newcom/newpassword';
+import Footer from './newcom/Footer';
 
 function App() {
 
@@ -29,6 +30,7 @@ function App() {
           <Route path='/logout' element={<Logout />}/>
           <Route path='/fgpassword' element={<Forgetpassword />}/>
           <Route path='/newpassword' element={<Newpassword />}/>
+          <Route path='/footer' element={<Footer />}/>
       </Routes>
     </div>
   )
