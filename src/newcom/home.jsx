@@ -74,7 +74,7 @@ const Home = () => {
       <LastF />
         
       </div>
-      <div className="mt-6">
+      <div className="">
         
       <Footer />
       </div>

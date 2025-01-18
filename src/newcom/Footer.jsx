@@ -1,12 +1,15 @@
 import React from 'react'
 
+
 const Footer = () => {
+    const year = new Date().getFullYear();
+    
     return (
-        <div className='bg-gradient-to-t from-emerald-500 hover:text-emerald-700  to-transparent  bottom-0  text-white text-center -mb-12 mt-10 p-4 '>
+        <div className='bg-gradient-to-t from-emerald-500 hover:text-emerald-700  to-transparent  bottom-0  text-white text-center  mt-10 p-4 '>
 
 
 
-            <footer className="bg-white backdrop-blur-sm backdrop-opacity-50  flex items-center justify-center  rounded-lg shadow-md  -mt-16  text-white">
+            <footer className="bg-white  flex items-center justify-center  rounded-lg shadow-md -mt-6 text-white">
                 <div className="mx-auto max-w-screen-xl space-y-8 px-4 py-16 sm:px-6 lg:space-y-16 lg:px-8">
                     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                         <div>
@@ -159,20 +162,16 @@ const Footer = () => {
                                     <li>
                                         <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Returns Policy </a>
                                     </li>
-
-                                    <li>
-                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Refund Policy </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Hiring Statistics </a>
-                                    </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
 
-                    <p className="text-xs text-gray-500">&copy; 2025. <span className='text-emerald-700 font-bold font-ff' >Dhuv ✌️ Man</span>. All rights reserved.</p>
+                    <p className="text-xs text-gray-500">&copy; {year}. <span className='text-emerald-700 font-bold font-ff' >
+                        <a href="https://github.com/Dhruv9512" target="_blank" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Dhruv </a> 
+✌️ 
+                        <a href="https://github.com/man-navlakha" target="_blank" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Man </a> 
+</span>. All rights reserved.</p>
                 </div>
             </footer>
         </div>
