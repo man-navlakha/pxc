@@ -3,35 +3,41 @@ import React from 'react'
 
 const Footer = () => {
     const year = new Date().getFullYear();
-    
+
     return (
         <div className='bg-gradient-to-t from-emerald-500 hover:text-emerald-700  to-transparent  bottom-0  text-white text-center  mt-10 p-4 '>
 
 
 
-            <footer className="bg-white  flex items-center justify-center  rounded-lg shadow-md -mt-6 text-white">
+            <footer className=" bg-white
+backdrop-filter
+backdrop-blur-sm
+bg-opacity-50
+backdrop-saturate-100
+backdrop-contrast-100
+bg-blend-overlay flex items-center justify-center  rounded-lg -mt-[120px] text-white">
                 <div className="mx-auto max-w-screen-xl space-y-8 px-4 py-16 sm:px-6 lg:space-y-16 lg:px-8">
                     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                         <div>
-                            <div className="backdrop-blur-none text-teal-600 flex items-center justify-center">
+                            <div className="text-teal-600 flex items-center justify-center">
                                 <img
                                     src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png?updatedAt=1735069174018"
                                     alt="Company logo"
-                                    className="h-10 backdrop-blur-lg"
+                                    className="h-10"
                                 />
                             </div>
 
-                            <p className="mt-4 backdrop-blur-none text-emerald-700 flex items-center justify-center">
+                            <p className="mt-4 text-emerald-700 flex items-center justify-center fn-bold">
                                 A education notes sharing platform there you can share your notes and get notes of your course.
                             </p>
 
-                            <ul className=" mt-8 flex items-center justify-center p-4 gap-6">
+                            <ul className="mt-8 flex items-center justify-center p-4 gap-6">
                                 <li>
                                     <a
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"
+                                        className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">Facebook</span>
 
@@ -50,7 +56,7 @@ const Footer = () => {
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"
+                                        className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">Instagram</span>
 
@@ -69,7 +75,7 @@ const Footer = () => {
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"
+                                        className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">Twitter</span>
 
@@ -86,7 +92,7 @@ const Footer = () => {
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"
+                                        className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">GitHub</span>
 
@@ -105,75 +111,76 @@ const Footer = () => {
 
                         <div className="grid grid-cols-1  gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
                             <div>
-                                <p className="font-medium font-ff text-emerald-700">Top cources</p>
+                                <p className="font-medium fj-black text-emerald-700">Top cources</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
-                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> MSCIT </a>
+                                        <a href="#" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> MSCIT </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> BCA </a>
+                                        <a href="#" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> BCA </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> BCOM </a>
+                                        <a href="#" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> BCOM </a>
                                     </li>
 
                                 </ul>
                             </div>
 
                             <div>
-                                <p className="font-medium font-ff text-emerald-700">Company</p>
+                                <p className="font-medium fj-black text-emerald-700">Company</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
-                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> About </a>
+                                        <a href="#" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> About </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Meet the Team </a>
+                                        <a href="/team" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> Meet the Team </a>
                                     </li>
                                 </ul>
                             </div>
 
                             <div>
-                                <p className="font-medium font-ff text-emerald-700">Helpful Links</p>
+                                <p className="font-medium fj-black text-emerald-700">Helpful Links</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
-                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Contact </a>
+                                        <a href="#" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> Contact </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> FAQs </a>
+                                        <a href="faq" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> FAQs </a>
                                     </li>
                                 </ul>
                             </div>
 
                             <div>
-                                <p className="font-medium font-ff text-emerald-700">Legal</p>
+                                <p className="font-medium fj-black text-emerald-700">Legal</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
-                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Accessibility </a>
+                                        <a href="#" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> Terms of Use </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Returns Policy </a>
+                                        <a href="#" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> Policy </a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
 
-                    <p className="text-xs text-gray-500">&copy; {year}. <span className='text-emerald-700 font-bold font-ff' >
-                        <a href="https://github.com/Dhruv9512" target="_blank" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Dhruv </a> 
-✌️ 
-                        <a href="https://github.com/man-navlakha" target="_blank" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Man </a> 
-</span>. All rights reserved.</p>
+                    <p className="text-xs text-gray-500">&copy; {year}. <span className='text-emerald-700 font-bold fj-black' >
+                        <a href="https://github.com/Dhruv9512" target="_blank" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Dhruv </a>
+                        ✌️
+                        <a href="https://github.com/man-navlakha" target="_blank" className="text-emerald-900  hover:text-emerald-700 transition hover:opacity-75"> Man </a>
+                    </span>. All rights reserved.</p>
                 </div>
             </footer>
+
         </div>
     )
 }

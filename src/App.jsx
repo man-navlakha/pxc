@@ -13,11 +13,16 @@ import Logout from './newcom/Logout';
 import Forgetpassword from './newcom/Forgetpassword';
 import Newpassword from './newcom/newpassword';
 import Footer from './newcom/Footer';
+import Team from './newcom/Team';
+import Faq from './newcom/Faq';
 
 function App() {
 
   return (
-    <div className="App">
+    <div className="App 
+    
+     dotted-background 
+    ">
       <Routes>
         
           <Route path='*' element={<NotFound />} />
@@ -31,6 +36,8 @@ function App() {
           <Route path='/fgpassword' element={<Forgetpassword />}/>
           <Route path='/newpassword' element={<Newpassword />}/>
           <Route path='/footer' element={<Footer />}/>
+          <Route path='/team' element={<Team />}/>
+          <Route path='/faq' element={<Faq />}/>
       </Routes>
     </div>
   )

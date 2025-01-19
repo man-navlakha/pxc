@@ -23,6 +23,18 @@ body {
   font-weight: normal;
   font-style: normal;
 }
+@font-face {
+  font-family: 'juna-black';
+  src: url('./fonts/wwf/Fontspring-DEMO-juana-black_qsRZ2yEB9.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'neue-bold';
+  src: url('./fonts/wwf/NeueMachina-Bold_WaMOsLX9Z9.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
 
 .font-ff {
   font-family: 'ff', sans-serif;
@@ -30,4 +42,70 @@ body {
 
 .f-black {
   font-family: 'f-black', sans-serif;
+}
+.fj-black {
+  font-family: 'juna-black', sans-serif;
+}
+.fn-bold {
+  font-family: 'neue-bold', sans-serif;
+}
+  
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* 
+.bg {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  width: 200%;
+  height: 200vh;
+  background: transparent url('https://ik.imagekit.io/pxc/n-bo-p-edu%20mesh%20.png') repeat 0 0;
+  background-repeat: repeat;
+  animation: bg-animation .2s infinite;
+  visibility: visible;
+} */
+
+@keyframes bg-animation {
+    0% { transform: translate(0,0) }
+    10% { transform: translate(-5%,-5%) }
+    20% { transform: translate(-10%,5%) }
+    30% { transform: translate(5%,-10%) }
+    40% { transform: translate(-5%,15%) }
+    50% { transform: translate(-10%,5%) }
+    60% { transform: translate(15%,0) }
+    70% { transform: translate(0,10%) }
+    80% { transform: translate(-15%,0) }
+    90% { transform: translate(10%,5%) }
+    100% { transform: translate(5%,0) }
+}
+
+
+.dotted-background {
+    background-image: radial-gradient(#c7c6c6fb 1%,#ffffff27 10%);
+    backdrop-filter: opacity(0.5);
+    
+}
+
+.dotted-background,.result-background {
+    background-position: 0 0,14px 14px;
+    background-size: 16px 16px;
+    width: 100%;
+    
+}
+
+
+/* Hide scrollbars for all elements */
+* {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+
+*::-webkit-scrollbar {
+  display: none;  /* Safari and Chrome */
 }

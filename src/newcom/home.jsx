@@ -7,6 +7,7 @@ import Cbtn from './Cbtn';
 import Cookies from 'js-cookie'; // Importing js-cookie library
 import '../index.css'; // Import css file
 import Footer from './Footer';
+import Team from './Team';
 
 const Home = () => {
   const [userName, setUserName] = useState('');
@@ -41,12 +42,15 @@ const Home = () => {
   const courses = ['BCA', 'MSCIT', 'BBA', 'BCIT', 'BCOM', 'Nursing', 'B.Tech']; // Array of courses
 
   return (
-    <div className="flex relative flex-col w-full min-h-screen bg-white">
+    <div className="
+       
+     flex relative flex-col w-full min-h-screen">
+      
       <Navbar className="sticky top-0 " />
 
       <div className="text-left w-full mb:max-w-mb lg:max-w-full p-4">
         <p className="text-lg">Welcome 👋,</p>
-        <h1 className="text-3xl font-ff font-bold text-emerald-700">
+        <h1 className="text-3xl font-ff font-bold bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-green-500 via-emerable-900 to-green-700 text-transparent bg-clip-text">
           {userName}
         </h1>
 
@@ -74,7 +78,7 @@ const Home = () => {
       <LastF />
         
       </div>
-      <div className="">
+      <div className="mt-12">
         
       <Footer />
       </div>
