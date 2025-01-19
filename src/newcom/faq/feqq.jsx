@@ -21,7 +21,8 @@ const feqq = () => {
         <button className="border border-white px-4 py-2 bg-white text-black">PAYMENTS</button>
         <button className="border border-white px-4 py-2">MISCELLANEOUS</button>
       </div> */}
-      <div className="bg-white text-black p-10">
+      <div className="bg-white 
+      text-black p-10">
         <div className="border-b border-pink-500 pb-4 mb-4">
           <div
             className="flex justify-between items-center cursor-pointer"
