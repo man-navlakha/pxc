@@ -1,27 +1,23 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
-
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useParams, Link } from "react-router-dom";
 
 const NewPassword = () => {
+  const { token } = useParams(); // Extract the token from the URL
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
-  const location = useLocation();
 
-  // Get query parameters from URL
-  const params = new URLSearchParams(location.search);
-  // const userId = params.get("id"); // Use 'id' if that's what Django is sending
-  const userId =  Cookies.get('user_id');
-  console.log(userId);
-  // If userId is not found, handle error gracefully
+  // Save the token to cookies when the component mounts
   useEffect(() => {
-    if (!userId) {
-      setError("Invalid or expired link. Please try again.");
+    if (token) {
+      Cookies.set('reset_token', token, { expires: 7 }); // Store the token in cookies with a 7-day expiry
+    } else {
+      setError("Invalid or expired token. Please try again.");
     }
-  }, [userId]);
+  }, [token]);
 
   const handleLogin = () => {
     navigate('/login');
@@ -50,24 +46,18 @@ const NewPassword = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_id: userId, // Pass user_id to the API
+          token: Cookies.get('reset_token'), // Retrieve the token from cookies
           new_password: password,
         }),
       });
 
-      const text = await response.text();  // Get the raw response as text
-      console.log(text);  // Log the response to check if it's HTML
+      const result = await response.json();
 
       if (response.ok) {
-        const data = JSON.parse(text);  // Try parsing the JSON if the response is valid
         // On success, redirect to login page
         navigate('/login');
-
-             
-  // Set a cookie
-  Cookies.set('user_id', user_id, { expires: 7 }); // Cookie expires in 7 days
       } else {
-        setError(text);  // Show the error text if it's not valid JSON
+        setError(result.error || 'An error occurred. Please try again.');
       }
     } catch (err) {
       console.error('Error:', err);

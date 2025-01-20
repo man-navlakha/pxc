@@ -36,7 +36,7 @@ function App() {
           <Route path='/verification' element={<Verify />}/>
           <Route path='/logout' element={<Logout />}/>
           <Route path='/fgpassword' element={<Forgetpassword />}/>
-          <Route path='/newpassword' element={<Newpassword />}/>
+          <Route path='/newpassword/:token' element={<NewPassword />} />
           <Route path='/footer' element={<Footer />}/>
           <Route path='/team' element={<Team />}/>
           <Route path='/faq' element={<Faq />}/>
