@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
+import { useLocation,Link } from 'react-router-dom';
 import FileViewer from 'react-file-viewer';
 import Navbar from './Navbar';
 import LastF from './LastF';
 import Footer from './Footer';
 
 const NotesSharingPage = () => {
+  const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const subb = queryParams.get('sub');
+  
+    console.log(subb);
+  
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [files, setFiles] = useState([]);
@@ -54,7 +61,8 @@ const NotesSharingPage = () => {
     <>
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-center mb-4">Notes Sharing Page</h1>
+        <h1 className="text-3xl font-bold text-center mb-4">Notes for</h1>
+        <h1 className="text-3xl font-bold text-center mb-4">{subb}</h1>
         <div className="backdrop-filter backdrop-blur-sm bg-opacity-50 backdrop-saturate-100 backdrop-contrast-100 bg-blend-overlay p-6 mb-8">
           <h2 className="text-2xl font-bold mb-4">Add a Note</h2>
           <div className="mb-4">
@@ -114,9 +122,9 @@ const NotesSharingPage = () => {
           </button>
         </div>
         <div className="bg-gray-200 p-6 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-4">Shared Notes</h2>
+          <h2 className="text-2xl font-bold mb-4">Shared Notes for {subb}</h2>
           {notes.length === 0 ? (
-            <p className="text-gray-700">No notes shared yet.</p>
+            <p className="text-gray-700">No notes shared yet for {subb}.</p>
           ) : (
             notes.map(note => (
               <div key={note.id} className="mb-4 p-4 bg-gray-200 border border-gray-300 rounded-lg shadow">
