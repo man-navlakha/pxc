@@ -41,7 +41,7 @@ function App() {
           <Route path='/team' element={<Team />}/>
           <Route path='/faq' element={<Faq />}/>
           <Route path='/career' element={<Career />}/>
-          {/* <Route path='/ns' element={<NotesSharingPage />}/> */}
+          <Route path='/ns' element={<NotesSharingPage />}/>
       </Routes>
     </div>
   )
