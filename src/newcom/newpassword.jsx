@@ -13,7 +13,7 @@ const newpassword = () => {
   // Save the token to cookies when the component mounts
   useEffect(() => {
     if (token) {
-      Cookies.set('reset_token', {token}, { expires: 7 }); 
+      Cookies.set('reset_token', token, { expires: 7 }); 
       // Store the token in cookies with a 7-day expiry
 
       console.log(token);
