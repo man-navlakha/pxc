@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
-import { useLocation,Link } from 'react-router-dom';
-// import FileViewer from 'react-file-viewer';
+import { useLocation, Link } from 'react-router-dom';
 import Navbar from './Navbar';
 import LastF from './LastF';
 import Footer from './Footer';
 
 const NotesSharingPage = () => {
   const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
-    const subb = queryParams.get('sub');
-  
-    console.log(subb);
-  
+  const queryParams = new URLSearchParams(location.search);
+  const subb = queryParams.get('sub');
+
+  console.log(subb);
+
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [files, setFiles] = useState([]);
@@ -40,29 +39,11 @@ const NotesSharingPage = () => {
     setNotes(notes.filter(note => note.id !== id));
   };
 
-  const renderFilePreview = (file) => {
-    const fileType = file.type.split('/')[1];
-    const filePath = URL.createObjectURL(file);
-    return (
-      <div className="w-full h-64 mb-4">
-        <a href={filePath} target="_blank" rel="noopener noreferrer">
-          <FileViewer
-            fileType={fileType}
-            filePath={filePath}
-            errorComponent={<p className="text-gray-700 truncate">{file.name}</p>}
-            onError={(e) => console.error(e)}
-          />
-        </a>
-      </div>
-    );
-  };
-
   return (
     <>
       <Navbar />
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-center mb-4">Notes for</h1>
-        <h1 className="text-3xl font-bold text-center mb-4">{subb}</h1>
+        <h1 className="text-3xl font-bold text-center mb-4">Notes for {subb}</h1>
         <div className="backdrop-filter backdrop-blur-sm bg-opacity-50 backdrop-saturate-100 backdrop-contrast-100 bg-blend-overlay p-6 mb-8">
           <h2 className="text-2xl font-bold mb-4">Add a Note</h2>
           <div className="mb-4">
@@ -106,8 +87,8 @@ const NotesSharingPage = () => {
                 <p className="text-gray-700">Files to be uploaded:</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {files.map((file, index) => (
-                    <div key={index} className="p-4 border bg-white rounded-full shadow">
-                      {renderFilePreview(file)}
+                    <div key={index} className="p-4 border bg-white rounded-lg shadow">
+                      <p className="text-gray-700 truncate">{file.name}</p>
                     </div>
                   ))}
                 </div>
@@ -133,8 +114,8 @@ const NotesSharingPage = () => {
                 {note.files.length > 0 && (
                   <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {note.files.map((file, index) => (
-                      <div key={index} className="p-2 border rounded-full bg-white shadow">
-                        {renderFilePreview(file)}
+                      <div key={index} className="p-4 border bg-white rounded-lg shadow">
+                        <p className="text-gray-700 truncate">{file.name}</p>
                       </div>
                     ))}
                   </div>
