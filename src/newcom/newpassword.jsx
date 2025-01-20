@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { useNavigate, useParams, Link } from "react-router-dom";
 
-const NewPassword = () => {
+const newpassword = () => {
   const { token } = useParams(); // Extract the token from the URL
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -138,4 +138,4 @@ const NewPassword = () => {
   );
 };
 
-export default NewPassword;
+export default newpassword;
