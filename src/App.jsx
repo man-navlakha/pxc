@@ -10,7 +10,7 @@ import Verify from './newcom/veri';
 import NotFound from './NotFound';
 import './index.css';
 import Logout from './newcom/Logout';
-import Forgetpassword from './newcom/Forgetpassword';
+import Forgetpassword from './newcom/Forgetpassword'; 
 import Newpassword from './newcom/newpassword';
 import Footer from './newcom/Footer';
 import Team from './newcom/Team';
@@ -36,7 +36,7 @@ function App() {
           <Route path='/verification' element={<Verify />}/>
           <Route path='/logout' element={<Logout />}/>
           <Route path='/fgpassword' element={<Forgetpassword />}/>
-          <Route path='/newpassword/:token' element={<NewPassword />} />
+          <Route path='/newpassword/:token' element={<Newpassword />} />
           <Route path='/footer' element={<Footer />}/>
           <Route path='/team' element={<Team />}/>
           <Route path='/faq' element={<Faq />}/>
