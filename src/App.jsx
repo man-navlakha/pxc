@@ -16,6 +16,7 @@ import Footer from './newcom/Footer';
 import Team from './newcom/Team';
 import Faq from './newcom/Faq';
 import Career from './newcom/Career';
+import NotesSharingPage from './newcom/NotesSharingPage';
 
 function App() {
 
@@ -40,6 +41,7 @@ function App() {
           <Route path='/team' element={<Team />}/>
           <Route path='/faq' element={<Faq />}/>
           <Route path='/career' element={<Career />}/>
+          <Route path='/ns' element={<NotesSharingPage />}/>
       </Routes>
     </div>
   )
