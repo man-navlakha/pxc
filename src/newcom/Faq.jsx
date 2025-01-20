@@ -14,7 +14,7 @@ const Faq = () => {
       <LastF />
         
       </div>
-      <div className="mt-22">
+      <div className="mt-36">
         
       <Footer />
       </div>

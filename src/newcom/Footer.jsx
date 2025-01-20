@@ -129,12 +129,12 @@ bg-blend-overlay flex items-center justify-center  rounded-lg -mt-[120px] text-w
                                 </ul>
                             </div>
 
-                            <div>
+                            <div className='hidden lg:block md:hidden sm:hidden'>
                                 <p className="font-medium fj-black text-emerald-700">Company</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
-                                        <a href="#" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> About </a>
+                                        <a href="/career" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> Careers </a>
                                     </li>
 
                                     <li>
@@ -157,7 +157,7 @@ bg-blend-overlay flex items-center justify-center  rounded-lg -mt-[120px] text-w
                                 </ul>
                             </div>
 
-                            <div>
+                            <div className='hidden lg:block md:hidden sm:hidden'>
                                 <p className="font-medium fj-black text-emerald-700">Legal</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">

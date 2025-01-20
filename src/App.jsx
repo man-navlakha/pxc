@@ -15,6 +15,7 @@ import Newpassword from './newcom/newpassword';
 import Footer from './newcom/Footer';
 import Team from './newcom/Team';
 import Faq from './newcom/Faq';
+import Career from './newcom/Career';
 
 function App() {
 
@@ -38,6 +39,7 @@ function App() {
           <Route path='/footer' element={<Footer />}/>
           <Route path='/team' element={<Team />}/>
           <Route path='/faq' element={<Faq />}/>
+          <Route path='/career' element={<Career />}/>
       </Routes>
     </div>
   )
