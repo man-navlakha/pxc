@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import { useNavigate, useParams, Link } from "react-router-dom";
 
 const newpassword = () => {
-  const token = useParams(); // Extract the token from the URL
+  const { token } = useParams(); // Extract the token from the URL
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState('');
@@ -13,7 +13,7 @@ const newpassword = () => {
   // Save the token to cookies when the component mounts
   useEffect(() => {
     if (token) {
-      Cookies.set('reset_token', token, { expires: 7 }); 
+      Cookies.set('reset_token', {token}, { expires: 7 }); 
       // Store the token in cookies with a 7-day expiry
 
       console.log(token);
