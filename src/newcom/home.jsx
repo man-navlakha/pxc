@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Navbar from './Navbar';
-import LastF from './LastF';
-import Card from './Card';
-import Cbtn from './Cbtn';
+import Navbar from '../componets/Navbar';
+import LastF from '../componets/LastF';
+import Card from '../componets/Card';
+import Cbtn from '../componets/Cbtn';
 import Cookies from 'js-cookie'; // Importing js-cookie library
 import '../index.css'; // Import css file
-import Footer from './Footer';
-import Team from './Team';
+import Footer from '../componets/Footer';
+import Team from '../pages/Team';
 
 const Home = () => {
   const [userName, setUserName] = useState('');

@@ -10,12 +10,12 @@ import Verify from './newcom/veri';
 import NotFound from './NotFound';
 import './index.css';
 import Logout from './newcom/Logout';
-import Forgetpassword from './newcom/Forgetpassword'; 
+import Forgetpassword from './pages/Forgetpassword'; 
 import Newpassword from './newcom/newpassword';
-import Footer from './newcom/Footer';
-import Team from './newcom/Team';
-import Faq from './newcom/Faq';
-import Career from './newcom/Career';
+import Footer from './componets/Footer';
+import Team from './pages/Team';
+import Faq from './pages/Faq';
+import Career from './pages/Career';
 import NotesSharingPage from './newcom/NotesSharingPage';
 
 function App() {

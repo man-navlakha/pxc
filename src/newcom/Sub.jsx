@@ -1,6 +1,6 @@
 import React from 'react'
 import { useLocation,Link } from 'react-router-dom';
-import GoBack from './GoBack';
+import GoBack from '../componets/GoBack';
 
 
 

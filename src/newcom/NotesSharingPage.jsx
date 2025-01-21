@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import Navbar from './Navbar';
-import LastF from './LastF';
-import Footer from './Footer';
+import Navbar from '../componets/Navbar';
+import LastF from '../componets/LastF';
+import Footer from '../componets/Footer';
 
 const NotesSharingPage = () => {
   const location = useLocation();
