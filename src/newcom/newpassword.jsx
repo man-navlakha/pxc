@@ -30,7 +30,7 @@ const newpassword = () => {
     setError('');
 
     try {
-      const response = await fetch('https://pixel-classes.onrender.com/api/submit-new-password/', {
+      const response = await fetch('https://pixel-classes.onrender.com/api/user/submit-new-password/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

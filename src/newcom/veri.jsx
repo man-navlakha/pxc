@@ -54,7 +54,7 @@ const Veri = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('https://pixel-classes.onrender.com/api/verify-otp/', {
+      const response = await fetch('https://pixel-classes.onrender.com/api/user/verify-otp/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,7 +87,7 @@ const Veri = () => {
     setTimer(300); // Reset timer to 5 minutes
   
     try {
-      const response = await fetch('https://pixel-classes.onrender.com/api/resend-otp/', {
+      const response = await fetch('https://pixel-classes.onrender.com/api/user/resend-otp/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

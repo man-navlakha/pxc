@@ -40,7 +40,7 @@ const Sign = () => {
     
 
     try {
-      const response = await fetch('https://pixel-classes.onrender.com/api/register/', {
+      const response = await fetch('https://pixel-classes.onrender.com/api/user/register/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
