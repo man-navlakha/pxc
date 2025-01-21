@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Cookies from "js-cookie";
 import { useNavigate, useParams, Link } from "react-router-dom";
 
 const newpassword = () => {
@@ -9,18 +8,6 @@ const newpassword = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
-
-  // Save the token to cookies when the component mounts
-  useEffect(() => {
-    if (token) {
-      Cookies.set('reset_token', {token}, { expires: 7 }); 
-      // Store the token in cookies with a 7-day expiry
-
-      console.log(token);
-    } else {
-      setError("Invalid or expired token. Please try again.");
-    }
-  }, [token]);
 
   const handleLogin = () => {
     navigate('/login');
@@ -49,7 +36,7 @@ const newpassword = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          token: Cookies.get('reset_token'), // Retrieve the token from cookies
+          token: token, // Retrieve the token from cookies
           new_password: password,
         }),
       });
