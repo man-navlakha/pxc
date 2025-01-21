@@ -17,6 +17,7 @@ import Team from './pages/Team';
 import Faq from './pages/Faq';
 import Career from './pages/Career';
 import NotesSharingPage from './newcom/NotesSharingPage';
+import Help from './pages/Help';
 
 function App() {
 
@@ -42,6 +43,7 @@ function App() {
           <Route path='/faq' element={<Faq />}/>
           <Route path='/career' element={<Career />}/>
           <Route path='/ns' element={<NotesSharingPage />}/>
+          <Route path='/help' element={<Help />}/>
       </Routes>
     </div>
   )
