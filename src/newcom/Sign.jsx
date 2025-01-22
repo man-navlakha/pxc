@@ -147,13 +147,23 @@ const Sign = () => {
           </div>
         </form>
         <div className="mt-6">
-          <button
+          {/* <button
             className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
           >
             <img src="https://ik.imagekit.io/pxc/g-logo.png" alt="Google logo" className="mr-2 h-6 w-6" />
             Sign Up with Google
-          </button>
+          </button> */}
         </div>
+
+        <div className="mt-6">
+            <p className="text-emerald-600 text-center m-2">I have an account?</p>
+            <button 
+              onClick={handleClick}
+              className="font-ff w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm hover:text-md font-medium text-white hover:text-gray-700 bg-emerald-900 hover:bg-emerald-50"
+            >
+             Login 
+            </button>
+          </div>
       </div>
     </div>
   );
