@@ -8,10 +8,12 @@ import Cookies from 'js-cookie'; // Importing js-cookie library
 import '../index.css'; // Import css file
 import Footer from '../componets/Footer';
 import Team from '../pages/Team';
+import axios from 'axios'; // Import axios for API calls
 
 const Home = () => {
   const [userName, setUserName] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [courses, setCourses] = useState([]); // State to store courses
 
   useEffect(() => {
     // Retrieve the 'username' cookie value
@@ -25,6 +27,15 @@ const Home = () => {
       setUserName('Guest'); // Default name if cookie is not found
       setIsLoggedIn(false); // Mark the user as not logged in
     }
+
+    // Fetch courses from API
+    axios.get('https://pixel-classes.onrender.com/api/home/courses')
+      .then(response => {
+        setCourses(response.data.CourseList); // Set the courses state with the fetched data
+      })
+      .catch(error => {
+        console.error('Error fetching courses:', error);
+      });
   }, []);
 
   const handleLogout = () => {
@@ -39,13 +50,8 @@ const Home = () => {
     window.location.reload(); // Reload the page to reset the UI and state
   };
 
-  const courses = ['BCA', 'MSCIT', 'BBA', 'BCIT', 'BCOM', 'Nursing', 'B.Tech']; // Array of courses
-
   return (
-    <div className="
-       
-     flex relative flex-col w-full min-h-screen">
-      
+    <div className="flex relative flex-col w-full min-h-screen">
       <Navbar className="sticky top-0 " />
 
       <div className="text-left w-full mb:max-w-mb lg:max-w-full p-4">
@@ -54,33 +60,29 @@ const Home = () => {
           {userName}
         </h1>
 
-      
-
         <p className="mt-4 text-sm font-bold">Favorite Course</p>
         <div className="fav overflow-x-scroll -mx-4 mt-4 md:max-w-full md:h-full p-4 lg:max-w-full flex gap-4 scrollable-courses">
-          {courses.map((course, index) => (
-            <Link key={index} to={`/sub?course=${course}`}>
-              <Card b={course} />
+          {courses.map(course => (
+            <Link key={course.id} to={`/sub?course=${course.name}`}>
+              <Card b={course.name} />
             </Link>
           ))}
         </div>
 
         <p className="mt-4 text-sm font-bold">Select your course</p>
         <div className="grid grid-cols-2 p-4 lg:grid-cols-6 gap-4 mt-4">
-          {courses.map((course, index) => (
-            <Link key={index} to={`/sub?course=${course}`}>
-              <Cbtn b={course} />
+          {courses.map(course => (
+            <Link key={course.id} to={`/sub?course=${course.name}`}>
+              <Cbtn b={course.name} />
             </Link>
           ))}
         </div>
       </div>
       <div className="lg:hidden md:block block">
-      <LastF />
-        
+        <LastF />
       </div>
       <div className="mt-12">
-        
-      <Footer />
+        <Footer />
       </div>
     </div>
   );
