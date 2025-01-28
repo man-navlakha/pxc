@@ -56,7 +56,7 @@ const Forgetpassword = () => {
   const startPolling = () => {
     pollingInterval = setInterval(async () => {
       try {
-        const response = await fetch("https://pixel-classes.onrender.com/api/reset/status/", {
+        const response = await fetch("https://pixel-classes.onrender.com/api/user/reset/status/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
