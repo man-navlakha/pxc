@@ -117,7 +117,7 @@ const Veri = () => {
     if (timer > 0 && !expired) {
       const intervalId = setInterval(() => {
         setTimer(prevTimer => prevTimer - 1);
-      }, 1000);
+      },1000);
 
       return () => clearInterval(intervalId); // Cleanup interval on component unmount or when timer reaches 0
     }
@@ -135,10 +135,10 @@ const Veri = () => {
       <h2 className="text-2xl font-semibold mb-6 text-center">OTP Verification</h2>
       <p className="text-gray-600 mb-4 text-center">Enter the 6-digit code sent to your email</p>
       
-      <div className="flex space-x-2 mb-6">
+      <div className="flex space-x-2 p-4 mb-6 ">
         {otp.map((data, index) => (
           <input
-            className="w-14 h-14 text-center text-2xl border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-14 h-14 text-center text-2xl md:text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
             type="text"
             maxLength="1"
             key={index}
