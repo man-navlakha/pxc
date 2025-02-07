@@ -60,15 +60,33 @@ const Home = () => {
           {userName}
         </h1>
 
-        <p className="mt-4 text-sm font-bold">Favorite Course</p>
-        <div className="fav overflow-x-scroll -mx-4 mt-4 md:max-w-full md:h-full p-4 lg:max-w-full flex gap-4 scrollable-courses">
-          {courses.map(course => (
-            <Link key={course.id} to={`/sub?course=${course.name}`}>
-              <Card b={course.name} />
-            </Link>
-          ))}
-        </div>
 
+
+  {isLoggedIn && (
+    <>
+      <p className="mt-4 text-sm font-bold">Favorite Course</p>
+      <div className="fav overflow-x-scroll -mx-4 mt-4 md:max-w-full md:h-full p-4 lg:max-w-full flex gap-4 scrollable-courses">
+        {courses.map(course => (
+          <Link key={course.id} to={`/sub?course=${course.name}`}>
+            <Card b={course.name} />
+          </Link>
+        ))}
+      </div>
+    </>
+  )}
+
+
+{/* <div className='mx-12 '>
+  <div className="bg-green-200 p-6 flex  items-center overflow-hidden">
+    <div className='P-4 bg-green-200'>
+      <h1 className='text-4xl font-bold'>Get 100% notes for free of cost</h1>
+      <p className='text-2xl font-medium'>of any course : BCA, MSCIT, BSCIT</p>
+    </div>
+    <div className=' object-contain h-[400px]'><img src="https://www.tops-int.com/images/placement-banner-mob.jpg" alt="" /></div>
+  </div>
+
+
+</div> */}
         <p className="mt-4 text-sm font-bold">Select your course</p>
         <div className="grid grid-cols-2 p-4 lg:grid-cols-6 gap-4 mt-4">
           {courses.map(course => (
