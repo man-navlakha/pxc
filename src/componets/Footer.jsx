@@ -110,7 +110,7 @@ bg-blend-overlay flex items-center justify-center  rounded-lg -mt-[120px] text-w
                         </div>
 
                         <div className="grid grid-cols-1  gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
-                            <div>
+                            <div className='hidden lg:block md:hidden sm:hidden'> 
                                 <p className="font-medium fj-black text-emerald-700">Top cources</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
@@ -129,7 +129,7 @@ bg-blend-overlay flex items-center justify-center  rounded-lg -mt-[120px] text-w
                                 </ul>
                             </div>
 
-                            <div className='hidden lg:block md:hidden sm:hidden'>
+                            <div >
                                 <p className="font-medium fj-black text-emerald-700">Company</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">

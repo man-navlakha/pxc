@@ -3,7 +3,7 @@ import React from 'react'
 const Cbtn = (props) => {
   return (
     <div className='hover:f-black '>
-      <button className="py-4 w-full  hover:bg-[conic-gradient(at_top,_var(--tw-gradient-stops))] from-lime-600  to-emerald-100 border-emerald-800 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-lime-600  to-emerald-300 hover:border-emerald-200  text-2xl font-semibold hover:shadow-lg hover:text-white rounded-lg">{props.b}</button>
+      <button className="py-4 w-full border-4   hover:bg-[conic-gradient(at_top,_var(--tw-gradient-stops))] from-lime-600  to-emerald-100 border-emerald-600 shadow-[4px_5px_0px_0px_#065f46] hover:shadow-[2px_2px_0px_0px_#065f46] bg-[#0f6c38] hover:border-none hover:scale-110  text-white  text-2xl font-semibold hover:shadow-lg hover:text-[#0f6c38] ">{props.b}</button>
     </div>
   )
 }
