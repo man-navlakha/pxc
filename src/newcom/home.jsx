@@ -1,49 +1,48 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import Navbar from '../componets/Navbar';
-import LastF from '../componets/LastF';
-import Card from '../componets/Card';
-import Cbtn from '../componets/Cbtn';
-import Cookies from 'js-cookie'; // Importing js-cookie library
-import '../index.css'; // Import css file
-import Footer from '../componets/Footer';
-import Team from '../pages/Team';
-import axios from 'axios'; // Import axios for API calls
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Navbar from "../componets/Navbar";
+import LastF from "../componets/LastF";
+import Card from "../componets/Card";
+import Cbtn from "../componets/Cbtn";
+import Cookies from "js-cookie"; // Importing js-cookie library
+import "../index.css"; // Import css file
+import Footer from "../componets/Footer";
+import Team from "../pages/Team";
+import axios from "axios"; // Import axios for API calls
 
 const Home = () => {
-  const [userName, setUserName] = useState('');
+  const [userName, setUserName] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [courses, setCourses] = useState([]); // State to store courses
 
   useEffect(() => {
     // Retrieve the 'username' cookie value
-    const storedUserName = Cookies.get('username');
-    console.log('Retrieved userName from cookie:', storedUserName); // Log the cookie value
+    const storedUserName = Cookies.get("username");
+    console.log("Retrieved userName from cookie:", storedUserName); // Log the cookie value
 
-    if (storedUserName && storedUserName !== 'undefined') {
+    if (storedUserName && storedUserName !== "undefined") {
       setUserName(storedUserName); // Set the username from cookie
       setIsLoggedIn(true); // Mark the user as logged in
     } else {
-      setUserName('Guest'); // Default name if cookie is not found
+      setUserName("Guest"); // Default name if cookie is not found
       setIsLoggedIn(false); // Mark the user as not logged in
     }
 
-    // Fetch courses from API
-    axios.get('https://pixel-classes.onrender.com/api/home/courses')
-      .then(response => {
-        setCourses(response.data.CourseList); // Set the courses state with the fetched data
-      })
-      .catch(error => {
-        console.error('Error fetching courses:', error);
-      });
-  }, []);
+    axios.post("https://pixel-classes.onrender.com/api/home/courses", {})
+    .then(response => {
+      setCourses(response.data.CourseList); // Set the courses state with the fetched data
+    })
+    .catch(error => {
+      console.error("Error fetching courses:", error);
+    });
+  }, []);  
 
   const handleLogout = () => {
     // Remove the username and access_token cookies to log the user out
-    Cookies.remove('username');
-    Cookies.remove('access_token');
-    
-    setUserName('Guest'); // Reset the username to 'Guest'
+    Cookies.remove("username");
+    Cookies.remove("access_token");
+
+    setUserName("Guest"); // Reset the username to 'Guest'
     setIsLoggedIn(false); // Update the login state to logged out
 
     // Refresh the page after logout
@@ -60,23 +59,20 @@ const Home = () => {
           {userName}
         </h1>
 
+        {isLoggedIn && (
+          <>
+            <p className="mt-4 text-sm font-bold">Favorite Course</p>
+            <div className="fav overflow-x-scroll -mx-4 mt-4 md:max-w-full md:h-full p-4 lg:max-w-full flex gap-4 scrollable-courses">
+              {courses.map((course) => (
+                <Link key={course.id} to={`/sub?course=${course.name}`}>
+                  <Card b={course.name} />
+                </Link>
+              ))}
+            </div>
+          </>
+        )}
 
-
-  {isLoggedIn && (
-    <>
-      <p className="mt-4 text-sm font-bold">Favorite Course</p>
-      <div className="fav overflow-x-scroll -mx-4 mt-4 md:max-w-full md:h-full p-4 lg:max-w-full flex gap-4 scrollable-courses">
-        {courses.map(course => (
-          <Link key={course.id} to={`/sub?course=${course.name}`}>
-            <Card b={course.name} />
-          </Link>
-        ))}
-      </div>
-    </>
-  )}
-
-
-{/* <div className='mx-12 '>
+        {/* <div className='mx-12 '>
   <div className="bg-green-200 p-6 flex  items-center overflow-hidden">
     <div className='P-4 bg-green-200'>
       <h1 className='text-4xl font-bold'>Get 100% notes for free of cost</h1>
@@ -89,7 +85,7 @@ const Home = () => {
 </div> */}
         <p className="mt-4 text-sm font-bold">Select your course</p>
         <div className="grid grid-cols-2 p-4 lg:grid-cols-6 gap-4 mt-4">
-          {courses.map(course => (
+          {courses.map((course) => (
             <Link key={course.id} to={`/sub?course=${course.name}`}>
               <Cbtn b={course.name} />
             </Link>
