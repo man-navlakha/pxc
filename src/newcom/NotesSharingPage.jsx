@@ -253,6 +253,7 @@ const NotesSharingPage = () => {
 
           {/* Modal for Adding Notes */}
           {isModalOpen && (
+            <form action="https://pixel-classes.onrender.com/api/home/upload_pdf/" method="post">
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
                 <button
@@ -300,14 +301,14 @@ const NotesSharingPage = () => {
                 </div>
                 <div className="flex justify-center">
                   <button
-                    onClick={() => setIsModalOpen(true)}
+                   
                     className="bg-[#047857] hover:bg-[#047857] text-white font-bold py-2 px-4 rounded-md mb-4"
                   >
-                    Add Note
+                    Add File
                   </button>
                 </div>
               </div>
-            </div>
+            </div></form>
           )}
         </div>
       </div>
