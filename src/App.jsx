@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import Home from './newcom/home';
-import Sub from './newcom/Sub';
+import Sub from './newcom/Subj';
 import Login from './newcom/Login';
 import Open from './newcom/open';
 import { Routes, Route } from 'react-router-dom';
