@@ -5,7 +5,6 @@ import GoBack from "../componets/GoBack";
 import Sem from "../componets/sem";
 
 const Subj = () => {
-    
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -21,7 +20,10 @@ const Subj = () => {
       .post("https://pixel-classes.onrender.com/api/home/courses")
       .then((response) => {
         console.log("Courses API Response:", response.data);
-        if (response.data.CourseList && Array.isArray(response.data.CourseList)) {
+        if (
+          response.data.CourseList &&
+          Array.isArray(response.data.CourseList)
+        ) {
           setCourses(response.data.CourseList);
           setSelectedCourse(response.data.CourseList[0]); // Default to first course
         } else {
@@ -64,11 +66,10 @@ const Subj = () => {
       .split("; ")
       .find((row) => row.startsWith("username="))
       ?.split("=")[1];
-  
+
     console.log("Username:", username);
     return username || null; // Return null if not found
   };
-  
 
   // Handle subject click
   const handleLinkClick = (event, item) => {
@@ -77,8 +78,7 @@ const Subj = () => {
       event.preventDefault();
       navigate("/login");
     } else {
-        console.log(`Navigating to: /ns?sub=datastructure&sem=${item.sem}&div=${item.div}`);
-        navigate(`/ns?sub=datastructure&sem=${item.sem}&div=${item.div}`);
+      navigate(`/ns?sub=datastructure&id=${item.id}`);
     }
   };
 
@@ -131,22 +131,23 @@ const Subj = () => {
                       handleLinkClick(event, item);
                     }}
                   >
-                    <div className="flex items-center p-4 bg-gray-200 shadow-md">
+                    <div className="flex items-center justify-between p-4 bg-gray-200 shadow-md rounded-lg">
+                      {/* Subject Icon */}
                       <img
                         src="https://thumbs.dreamstime.com/b/data-structures-algorithms-blue-gradient-concept-icon-problem-solving-programming-skill-abstract-idea-thin-line-illustration-248447079.jpg"
                         alt="Subject Icon"
                         className="shadow-[3px_3px_0px_0px_#065f46] w-12 h-12 mr-4"
                       />
-                      <div>
-                        <span className="text-lg font-medium">
-                          {item.pdf || "Unknown Subject"}
-                        </span>
-                        <p>
-                          {selectedCourse?.name} - Semester {item.sem}
-                        </p>
-                        <p>Div-{item.div}</p>
-                        <p>Year-{item.year}</p>
-                      </div>
+
+                      {/* Subject Details */}
+                      <span className="text-lg font-medium">
+                        {item.name || "Unknown Subject"}
+                      </span>
+                      <p className="text-sm text-gray-600">
+                        Semester {item.sem}
+                      </p>
+                      <p className="text-sm text-gray-600">Div-{item.div}</p>
+                      <p className="text-sm text-gray-600">Year-{item.year}</p>
                     </div>
                   </div>
                 ))
@@ -159,22 +160,21 @@ const Subj = () => {
                     handleLinkClick(event, item);
                   }}
                 >
-                  <div className="flex items-center p-4 bg-gray-200 shadow-md">
+                  <div className="flex items-center justify-between p-4 bg-gray-200 shadow-md rounded-lg">
+                    {/* Subject Icon */}
                     <img
                       src="https://thumbs.dreamstime.com/b/data-structures-algorithms-blue-gradient-concept-icon-problem-solving-programming-skill-abstract-idea-thin-line-illustration-248447079.jpg"
                       alt="Subject Icon"
                       className="shadow-[3px_3px_0px_0px_#065f46] w-12 h-12 mr-4"
                     />
-                    <div>
-                      <span className="text-lg font-medium">
-                        {item.pdf || "Unknown Subject"}
-                      </span>
-                      <p>
-                        {selectedCourse?.name} - Semester {item.sem}
-                      </p>
-                      <p>Div-{item.div}</p>
-                      <p>Year-{item.year}</p>
-                    </div>
+  
+                    {/* Subject Details */}
+                    <span className="text-lg font-medium">
+                      {item.name || "Unknown Subject"}
+                    </span>
+                    <p className="text-sm text-gray-600">Semester {item.sem}</p>
+                    <p className="text-sm text-gray-600">Div-{item.div}</p>
+                    <p className="text-sm text-gray-600">Year-{item.year}</p>
                   </div>
                 </div>
               ))}
