@@ -7,7 +7,6 @@ import Home from './newcom/home';
 import Sub from './newcom/Sub';
 import Login from './newcom/Login';
 import Open from './newcom/open';
-import { Routes, Route } from 'react-router-dom';
 import Sign from './newcom/Sign';
 import Verify from './newcom/veri';
 import NotFound from './NotFound';

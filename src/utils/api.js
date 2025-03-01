@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://your-backend-url.com"; // Replace with your actual backend URL
+const API_BASE_URL = "https://pixel-classes.onrender.com/api/user/DeleteNONVerifiedUsers"; // Replace with your actual backend URL
 
 export const deleteNonVerifiedUsers = async () => {
   try {
