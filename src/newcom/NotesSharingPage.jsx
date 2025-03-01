@@ -292,7 +292,7 @@ const NotesSharingPage = () => {
                 {/* PDF Download Button */}
                 <a
                   onClick={() => downloadFile(QuePdf.pdf, "Your_File.pdf")} // Trigger the download onClick
-                  className="bg-[#047857] hover:bg-[#047857] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                  className="bg-[#047857] man_off hover:bg-[#047857] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
                 >
                   📥 Download PDF
                 </a>
@@ -354,7 +354,7 @@ const NotesSharingPage = () => {
 
                 {/* Download PDF */}
                 {note.pdf && (
-                  <div className="flex-none mt-4 sm:mt-0">
+                  <div className="flex-none man_off mt-4 sm:mt-0">
                     <a
                       onClick={() => downloadFile(note.pdf, "Your_File.pdf")}
                       className="inline-block bg-[#047857] hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"

@@ -110,3 +110,25 @@ body {
 *::-webkit-scrollbar {
   display: none;  /* Safari and Chrome */
 }
+
+
+::selection {
+  background: #000000;
+  color: #000;
+}
+
+::-moz-selection {
+  background: #b3d4fc;
+  color: #000;
+}
+
+
+
+
+/* Disable text selection for all elements */
+.man_off {
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+}
