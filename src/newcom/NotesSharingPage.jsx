@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import Navbar from "../componets/Navbar";
 import LastF from "../componets/LastF";
 import Footer from "../componets/Footer";
+import ImageUpload from "../pages/ImageUpload";
 
 const NotesSharingPage = () => {
   const location = useLocation();
@@ -308,7 +309,10 @@ const NotesSharingPage = () => {
                   </button>
                 </div>
               </div>
-            </div></form>
+            </div>
+            
+            <ImageUpload />
+            </form>
           )}
         </div>
       </div>
