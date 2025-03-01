@@ -131,7 +131,7 @@ const Sub = () => {
                       handleLinkClick(event, item);
                     }}
                   >
-                    <div className="flex items-center justify-between p-4 bg-gray-200 shadow-md rounded-lg">
+                    <div className="flex items-center flex-wrap justify-between p-4 bg-gray-200 shadow-md rounded-lg">
                       {/* Subject Icon */}
                       <img
                         src="https://thumbs.dreamstime.com/b/data-structures-algorithms-blue-gradient-concept-icon-problem-solving-programming-skill-abstract-idea-thin-line-illustration-248447079.jpg"
@@ -160,7 +160,7 @@ const Sub = () => {
                     handleLinkClick(event, item);
                   }}
                 >
-                  <div className="flex items-center justify-between p-4 bg-gray-200 shadow-md rounded-lg">
+                  <div className="flex items-center flex-wrap justify-between p-4 bg-gray-200 shadow-md rounded-lg">
                     {/* Subject Icon */}
                     <img
                       src="https://thumbs.dreamstime.com/b/data-structures-algorithms-blue-gradient-concept-icon-problem-solving-programming-skill-abstract-idea-thin-line-illustration-248447079.jpg"
