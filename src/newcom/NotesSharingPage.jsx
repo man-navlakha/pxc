@@ -141,7 +141,7 @@ const NotesSharingPage = () => {
         } else {
           // If the size is 1MB or larger, display in MB
           const sizeInMB = sizeInBytes / (1024 * 1024);
-          sizeString = `{sizeInMB.toFixed(2)} MB`;
+          sizeString = `${sizeInMB.toFixed(2)} MB`;
         }
         return sizeString;
       } else {
