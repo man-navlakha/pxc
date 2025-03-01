@@ -78,7 +78,7 @@ const Sub = () => {
       event.preventDefault();
       navigate("/login");
     } else {
-      navigate(/ns?course=${course}&id=${item.id});
+      navigate(`/ns?course=${course}&id=${item.id}`);
     }
   };
 

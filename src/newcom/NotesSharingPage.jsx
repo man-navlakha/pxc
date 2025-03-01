@@ -137,11 +137,11 @@ const NotesSharingPage = () => {
         if (sizeInBytes < 1024 * 1024) {
           // If the size is less than 1MB, display in KB
           const sizeInKB = sizeInBytes / 1024;
-          sizeString = ${sizeInKB.toFixed(2)} KB;
+          sizeString = `${sizeInKB.toFixed(2)} KB`;
         } else {
           // If the size is 1MB or larger, display in MB
           const sizeInMB = sizeInBytes / (1024 * 1024);
-          sizeString = ${sizeInMB.toFixed(2)} MB;
+          sizeString = `${sizeInMB.toFixed(2)} MB`;
         }
         return sizeString;
       } else {
@@ -219,7 +219,7 @@ const NotesSharingPage = () => {
       );
 
       if (!response.ok) {
-        throw new Error(Server error: ${response.status});
+        throw new Error(`Server error: ${response.status}`);
       }
 
       const data = await response.json();
