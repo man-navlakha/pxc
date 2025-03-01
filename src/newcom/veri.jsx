@@ -117,7 +117,7 @@ const Veri = () => {
     if (timer > 0 && !expired) {
       const intervalId = setInterval(() => {
         setTimer(prevTimer => prevTimer - 1);
-      },1000);
+      },10000);
 
       return () => clearInterval(intervalId); // Cleanup interval on component unmount or when timer reaches 0
     }
