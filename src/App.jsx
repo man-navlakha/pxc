@@ -31,7 +31,7 @@ function App() {
     // Set interval to call API every 1 minute
     const interval = setInterval(() => {
       deleteNonVerifiedUsers();
-    }, 60000); // 60,000ms = 1 minute
+    }, 86400000); // 86,400,000ms = 24 hours
 
     // Cleanup interval when component unmounts or route changes
     return () => clearInterval(interval);
