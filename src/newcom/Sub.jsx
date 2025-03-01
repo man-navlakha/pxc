@@ -95,7 +95,7 @@ const Sub = () => {
 
       {/* Semester Tabs */}
       <div className="z-1 rounded-t-lg mr-2 ml-2 mt-4 bg-white">
-        <div className="block shadow-[inset_0px_4px_4px_rgba(0,0,0)] rounded-t-3xl">
+        <div className="block shadow-[inset_0px_4px_4px_rgba(0,0,0)] overflow-hidden rounded-t-3xl">
           <div className="ml-2 p-4 mr-2 rounded-t-lg flex overflow-x-auto gap-6 w-full min-h-[50px] whitespace-nowrap">
             {selectedCourse?.number_sem > 0 ? (
               Array.from({ length: selectedCourse.number_sem }, (_, index) => (
@@ -115,7 +115,7 @@ const Sub = () => {
               <p className="text-gray-500">No semesters available</p>
             )}
           </div>
-        </div>
+      
 
         {/* Semester Content */}
         <div className="mt-6 space-y-4 p-4 h-dvh overflow-y-auto">
@@ -178,6 +178,7 @@ const Sub = () => {
                   </div>
                 </div>
               ))}
+        </div>
         </div>
       </div>
     </div>
