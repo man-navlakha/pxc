@@ -65,11 +65,4 @@ function App() {
   )
 }
 
-// Wrap App inside Router
-export default function Root() {
-  return (
-    <Router>
-      <App />
-    </Router>
-  );
-}
+export default App;
