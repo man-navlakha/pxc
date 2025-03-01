@@ -248,9 +248,10 @@ const NotesSharingPage = () => {
 
           {/* PDF Display */}
           {QuePdf ? (
-            <div className="relative w-full flex items-center justify-between border p-6 bg-white rounded-lg shadow-lg">
+            <div className="relative flex-wrap
+ w-full flex items-center justify-between border p-6 bg-white rounded-lg shadow-lg">
               {/* PDF Details Row */}
-              <div className="flex items-center justify-between w-full space-x-4">
+              <div className="flex flex-wrap items-center justify-between w-full space-x-4">
                 {/* File Icon & File Name */}
                 <div className="flex items-center space-x-4">
                   <img
