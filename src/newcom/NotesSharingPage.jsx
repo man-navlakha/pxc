@@ -340,7 +340,7 @@ const NotesSharingPage = () => {
 
                 {/* Files */}
                 {note.files && note.files.length > 0 && (
-                  <div className="flex-none space-x-2 mt-4 sm:mt-0">
+                  <div className=" mt-4 sm:mt-0">
                     {note.files.map((file, index) => (
                       <div
                         key={index}
