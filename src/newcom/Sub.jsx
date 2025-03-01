@@ -185,7 +185,3 @@ const Sub = () => {
 };
 
 export default Sub;
-
-
-
-sub.jsx
