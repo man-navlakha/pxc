@@ -245,8 +245,11 @@ const NotesSharingPage = () => {
         {/* PDF Display Section */}
         <div className="bg-white p-4 w-full">
           <h1 className="text-4xl text-left font-bold mb-10">📘 {course}</h1>
-
+        
           {/* PDF Display */}
+            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+              Quetions
+            </h2>
           {QuePdf ? (
             <div className="relative flex-wrap
  w-full flex items-center justify-between border p-6 bg-white rounded-lg shadow-lg">
@@ -301,13 +304,15 @@ const NotesSharingPage = () => {
           ) : (
             <p className="text-red-500">{error || "Loading PDF..."}</p>
           )}
-        </div>
+     
 
         {/* Notes List */}
-        <div className="bg-gray-100 p-8 rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-            Shared Notes by students
+        <div className="bg-gray-100 p-8 rounded-lg shadow-lg -mt-4">
+       
+          <h2 className="text-2xl font-bold mb-6 pt-4 text-center text-gray-800">
+            Answer Shared Notes by students
           </h2>
+
 
           {ansPdfData.length === 0 ? (
             <p className="text-gray-700 text-center">
@@ -333,7 +338,7 @@ const NotesSharingPage = () => {
                   <p className="text-gray-900">{note.contant}</p>
                 </div>
                   <h3 className="text-xl font-bold text-gray-400 mb-2">
-                    by, {note.name}
+                    Uploded by,  {note.name}
                   </h3>
                 </div>
 
@@ -373,7 +378,7 @@ const NotesSharingPage = () => {
           >
             Add Note
           </button>
-
+          </div>
           {/* Modal for Adding Notes */}
           {isModalOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
