@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { deleteNonVerifiedUsers } from "./utils/api";
+// import { deleteNonVerifiedUsers } from "./utils/api";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import './App.css';
 import Home from './newcom/home';
@@ -22,20 +22,20 @@ import NotesSharingPage from './newcom/NotesSharingPage';
 import Help from './pages/Help';
 
 function App() {
-  const location = useLocation();
+  // const location = useLocation();
 
-  useEffect(() => {
-    // Call API immediately when page loads
-    deleteNonVerifiedUsers();
+  // useEffect(() => {
+  //   // Call API immediately when page loads
+  //   deleteNonVerifiedUsers();
 
-    // Set interval to call API every 1 minute
-    const interval = setInterval(() => {
-      deleteNonVerifiedUsers();
-    }, 86400000); // 86,400,000ms = 24 hours
+  //   // Set interval to call API every 1 minute
+  //   const interval = setInterval(() => {
+  //     deleteNonVerifiedUsers();
+  //   }, 86400000); // 86,400,000ms = 24 hours
 
-    // Cleanup interval when component unmounts or route changes
-    return () => clearInterval(interval);
-  }, [location.pathname]); // Runs on every page change
+  //   // Cleanup interval when component unmounts or route changes
+  //   return () => clearInterval(interval);
+  // }, [location.pathname]); // Runs on every page change
 
   return (
     <div className="App 
