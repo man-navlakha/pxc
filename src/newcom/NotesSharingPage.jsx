@@ -329,14 +329,14 @@ const NotesSharingPage = () => {
                 </div>
                 {/* Note Title and Content */}
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">
-                    {note.name}
+                <div className="flex-1">
+                  <p className="text-gray-900">{note.contant}</p>
+                </div>
+                  <h3 className="text-xl font-bold text-gray-400 mb-2">
+                    by, {note.name}
                   </h3>
                 </div>
 
-                <div className="flex-1">
-                  <p className="text-gray-700">{note.contant}</p>
-                </div>
 
                 {/* Files */}
                 {note.files && note.files.length > 0 && (
