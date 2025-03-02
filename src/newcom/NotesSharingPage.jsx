@@ -154,8 +154,9 @@ const NotesSharingPage = () => {
     }
   };
 
-  const downloadFile = async (url, fileName) => {
+  const downloadFile = async (url, fileName, setLoading) => {
     try {
+      setLoading(true);
       const response = await fetch(url, {
         method: "GET",
       });
@@ -177,7 +178,13 @@ const NotesSharingPage = () => {
       URL.revokeObjectURL(blobUrl);
     } catch (error) {
       console.error("Error downloading file:", error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleDownload = async (pdfUrl, fileName) => {
+    await downloadFile(pdfUrl, fileName, setLoading);
   };
 
   const handleSubmit = async (event) => {
@@ -302,7 +309,7 @@ const NotesSharingPage = () => {
               </div>
             </div>
           ) : (
-            <p className="text-red-500">{error || "Loading PDF..."}</p>
+            <p className="text-red-500 text-xl">{error || "Loading PDF..."}</p>
           )}
      
 
@@ -359,15 +366,15 @@ const NotesSharingPage = () => {
 
                 {/* Download PDF */}
                 {note.pdf && (
-                  <div className="flex-none man_off mt-4 sm:mt-0">
-                    <a
-                      onClick={() => downloadFile(note.pdf, "Your_File.pdf")}
-                      className="inline-block bg-[#047857] hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                    >
-                      📥 Download PDF
-                    </a>
-                  </div>
-                )}
+      <div className="flex-none man_off mt-4 sm:mt-0">
+        <a
+          onClick={() => handleDownload(note.pdf, "Answer pdf -- Pixel Class.pdf")}
+          className="inline-block bg-[#047857] hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
+        >
+          {loading ? 'Loading...' : '📥 Download PDF'}
+        </a>
+      </div>
+    )}
               </div>
             ))
           )}
