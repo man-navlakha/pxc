@@ -10,6 +10,7 @@ const NotesSharingPage = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const [loading, setLoading] = useState(false);
+  const [loading2, setLoading2] = useState(false);
   const subb = queryParams.get("sub");
   const idFromUrl = queryParams.get("id");
   const course = queryParams.get("course");
@@ -154,8 +155,9 @@ const NotesSharingPage = () => {
     }
   };
 
-  const downloadFile = async (url, fileName) => {
+  const downloadFile = async (url, fileName, setLoading) => {
     try {
+      setLoading(true);
       const response = await fetch(url, {
         method: "GET",
       });
@@ -177,7 +179,13 @@ const NotesSharingPage = () => {
       URL.revokeObjectURL(blobUrl);
     } catch (error) {
       console.error("Error downloading file:", error);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleDownload = async (pdfUrl, fileName, setLoading) => {
+    await downloadFile(pdfUrl, fileName, setLoading);
   };
 
   const handleSubmit = async (event) => {
@@ -294,11 +302,11 @@ const NotesSharingPage = () => {
 
                 {/* PDF Download Button */}
                 <a
-                  onClick={() => downloadFile(QuePdf.pdf, "Your_File.pdf")} // Trigger the download onClick
-                  className="bg-[#047857] man_off hover:bg-[#047857] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                >
-                  📥 Download PDF
-                </a>
+      onClick={() => handleDownload(QuePdf.pdf, "Your_File.pdf", setLoading2)} // Trigger the download onClick
+      className="bg-[#047857] man_off hover:bg-[#047857] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
+    >
+      {loading2 ? 'Loading...' : '📥 Download PDF'}
+    </a>
               </div>
             </div>
           ) : (
@@ -359,15 +367,15 @@ const NotesSharingPage = () => {
 
                 {/* Download PDF */}
                 {note.pdf && (
-                  <div className="flex-none man_off mt-4 sm:mt-0">
-                    <a
-                      onClick={() => downloadFile(note.pdf, "Answer pdf -- Pixel Classes.pdf")}
-                      className="inline-block bg-[#047857] hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                    >
-                      📥 Download PDF
-                    </a>
-                  </div>
-                )}
+      <div className="flex-none man_off mt-4 sm:mt-0">
+        <a
+          onClick={() => handleDownload(note.pdf, "Answer pdf -- Pixel Classes.pdf", setLoading)}
+          className="inline-block bg-[#047857] hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
+        >
+          {loading ? 'Loading...' : '📥 Download PDF'}
+        </a>
+      </div>
+    )}
               </div>
             ))
           )}
