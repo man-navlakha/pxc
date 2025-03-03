@@ -345,7 +345,7 @@ const NotesSharingPage = () => {
                 <div className="flex-1">
                   <p className="text-gray-900">{note.contant}</p>
                 </div>
-                  <h3 className="text-xl font-bold text-gray-400 mb-2">
+                  <h3 className="text-lg font-medium text-gray-400 mb-2">
                     Uploded by,  {note.name}
                   </h3>
                 </div>
@@ -357,7 +357,7 @@ const NotesSharingPage = () => {
                     {note.files.map((file, index) => (
                       <div
                         key={index}
-                        className="p-3  border border-gray-300 rounded-md shadow-sm"
+                        className="p-3 text-md border border-gray-300 rounded-md shadow-sm"
                       >
                         <p className="text-gray-700 truncate">{file.name}</p>
                       </div>
@@ -370,7 +370,7 @@ const NotesSharingPage = () => {
       <div className="flex-none man_off mt-4 sm:mt-0">
         <a
           onClick={() => handleDownload(note.pdf, `Answer of ${QuePdf.name}` || "Answer pdf -- Pixel Classes.pdf", setLoading)}
-          className="inline-block bg-[#047857]  text-md hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
+          className="inline-block bg-[#047857]  text-sm hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
         >
           {loading ? 'Loading...' : '📥 Download PDF'}
         </a>

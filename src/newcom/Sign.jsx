@@ -56,6 +56,7 @@ const Sign = () => {
       const data = await response.json();
       console.log('Signup successful:', data);
       Cookies.set('username', username); // Save username to cookies
+      Cookies.set('email', email); // Save username to cookies
       
       // Redirect to the /verification page and pass the username via state
       navigate('/verification', { state: { user: { username } } });

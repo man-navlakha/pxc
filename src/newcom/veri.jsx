@@ -20,6 +20,7 @@ const Veri = () => {
 
   // Get username from cookies (can be used if necessary)
   const username = Cookies.get('username');  // This ensures username is available even on page reloads
+  const email_my = Cookies.get('email');  // This ensures username is available even on page reloads
 
   // Handle OTP input change
   const handleChange = (element, index) => {
@@ -145,7 +146,9 @@ const Veri = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-8 rounded-lg shadow-lg">
       <h2 className="text-2xl font-semibold mb-6 text-center">OTP Verification</h2>
+      <p className="text-gray-600 text-center">Hello, {username}</p>
       <p className="text-gray-600 mb-4 text-center">Enter the 6-digit code sent to your email</p>
+      <p className="text-gray-900 bg-[#22c55e] p-2 rounded-lg text-center">{email_my}</p>
       
       <div className="flex space-x-2 p-4 mb-6">
         <input
