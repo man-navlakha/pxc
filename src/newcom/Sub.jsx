@@ -25,8 +25,7 @@ const Sub = () => {
           Array.isArray(response.data.CourseList)
         ) {
           setCourses(response.data.CourseList);
-            const initialCourse = response.data.CourseList.find(c => c.name === course) || response.data.CourseList[0];
-            setSelectedCourse(initialCourse); // Default to the course from URL or first course
+          setSelectedCourse(response.data.CourseList[0]); // Default to first course
         } else {
           console.error("Invalid Course List format");
         }
