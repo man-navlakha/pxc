@@ -251,7 +251,7 @@ const NotesSharingPage = () => {
       <Navbar />
       <div className="container mx-auto px-4 py-8">
         {/* PDF Display Section */}
-        <div className="bg-white p-4 w-full">
+        <div className=" p-4 w-full">
           <h1 className="text-4xl text-left font-bold mb-10">📘 {course}</h1>
         
           {/* PDF Display */}
@@ -260,7 +260,7 @@ const NotesSharingPage = () => {
             </h2>
           {QuePdf ? (
             <div className="relative flex-wrap
- w-full flex items-center justify-between border p-6 bg-white rounded-lg shadow-lg">
+ w-full flex items-center justify-between border p-6 bg-white rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
               {/* PDF Details Row */}
               <div className="flex flex-wrap items-center justify-between w-full space-x-4">
                 {/* File Icon & File Name */}
@@ -315,7 +315,7 @@ const NotesSharingPage = () => {
      
 
         {/* Notes List */}
-        <div className="bg-gray-100 p-8 rounded-lg shadow-lg -mt-4">
+        <div className=" p-8 -mt-4">
        
           <h2 className="text-2xl font-bold mb-6 pt-4 text-center text-gray-800">
             Answer Shared Notes by students
@@ -330,7 +330,7 @@ const NotesSharingPage = () => {
             ansPdfData.map((note) => (
               <div
                 key={note.id}
-                className="mb-6 p-6 bg-white border border-gray-200 rounded-lg shadow-md flex flex-col sm:flex-row gap-4"
+                className="mb-6 p-6 bg-white border border-gray-200 rounded-lg  flex flex-col sm:flex-row gap-4"
 
               >
                 <div className="flex-1">
@@ -357,7 +357,7 @@ const NotesSharingPage = () => {
                     {note.files.map((file, index) => (
                       <div
                         key={index}
-                        className="p-3 bg-gray-50 border border-gray-300 rounded-md shadow-sm"
+                        className="p-3  border border-gray-300 rounded-md shadow-sm"
                       >
                         <p className="text-gray-700 truncate">{file.name}</p>
                       </div>
@@ -370,7 +370,7 @@ const NotesSharingPage = () => {
       <div className="flex-none man_off mt-4 sm:mt-0">
         <a
           onClick={() => handleDownload(note.pdf, `Answer of ${QuePdf.name}` || "Answer pdf -- Pixel Classes.pdf", setLoading)}
-          className="inline-block bg-[#047857] hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
+          className="inline-block bg-[#047857]  text-md hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
         >
           {loading ? 'Loading...' : '📥 Download PDF'}
         </a>
