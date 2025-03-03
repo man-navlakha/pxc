@@ -69,7 +69,19 @@ const Veri = () => {
 
       if (response.ok) {
         alert('Verification successful!');
-        navigate('/login');
+        
+              console.log(data); // Log backend response for debugging
+        
+              if (data.message === "Login successful!") {
+                // Save access_token and username to cookies
+                Cookies.set('access_token', data.access_token, { expires: 7 }); // Expires in 7 days
+                Cookies.set('username', username, { expires: 7 }); // Save username to cookies
+        
+                // Redirect to the home page after successful login
+                navigate('/');
+              } else {
+                console.error("Login error:", data.message);
+              }
       } else {
         alert(data.error);
       }
@@ -135,19 +147,20 @@ const Veri = () => {
       <h2 className="text-2xl font-semibold mb-6 text-center">OTP Verification</h2>
       <p className="text-gray-600 mb-4 text-center">Enter the 6-digit code sent to your email</p>
       
-      <div className="flex space-x-2 p-4 mb-6 ">
-        {otp.map((data, index) => (
-          <input
-            className="w-14 h-14 text-center text-2xl md:text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            type="text"
-            maxLength="1"
-            key={index}
-            value={data}
-            onChange={(e) => handleChange(e.target, index)}
-            onFocus={(e) => e.target.select()}
-            disabled={expired} // Disable inputs if OTP has expired
-          />
-        ))}
+      <div className="flex space-x-2 p-4 mb-6">
+        <input
+          className="w-full h-14 text-center text-2xl md:text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          type="text"
+          maxLength="6"
+          value={otp.join('')}
+          onChange={(e) => {
+            const value = e.target.value;
+            if (/^\d*$/.test(value) && value.length <= 6) {
+              setOtp(value.split(''));
+            }
+          }}
+          disabled={expired} // Disable input if OTP has expired
+        />
       </div>
 
       {/* Timer display */}

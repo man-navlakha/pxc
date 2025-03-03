@@ -25,8 +25,9 @@ const Sub = () => {
           Array.isArray(response.data.CourseList)
         ) {
           setCourses(response.data.CourseList);
-          setSelectedCourse(response.data.CourseList[0]); // Default to first course
-        } else {
+          const initialCourse = response.data.CourseList.find(c => c.name === course) || response.data.CourseList[0];
+          setSelectedCourse(initialCourse); // Default to the course from URL or first course
+      } else {
           console.error("Invalid Course List format");
         }
       })
@@ -60,20 +61,20 @@ const Sub = () => {
     console.log("Selected Semester:", semester);
   };
 
-  // Function to check authentication status
-  const getUsernameFromCookies = () => {
-    const username = document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("username="))
-      ?.split("=")[1];
+// Function to check authentication status based on access_token
+const getAccessTokenFromCookies = () => {
+  const accessToken = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("access_token="))
+    ?.split("=")[1];
 
-    console.log("Username:", username);
-    return username || null; // Return null if not found
-  };
+  console.log("Access Token:", accessToken);
+  return accessToken || null; // Return null if not found
+};
 
   // Handle subject click
   const handleLinkClick = (event, item) => {
-    if (!getUsernameFromCookies()) {
+    if (!getAccessTokenFromCookies()) {
       console.log("User not authenticated, redirecting to login...");
       event.preventDefault();
       navigate("/login");
