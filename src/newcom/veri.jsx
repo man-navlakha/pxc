@@ -6,7 +6,7 @@ const Veri = () => {
   const [otp, setOtp] = useState(new Array(6).fill(''));
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [timer, setTimer] = useState(280); // 300 seconds = 5 minutes
+  const [timer, setTimer] = useState(120); // 300 seconds = 5 minutes
   const [expired, setExpired] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -84,7 +84,7 @@ const Veri = () => {
   // Resend OTP function
   const handleResendOTP = async () => {
     setExpired(false);
-    setTimer(300); // Reset timer to 5 minutes
+    setTimer(120); // Reset timer to 2 minutes
   
     try {
       const response = await fetch('https://pixel-classes.onrender.com/api/user/resend-otp/', {
