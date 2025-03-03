@@ -154,6 +154,7 @@ const Veri = () => {
         <input
           className="w-full h-14 text-center text-2xl md:text-sm border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           type="text"
+          placeholder='OTP'
           maxLength="6"
           value={otp.join('')}
           onChange={(e) => {
@@ -162,7 +163,7 @@ const Veri = () => {
               setOtp(value.split(''));
             }
           }}
-          disabled={expired} // Disable input if OTP has expired
+          // Disable input if OTP has expired
         />
       </div>
 
@@ -174,13 +175,13 @@ const Veri = () => {
       <div className="w-full flex justify-center space-x-4">
         {/* Submit button with conditional styling for disabled state */}
         <button
-          className={`text-white px-6 py-2 rounded-md transition duration-200 ${
-            loading || expired
-              ? 'bg-gray-400 cursor-not-allowed'  // Gray background with disabled cursor
-              : 'bg-blue-500 hover:bg-blue-600'
-          }`}
+          className={`text-white px-6 py-2 rounded-md transition duration-200 
+            
+           bg-blue-500 hover:bg-blue-600
+          `}
+          // ${loading || expired ? 'bg-gray-400 cursor-not-allowed'  : 'bg-blue-500 hover:bg-blue-600' }
           onClick={handleSubmit}
-          disabled={loading || expired} // Disable the button if expired or loading
+          // disabled={loading || expired} // Disable the button if expired or loading
         >
           {loading ? 'Verifying...' : 'Verify'}
         </button>
