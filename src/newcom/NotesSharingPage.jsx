@@ -369,7 +369,7 @@ const NotesSharingPage = () => {
                 {note.pdf && (
       <div className="flex-none man_off mt-4 sm:mt-0">
         <a
-          onClick={() => handleDownload(note.pdf, `Answer of ${QuePdf.name}` || "Answer pdf -- Pixel Classes.pdf", setLoading)}
+          onClick={() => handleDownload(note.pdf, `Answer of ${QuePdf.name}.pdf` || "Answer pdf -- Pixel Classes.pdf", setLoading)}
           className="inline-block bg-[#047857]  text-sm hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
         >
           {loading ? 'Loading...' : '📥 Download PDF'}
