@@ -60,16 +60,19 @@ const Home = () => {
         </h1>
 
         {isLoggedIn && (
-          <>
-            <p className="mt-4 text-sm font-bold">Favorite Course</p>
-            <div className="fav overflow-x-scroll -mx-4 mt-4 md:max-w-full md:h-full p-4 lg:max-w-full flex gap-4 scrollable-courses">
-              {courses.map((course) => (
-                <Link key={course.id} to={`/sub?course=${course.name}`}>
-                  <Card b={course.name} />
-                </Link>
-              ))}
-            </div>
-          </>
+        <>
+        <p className="mt-4 text-sm font-bold">Favorite Course</p>
+        <div className="fav overflow-x-scroll -mx-4 mt-4 md:max-w-full md:h-full p-4 lg:max-w-full flex gap-4 scrollable-courses">
+          {courses
+            .filter((course) => course.id === 1)
+            .map((course) => (
+              <Link key={course.id} to={`/sub?course=${course.name}`}>
+                <Card b={course.name} />
+              </Link>
+            ))}
+        </div>
+      </>
+      
         )}
 
         {/* <div className='mx-12 '>
