@@ -14,6 +14,7 @@ const Home = () => {
   const [userName, setUserName] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [courses, setCourses] = useState([]); // State to store courses
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     // Retrieve the 'username' cookie value
@@ -31,9 +32,11 @@ const Home = () => {
     axios.post("https://pixel-classes.onrender.com/api/home/courses", {})
     .then(response => {
       setCourses(response.data.CourseList); // Set the courses state with the fetched data
+      setLoading(false); // Set loading to false after data is fetched
     })
     .catch(error => {
       console.error("Error fetching courses:", error);
+      setLoading(false); // Set loading to false in case of error
     });
   }, []);  
 
@@ -60,7 +63,12 @@ const Home = () => {
         </h1>
 
         {isLoggedIn && (
-        <>
+  loading ? (
+    <div>Loading...</div>
+  ) : (
+    <>
+      <div>
+        <div></div>
         <p className="mt-4 text-sm font-bold">Favorite Course</p>
         <div className="fav overflow-x-scroll -mx-4 mt-4 md:max-w-full md:h-full p-4 lg:max-w-full flex gap-4 scrollable-courses">
           {courses
@@ -71,9 +79,10 @@ const Home = () => {
               </Link>
             ))}
         </div>
-      </>
-      
-        )}
+      </div>
+    </>
+  )
+)}
 
         {/* <div className='mx-12 '>
   <div className="bg-green-200 p-6 flex  items-center overflow-hidden">
