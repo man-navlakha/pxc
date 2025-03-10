@@ -31,7 +31,7 @@ bg-blend-overlay flex items-center justify-center   -mt-[120px] text-white">
                                 A education notes sharing platform there you can share your notes and get notes of your course.
                             </p>
 
-                            <ul className="mt-8 flex items-center justify-center p-4 gap-6">
+                            {/* <ul className="mt-8 flex items-center justify-center p-4 gap-6">
                                 <li>
                                     <a
                                         href="#"
@@ -106,12 +106,12 @@ bg-blend-overlay flex items-center justify-center   -mt-[120px] text-white">
                                     </a>
                                 </li>
 
-                            </ul>
+                            </ul> */}
                         </div>
 
                         <div className="grid grid-cols-1  gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
                             <div className='hidden lg:block md:hidden sm:hidden'> 
-                                <p className="font-medium fj-black text-emerald-700">Top cources</p>
+                                <p className="font-medium fj-black text-[#10b981]">Top cources</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
@@ -130,7 +130,7 @@ bg-blend-overlay flex items-center justify-center   -mt-[120px] text-white">
                             </div>
 
                             <div >
-                                <p className="font-medium fj-black text-emerald-700">Company</p>
+                                <p className="font-medium fj-black text-[#10b981]">Company</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
@@ -144,7 +144,7 @@ bg-blend-overlay flex items-center justify-center   -mt-[120px] text-white">
                             </div>
 
                             <div>
-                                <p className="font-medium fj-black text-emerald-700">Helpful Links</p>
+                                <p className="font-medium fj-black text-[#10b981]">Helpful Links</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
@@ -158,7 +158,7 @@ bg-blend-overlay flex items-center justify-center   -mt-[120px] text-white">
                             </div>
 
                             <div className='hidden lg:block md:hidden sm:hidden'>
-                                <p className="font-medium fj-black text-emerald-700">Legal</p>
+                                <p className="font-medium fj-black text-[#10b981]">Legal</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
