@@ -102,7 +102,7 @@ const Login = () => {
               disabled={loading} // Disable button while loading
             >
               {loading ? (
-                <div className="loader"></div> // Loading spinner
+                <div className="s-loading"></div> // Loading spinner
               ) : (
                 <>
                   Log in

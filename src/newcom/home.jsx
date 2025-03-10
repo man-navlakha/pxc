@@ -58,17 +58,22 @@ const Home = () => {
 
       <div className="text-left w-full mb:max-w-mb lg:max-w-full p-4">
         <p className="text-lg">Welcome 👋,</p>
+      
         <h1 className="text-3xl font-ff font-bold bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-green-500 via-emerable-900 to-green-700 text-transparent bg-clip-text">
           {userName}
         </h1>
 
-        {isLoggedIn && (
-  loading ? (
-    <div>Loading...</div>
-  ) : (
-    <>
-      <div>
-        <div></div>
+        {loading ? (
+            <div className="loader"></div>
+          ) : (
+                  <>
+            <div>
+                  {isLoggedIn && (
+
+                
+                  <>
+  
+      
         <p className="mt-4 text-sm font-bold">Favorite Course</p>
         <div className="fav overflow-x-scroll -mx-4 mt-4 md:max-w-full md:h-full p-4 lg:max-w-full flex gap-4 scrollable-courses">
           {courses
@@ -79,22 +84,11 @@ const Home = () => {
               </Link>
             ))}
         </div>
-      </div>
-    </>
-  )
-)}
+        </>
+          )}
+        </div>
 
-        {/* <div className='mx-12 '>
-  <div className="bg-green-200 p-6 flex  items-center overflow-hidden">
-    <div className='P-4 bg-green-200'>
-      <h1 className='text-4xl font-bold'>Get 100% notes for free of cost</h1>
-      <p className='text-2xl font-medium'>of any course : BCA, MSCIT, BSCIT</p>
-    </div>
-    <div className=' object-contain h-[400px]'><img src="https://www.tops-int.com/images/placement-banner-mob.jpg" alt="" /></div>
-  </div>
-
-
-</div> */}
+     
         <p className="mt-4 text-sm font-bold">Select your course</p>
         <div className="grid grid-cols-2 p-4 lg:grid-cols-6 gap-4 mt-4">
           {courses.map((course) => (
@@ -103,6 +97,10 @@ const Home = () => {
             </Link>
           ))}
         </div>
+        </>
+        )}
+
+       
       </div>
       <div className="lg:hidden md:block block">
         <LastF />

@@ -113,7 +113,7 @@ const newpassword = () => {
               disabled={loading}
             >
               {loading ? (
-                <div className="loader"></div> // Loading spinner
+                <div className="s-loading"></div> // Loading spinner
               ) : (
                 <>
                   Set Password

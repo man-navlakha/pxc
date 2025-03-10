@@ -435,7 +435,7 @@ const NotesSharingPage = () => {
                       disabled={loading}
                     >
                       {loading ? (
-                        <div className="loader"></div> // Display loader inside the button
+                        <div className="s-loading"></div> // Display s-loading inside the button
                       ) : (
                         "Submit"
                       )}

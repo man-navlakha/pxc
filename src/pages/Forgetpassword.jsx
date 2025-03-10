@@ -131,7 +131,7 @@ const Forgetpassword = () => {
                 className="w-lg flex items-center px-4 py-2 bg-green-700 text-white font-ff rounded-md hover:bg-green-800"
                 disabled={loading}
               >
-                {loading ? <div className="loader"></div> : <>Send Email <i className="fas fa-arrow-right ml-2"></i></>}
+                {loading ? <div className="s-loading"></div> : <>Send Email <i className="fas fa-arrow-right ml-2"></i></>}
               </button>
             </div>
           </form>

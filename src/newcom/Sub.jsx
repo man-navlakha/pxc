@@ -109,7 +109,7 @@ const getAccessTokenFromCookies = () => {
     <div className="p-4 mr-2 rounded-t-lg flex overflow-x-auto gap-6 w-full min-h-[50px] whitespace-nowrap">
       {
         loading ? (
-          <div className="text-2xl p-10 text-red-500">Loading...</div>
+          <div className="loader"></div>
         ) : (
           selectedCourse?.number_sem > 0 ? (
           Array.from({ length: selectedCourse.number_sem }, (_, index) => (
