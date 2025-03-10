@@ -4,9 +4,24 @@ import Cookies from 'js-cookie';
 import GoBack from '../componets/GoBack';
 import LastF from '../componets/LastF';
 import Footer from '../componets/Footer';
+import { useNavigate } from 'react-router-dom'; // Make sure to import useNavigate
+import { useEffect } from 'react'; // Import useEffect
+
 const username = Cookies.get('username') || 'John Doe';
 
 const Profile = () => {
+    const navigate = useNavigate(); // Initialize navigate
+
+    useEffect(() => {
+      const token = Cookies.get('access_token');
+      if (token) {
+        // navigate('/'); // Redirect to home if already logged in
+      }else{
+        navigate('/login');
+      }
+    }, [navigate]);
+  
+
     return (
         <>
         <GoBack />
