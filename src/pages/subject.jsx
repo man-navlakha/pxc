@@ -13,6 +13,11 @@ const Subject = () => {
           📘 {course}
         </h1>
       </div>
+
+      <div className="z-1 rounded-t-lg -m-sm">
+      <div className="block shadow-[inset_0px_4px_4px_rgba(0,0,0)] overflow-hidden rounded-t-3xl">
+        </div>
+        </div>
     </div>
   );
 };

@@ -104,7 +104,7 @@ const getAccessTokenFromCookies = () => {
       <p className="mt-4 text-left pl-3 text-lg">Select your subject</p>
 
       {/* Semester Tabs */}
-      <div className="z-1 rounded-t-lg -m-sm">
+      <div className="z-1 rounded-t-lg -m-sm bg-white">
   <div className="block shadow-[inset_0px_4px_4px_rgba(0,0,0)] overflow-hidden rounded-t-3xl">
     <div className="p-4 mr-2 rounded-t-lg flex overflow-x-auto gap-6 w-full min-h-[50px] whitespace-nowrap">
       
