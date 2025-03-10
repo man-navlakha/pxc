@@ -104,9 +104,10 @@ const getAccessTokenFromCookies = () => {
       <p className="mt-4 text-left pl-3 text-lg">Select your subject</p>
 
       {/* Semester Tabs */}
-      <div className="z-1 rounded-t-lg mr-2 ml-2 mt-4 bg-white">
+      <div className="z-1 rounded-t-lg -m-sm">
   <div className="block shadow-[inset_0px_4px_4px_rgba(0,0,0)] overflow-hidden rounded-t-3xl">
     <div className="p-4 mr-2 rounded-t-lg flex overflow-x-auto gap-6 w-full min-h-[50px] whitespace-nowrap">
+      
       {
         loading ? (
           <div className="loader"></div>
@@ -114,10 +115,10 @@ const getAccessTokenFromCookies = () => {
           selectedCourse?.number_sem > 0 ? (
           Array.from({ length: selectedCourse.number_sem }, (_, index) => (
             <button
-              className={`px-4 py-2 rounded-md shadow-md transition-all ${
+              className={`px-4 py-2  transition-all ${
                 selectedSem === index + 1
-                  ? "shadow-lg border-2 border-black"
-                  : "shadow-md border border-gray-300"
+                  ? " border-2 border-black bg-gray-100 rounded-lg shadow-md"
+                  : ""
               }`}
               key={index}
               onClick={() => handleSemesterClick(index + 1)}
@@ -132,7 +133,8 @@ const getAccessTokenFromCookies = () => {
       
       
       )}
-    </div>
+  
+  </div>
 
     {/* Semester Content */}
     <div className="mt-6 space-y-4 p-4 h-dvh overflow-y-auto">
