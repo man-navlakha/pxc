@@ -20,6 +20,7 @@ import Faq from './pages/Faq';
 import Career from './pages/Career';
 import NotesSharingPage from './newcom/NotesSharingPage';
 import Help from './pages/Help';
+import Profile from "./pages/profile";
 
 function App() {
   // const location = useLocation();
@@ -60,6 +61,7 @@ function App() {
           <Route path='/career' element={<Career />}/>
           <Route path='/ns' element={<NotesSharingPage />}/>
           <Route path='/help' element={<Help />}/>
+          <Route path='/profile' element={<Profile />} />
       </Routes>
     </div>
   )
