@@ -10,7 +10,7 @@ const Profile = () => {
     return (
         <>
         <GoBack />
-        <div className="flex flex-col items-center p-6  min-h-screen">
+        <div className="flex flex-col items-center p-6  ">
             <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-md">
                 <div className="flex flex-col items-center">
                     <img src="https://ik.imagekit.io/pxc/def.jpg" alt="Profile" className="w-32 h-32 rounded-full mb-4" />
