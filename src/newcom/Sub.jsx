@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import GoBack from "../componets/GoBack";
 import Sem from "../componets/sem";
+import Sub_loader from "../componets/Sub_loader";
 
 const Sub = () => {
   const location = useLocation();
@@ -110,7 +111,8 @@ const getAccessTokenFromCookies = () => {
       
       {
         loading ? (
-          <div className="loader"></div>
+          // <div className="loader"></div>
+          <Sub_loader />
         ) : (
           selectedCourse?.number_sem > 0 ? (
           Array.from({ length: selectedCourse.number_sem }, (_, index) => (
