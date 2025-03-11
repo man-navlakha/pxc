@@ -8,6 +8,7 @@ import Cookies from "js-cookie"; // Importing js-cookie library
 import "../index.css"; // Import css file
 import Footer from "../componets/Footer";
 import Team from "../pages/Team";
+import Load from "../componets/Loader";
 import axios from "axios"; // Import axios for API calls
 
 const Home = () => {
@@ -64,7 +65,7 @@ const Home = () => {
         </h1>
 
         {loading ? (
-            <div className="loader"></div>
+             <Load />
           ) : (
                   <>
             <div>
