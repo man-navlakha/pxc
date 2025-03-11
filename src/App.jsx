@@ -22,6 +22,7 @@ import Career from './pages/Career';
 import NotesSharingPage from './newcom/NotesSharingPage';
 import Help from './pages/Help';
 import Profile from "./pages/profile";
+import Maintainces from "./pages/MaintenancePage";
 
 function App() {
   // const location = useLocation();
@@ -46,8 +47,8 @@ function App() {
     ">
       <Routes>
         
-          <Route path='*' element={<NotFound />} />
-          <Route path='/' element={<Home />}/>
+          <Route path='*' element={<Maintainces />} />
+          <Route path='/test' element={<Home />}/>
           <Route path='/sub' element={<Sub />}/>
           <Route path='/sem' element={<Subject />}/>
           <Route path='/login' element={<Login />}/>

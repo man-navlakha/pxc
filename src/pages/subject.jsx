@@ -82,16 +82,16 @@ const getAccessTokenFromCookies = () => {
   return accessToken || null; // Return null if not found
 };
 
-  // Handle Subject click
-  const handleLinkClick = (event, item) => {
-    if (!getAccessTokenFromCookies()) {
-      console.log("User not authenticated, redirecting to login...");
-      event.preventDefault();
-      navigate("/login");
-    } else {
-      navigate(`/ns?course=${course}&id=${item.id}`);
-    }
-  };
+  // // Handle Subject click
+  // const handleLinkClick = (event, item) => {
+  //   if (!getAccessTokenFromCookies()) {
+  //     console.log("User not authenticated, redirecting to login...");
+  //     event.preventDefault();
+  //     navigate("/login");
+  //   } else {
+  //     navigate(`/ns?course=${course}&id=${item.sub}`);
+  //   }
+  // };
 
   return (
     <div className="text-center">
