@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import './App.css';
 import Home from './newcom/home';
 import Sub from './newcom/Sub';
+import Subject from './pages/subject';
 import Login from './newcom/Login';
 import Open from './newcom/open';
 import Sign from './newcom/Sign';
@@ -48,6 +49,7 @@ function App() {
           <Route path='*' element={<NotFound />} />
           <Route path='/' element={<Home />}/>
           <Route path='/sub' element={<Sub />}/>
+          <Route path='/sem' element={<Subject />}/>
           <Route path='/login' element={<Login />}/>
           <Route path='/open' element={<Open />}/>
           <Route path='/signup' element={<Sign />}/>
