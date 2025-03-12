@@ -85,11 +85,7 @@ const Selectsub = () => {
                                     console.log(selectedCourse.name)
                                     const result = response.data;
                                     console.log('API response:', result);
-                                    if (result && Array.isArray(result.subjects) && result.subjects.length > 0) {
-                                        console.log('Subjects:', result.subjects);
-                                    } else {
-                                        console.log('No subjects found for the selected semester and course.');
-                                    }
+                                  
                                 } catch (error) {
                                     console.error('Error sending data to API:', error);
                                 }
