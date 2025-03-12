@@ -13,8 +13,8 @@ const Subject = () => {
   // State for courses, selected course, semesters, and selected semester
   const [courses, setCourses] = useState([]);
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [semesters, setSemesters] = useState([]);
   const [selectedSem, setSelectedSem] = useState(null);
+  const [semesters, setSemesters] = useState([]);
 
   // Fetch all courses on mount
   useEffect(() => {
