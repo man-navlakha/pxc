@@ -7,8 +7,7 @@
     "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "proxy": "https://pixel-classes.onrender.com"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@react-pdf-viewer/core": "^3.12.0",
