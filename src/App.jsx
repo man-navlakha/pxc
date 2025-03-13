@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import './App.css';
 import Home from './newcom/home';
 import Sub from './newcom/Sub';
+import Subj from './newcom/Subj';
 import Subject from './pages/subject';
 import Login from './newcom/Login';
 import Open from './newcom/open';
@@ -50,7 +51,7 @@ function App() {
         
           <Route path='*' element={<Maintainces />} />
           <Route path='/test' element={<Home />}/>
-          <Route path='/sub' element={<Sub />}/>
+          <Route path='/sub' element={<Subj />}/>
           <Route path='/sem' element={<Subject />}/>
           <Route path='/select' element={<Selectsub />}/>
           <Route path='/login' element={<Login />}/>

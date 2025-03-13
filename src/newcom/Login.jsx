@@ -75,7 +75,7 @@ const Login = () => {
           <h1 className="text-2xl font-ff font-bold">Welcome back, {username || 'to'}</h1>
           <div className="flex items-center justify-center mt-2">
             <Link to={'/'}>
-              <img src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png" alt="Pixel Class logo" className="mr-2 w-full h-fit" />
+              <img src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png" alt="Pixel Class logo" className="mr-2 w-full h-full " />
             </Link>
           </div>
         </div>
@@ -125,7 +125,7 @@ const Login = () => {
         )}
 
         {!token && (
-          <div className="mt-6">
+          <div className="mt-[76px]">
             <p className="text-emerald-600 text-center m-2">Don't have an account?</p>
             <button 
               onClick={handleSignUpClick}

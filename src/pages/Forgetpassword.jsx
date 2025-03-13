@@ -98,7 +98,7 @@ const Forgetpassword = () => {
               <img
                 src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png"
                 alt="Pixel Class logo"
-                className="mr-2 w-full h-fit"
+                className="mr-2 w-full h-full"
               />
             </Link>
           </div>

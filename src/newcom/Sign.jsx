@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Cookies from "js-cookie";
 import { useNavigate, Link } from 'react-router-dom';
+import Footer from '../componets/Footer';
 
 const Sign = () => {
   const [error, setError] = useState('');
@@ -76,13 +77,14 @@ const Sign = () => {
   };
 
   return (
+    <>
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="p-6 w-full max-w-sm">
         <div className="mb-6">
           <h1 className="text-2xl font-ff font-bold">Welcome to the,</h1>
           <div className="flex items-center justify-center mt-2">
             <Link to={'/'}>
-              <img src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png" alt="Pixel Class logo" className="mr-2 w-full h-fit" />
+              <img src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png" alt="Pixel Class logo" className="mr-2 w-full h-full" />
             </Link>
           </div>
         </div>
@@ -143,7 +145,7 @@ const Sign = () => {
               className="w-lg flex items-center px-4 py-2 bg-green-700 text-white font-ff rounded-md hover:bg-green-800"
               disabled={loading} // Disable button when loading
             >
-              {loading ? 'Signing up...' : 'Sign up'}
+              {loading ? ( <div className="s-loading"></div>) : ("Sign Up")}
             </button>
           </div>
         </form>
@@ -167,6 +169,8 @@ const Sign = () => {
           </div>
       </div>
     </div>
+      <Footer />
+      </>
   );
 };
 
