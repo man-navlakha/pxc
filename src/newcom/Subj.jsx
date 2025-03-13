@@ -78,8 +78,8 @@ const getAccessTokenFromCookies = () => {
       <p className="mt-4 text-left pl-3 text-lg">Select Semester</p>
 
       {/* Semester Tabs */}
-      <div className="z-1 rounded-t-lg -m-sm bg-white">
-        <div className="block shadow-[inset_0px_4px_4px_rgba(0,0,0)] overflow-hidden rounded-t-3xl">
+      <div className="z-1 rounded-t-lg -m-sm ">
+        <div className="block bg-[#D9D9D9]  h-screen shadow-[inset_0px_4px_4px_rgba(0,0,0)] overflow-hidden rounded-t-3xl">
       
             {/* <h1>Select Semester</h1> */}
             {selectedCourse ? (
@@ -128,7 +128,7 @@ const getAccessTokenFromCookies = () => {
                       
                     {selectedSem && apiResponse && (
                         <div className="flex flex-col ">
-                            <p className="text-red-500">Choose your Subject</p>
+                            <p className="text-red-500 mb-6">Choose your Subject</p>
                             {/* <pre>{JSON.stringify(apiResponse, null, 2)}</pre> */}
                             <ul>
                                 {apiResponse.map((subject) => (
