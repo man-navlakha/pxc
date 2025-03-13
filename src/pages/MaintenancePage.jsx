@@ -3,10 +3,10 @@ import Main_img from "../assets/img/Maintenance-bro.png";
 
 const MaintenancePage = () => {
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100 text-center p-4">
-      <div className="max-w-md p-6 bg-white rounded-2xl shadow-xl">
-        <h1 className="text-3xl font-bold text-gray-800">We'll be back soon!</h1>
-        <p className="text-gray-600 mt-4">
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-100 dark:bg-black text-center p-4">
+      <div className="max-w-md p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-xl">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-50">We'll be back soon!</h1>
+        <p className="text-gray-600 dark:text-gray-300 mt-4">
           Our website is currently undergoing scheduled maintenance.
           We appreciate your patience and will be back shortly.
         </p>

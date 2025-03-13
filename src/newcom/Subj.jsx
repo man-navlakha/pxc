@@ -128,11 +128,11 @@ const getAccessTokenFromCookies = () => {
                       
                     {selectedSem && apiResponse && (
                         <div className="flex flex-col ">
-                            <p className="text-red-500 mb-6">Choose your Subject</p>
+                            <p className="text-red-500 mb-6 dark:text-black">Choose your Subject</p>
                             {/* <pre>{JSON.stringify(apiResponse, null, 2)}</pre> */}
-                            <ul>
+                            <ul className="flex flex-col gap-2 items-baseline pl-4">
                                 {apiResponse.map((subject) => (
-                                    <li  onClick={(event) => {
+                                    <li className="p-4 bg-white dark:bg-black dark:text-white rounded-xl cursor-pointer"  onClick={(event) => {
                                         console.log("Div clicked!", subject.id);
                                         handleLinkClick(event, subject.id);
                                       }} onkey={subject.id}>{subject.name}</li>
@@ -144,7 +144,7 @@ const getAccessTokenFromCookies = () => {
                     </div>
                 </>
             ) : (
-                <p>Loading course details...</p>
+                <p className="cursor-wait ">Loading course details...</p>
             )}
         </div>
   </div>
