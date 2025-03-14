@@ -122,7 +122,7 @@ const getAccessTokenFromCookies = () => {
                           </button>
                             ))
                           ) : (
-                            <p className="text-gray-500">No semesters available</p>
+                            <p className="fj-black text-red-500 p-4 text-2xl mb-6">No semesters available</p>
                           )}
                           </div>
                     </div>
@@ -147,7 +147,7 @@ const getAccessTokenFromCookies = () => {
         ))}
     </>
 ) : (
-    <p className="text-red-500 p-4 text-2xl mb-6">No subjects available</p>
+    <p className="fj-black text-red-500 p-4 text-2xl mb-6">No subjects available</p>
 )}
 </ul>
                         </div>
