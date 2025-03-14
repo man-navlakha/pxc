@@ -70,7 +70,7 @@ const getAccessTokenFromCookies = () => {
       };
     
   return (
-    <div className=" bg-white dark:bg-gray-800 dark:text-gray-300">
+    <div className=" bg-white dark:bg-[#1E1E1E] dark:text-white">
       <GoBack />
       <div className=" p-4 w-full">
         <h1 className="text-4xl text-left f-black font-bold">

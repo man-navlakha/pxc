@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { X } from "lucide-react";
+import GoBack from '../componets/GoBack';
 
 const Pdfs = () => {
   const [course, setCourse] = useState('');
@@ -88,14 +89,29 @@ const Pdfs = () => {
     }
   };
 
+
+
+
+
+
+
   return (
-    <div>
-      <h1>Course: {course}</h1>
-      <h2>Subject: {sub}</h2>
+    <>
+    <div className='dark:bg-[#1E1E1E] dark:text-white bg-white h-screen'>
+    <GoBack />
+          <div className=" p-4 w-full">
+              <h1 className="text-4xl text-left f-black font-bold">
+              📘 {course} 
+              </h1>
+              <h2 className="text-2xl pt-2 text-left f-black font-bold">
+              {sub}
+              </h2>
+          </div>
+    <div className='p-6'>
       {loading && <p>Downloading...</p>}
       {pdfData.length > 0 ? (
         pdfData.map((pdf, index) => (
-          <div key={index} className="relative flex-wrap w-full flex items-center justify-between border p-6 bg-white rounded-lg shadow-[0px_4px_0px_0px_#065f46] mb-4">
+          <div key={index} className="relative flex-wrap w-full flex items-center justify-between border p-6 bg-white rounded-lg shadow-[0px_4px_0px_0px_#065f46] mb-4 p-4">
             <div className="flex flex-wrap items-center justify-between w-full space-x-4">
               <div className="flex items-center space-x-4">
                 <img
@@ -139,6 +155,8 @@ const Pdfs = () => {
         <p className="text-red-500">Loading PDF...</p>
       )}
     </div>
+    </div>
+    </>
   );
 };
 
