@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import GoBack from '../componets/GoBack';
 
 const Pdfs = () => {
   const [course, setCourse] = useState('');
   const [sub, setSub] = useState('');
+  const sub_new = useState('');
   const [pdfData, setPdfData] = useState([]);
   const [pdfSizes, setPdfSizes] = useState({}); // State to store PDF sizes
   const [loading, setLoading] = useState(false); // State to manage loading
+      const navigate = useNavigate();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -55,37 +58,23 @@ const Pdfs = () => {
       console.error('Error fetching PDF size:', error);
     }
   };
-
-  const handleDownload = async (pdfUrl, fileName) => {
-    await downloadFile(pdfUrl, fileName, setLoading);
+  const getAccessTokenFromCookies = () => {
+    const accessToken = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("access_token="))
+      ?.split("=")[1];
+  
+    console.log("Access Token:", accessToken);
+    return accessToken || null; // Return null if not found
   };
-
-  const downloadFile = async (url, fileName, setLoading) => {
-    try {
-      setLoading(true);
-      const response = await fetch(url, {
-        method: "GET",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to download file");
-      }
-
-      const blob = await response.blob(); // Convert the response to a blob
-      const blobUrl = URL.createObjectURL(blob); // Create a blob URL
-
-      // Create an anchor element to trigger the download
-      const a = document.createElement("a");
-      a.href = blobUrl;
-      a.download = fileName; // Set the desired file name
-      a.click(); // Programmatically click the anchor to trigger the download
-
-      // Clean up the blob URL
-      URL.revokeObjectURL(blobUrl);
-    } catch (error) {
-      console.error("Error downloading file:", error);
-    } finally {
-      setLoading(false);
+  const handleLinkClick = (event, item, sub, course) => {
+    if (!getAccessTokenFromCookies()) {
+      console.log("User not authenticated, redirecting to login...");
+      event.preventDefault();
+      navigate("/login");
+    } else {
+      console.log(`/ns?sub=${sub}&id=${item}&course=${course}`);
+      navigate(`/ns?sub=${sub}&id=${item}&course=${course}`);
     }
   };
 
@@ -143,11 +132,11 @@ const Pdfs = () => {
                 </p>
               </div>
               <a
-                onClick={() => handleDownload(pdf.pdf, `${pdf.name}.pdf`)}
-                className="bg-[#047857] hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
-              >
-                📥 Download PDF
-              </a>
+  onClick={(event) => handleLinkClick(event, pdf.id, sub, course)}
+  className="bg-[#047857] hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
+>
+  📥 Open this assignment
+</a>
             </div>
           </div>
         ))

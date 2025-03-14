@@ -23,10 +23,10 @@ const NotesSharingPage = () => {
   const [pdfSize, setPdfSize] = useState(""); // State to store PDF size
   const [ansPdfData, setAnsPdfData] = useState("");
   const [error, setError] = useState("");
+  const sub = queryParams.get("sub");
   const handleFileChange = (e) => {
     setFiles(Array.from(e.target.files));
   };
-
   function getCookie(name) {
     // Create a regular expression to search for the cookie by name
     const nameEQ = name + "=";
@@ -252,7 +252,7 @@ const NotesSharingPage = () => {
       <div className="container mx-auto px-4 py-8">
         {/* PDF Display Section */}
         <div className=" p-4 w-full">
-          <h1 className="text-4xl text-left font-bold mb-10">📘 {course}</h1>
+          <h1 className="text-4xl text-left font-bold mb-10">📘 {sub}</h1>
         
           {/* PDF Display */}
             <h2 className="text-2xl font-bold text-gray-800 mb-6">
