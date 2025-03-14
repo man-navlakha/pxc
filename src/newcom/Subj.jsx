@@ -70,9 +70,9 @@ const getAccessTokenFromCookies = () => {
       };
     
   return (
-    <div className="text-center">
+    <div className=" bg-white dark:bg-gray-800 dark:text-gray-300">
       <GoBack />
-      <div className="bg-white p-4 w-full">
+      <div className=" p-4 w-full">
         <h1 className="text-4xl text-left font-ff font-bold">
           📘 {courseName} 
         </h1>
@@ -81,7 +81,7 @@ const getAccessTokenFromCookies = () => {
 
       {/* Semester Tabs */}
       <div className="z-1 rounded-t-lg -m-sm ">
-        <div className="block bg-[#D9D9D9]  h-screen shadow-[inset_0px_4px_4px_rgba(0,0,0)] overflow-hidden rounded-t-3xl">
+        <div className="block bg-[#D9D9D9] h-screen shadow-[inset_0px_4px_4px_rgba(0,0,0)] overflow-hidden rounded-t-3xl">
       
             {/* <h1>Select Semester</h1> */}
             {selectedCourse ? (
@@ -130,16 +130,26 @@ const getAccessTokenFromCookies = () => {
                       
                     {selectedSem && apiResponse && (
                         <div className="flex flex-col ">
-                            <p className=" font-ff text-red-500 p-4 text-2xl mb-6 dark:text-black">Choose your Subject</p>
                             {/* <pre>{JSON.stringify(apiResponse, null, 2)}</pre> */}
                             <ul className="flex flex-col gap-2 items-baseline pl-4 pr-6">
-                                {apiResponse.map((subject) => (
-                                    <Sub_card key={subject.id} subject={subject} onClick={(event) => {
-                                        console.log("Div clicked!", subject.id);
-                                        handleLinkClick(event, subject.id);
-                                      }} />
-                                ))}
-                            </ul>
+                            {apiResponse.length > 0 ? (
+    <>
+        <p className="font-ff text-red-500 p-4 text-2xl mb-6 dark:text-black">Choose your Subject</p>
+        {apiResponse.map((subject) => (
+            <Sub_card 
+                key={subject.id} 
+                subject={subject} 
+                onClick={(event) => {
+                    console.log("Div clicked!", subject.id);
+                    handleLinkClick(event, subject.id);
+                }} 
+            />
+        ))}
+    </>
+) : (
+    <p className="text-red-500 p-4 text-2xl mb-6">No subjects available</p>
+)}
+</ul>
                         </div>
                     )}
                     

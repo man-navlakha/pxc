@@ -24,7 +24,6 @@ import NotesSharingPage from './newcom/NotesSharingPage';
 import Help from './pages/Help';
 import Profile from "./pages/profile";
 import Maintainces from "./pages/MaintenancePage";
-import Selectsub from "./pages/Selectsub";
 
 function App() {
   // const location = useLocation();
@@ -53,7 +52,6 @@ function App() {
           <Route path='/test' element={<Home />}/>
           <Route path='/sub' element={<Subj />}/>
           <Route path='/sem' element={<Subject />}/>
-          <Route path='/select' element={<Selectsub />}/>
           <Route path='/login' element={<Login />}/>
           <Route path='/open' element={<Open />}/>
           <Route path='/signup' element={<Sign />}/>
