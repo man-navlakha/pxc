@@ -11,6 +11,8 @@ import Home from './newcom/home';
 import Subj from './newcom/Subj';
 import Sub from './newcom/Sub';
 import Open from './newcom/open';
+import NotesSharingPage from './newcom/NotesSharingPage';
+import Pdfs from "./pages/pdfs";
 import './index.css';
 import Logout from './newcom/Logout';
 import Forgetpassword from './pages/Forgetpassword'; 
@@ -49,7 +51,6 @@ function App() {
           <Route path='*' element={<Maintainces />} />
           <Route path='/test' element={<Home />}/>
           <Route path='/sub' element={<Subj />}/>
-          <Route path='/sem' element={<Subject />}/>
           <Route path='/login' element={<Login />}/>
           <Route path='/open' element={<Open />}/>
           <Route path='/signup' element={<Sign />}/>
@@ -62,6 +63,7 @@ function App() {
           <Route path='/faq' element={<Faq />}/>
           <Route path='/career' element={<Career />}/>
           <Route path='/ns' element={<NotesSharingPage />}/>
+          <Route path='/select' element={<Pdfs />}/>
           <Route path='/help' element={<Help />}/>
           <Route path='/profile' element={<Profile />} />
       </Routes>

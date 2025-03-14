@@ -64,8 +64,8 @@ const getAccessTokenFromCookies = () => {
           event.preventDefault();
           navigate("/login");
         } else {
-            console.log(`/ns?course=${selectedCourse.name}&id=${item}`)
-          navigate(`/ns?course=${selectedCourse.name}&id=${item}`);
+            console.log(`/select?course=${selectedCourse.name}&sub=${item}`)
+          navigate(`/select?course=${selectedCourse.name}&sub=${item}`);
         }
       };
     
@@ -137,11 +137,11 @@ const getAccessTokenFromCookies = () => {
         <p className="fj-black text-red-500 p-4 text-2xl mb-6 dark:text-black ">Choose your Subject</p>
         {apiResponse.map((subject) => (
             <Sub_card 
-                key={subject.id} 
+                key={subject.name} 
                 subject={subject} 
                 onClick={(event) => {
-                    console.log("Div clicked!", subject.id);
-                    handleLinkClick(event, subject.id);
+                    console.log("Div clicked!", subject.name);
+                    handleLinkClick(event, subject.name);
                 }} 
             />
         ))}
