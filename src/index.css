@@ -49,6 +49,7 @@ body {
 }
 .fn-bold {
   font-family: 'neue-bold', sans-serif;
+  font-weight: bolder;
 }
   
 

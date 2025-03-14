@@ -73,7 +73,7 @@ const getAccessTokenFromCookies = () => {
     <div className=" bg-white dark:bg-gray-800 dark:text-gray-300">
       <GoBack />
       <div className=" p-4 w-full">
-        <h1 className="text-4xl text-left font-ff font-bold">
+        <h1 className="text-4xl text-left f-black font-bold">
           📘 {courseName} 
         </h1>
       </div>
@@ -134,7 +134,7 @@ const getAccessTokenFromCookies = () => {
                             <ul className="flex flex-col gap-2 items-baseline pl-4 pr-6">
                             {apiResponse.length > 0 ? (
     <>
-        <p className="font-ff text-red-500 p-4 text-2xl mb-6 dark:text-black drop-shadow-[1px_1px_1px_#065f46]">Choose your Subject</p>
+        <p className="fj-black text-red-500 p-4 text-2xl mb-6 dark:text-black ">Choose your Subject</p>
         {apiResponse.map((subject) => (
             <Sub_card 
                 key={subject.id} 
