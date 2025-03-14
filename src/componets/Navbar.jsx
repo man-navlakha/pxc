@@ -46,7 +46,7 @@ const Navbar = () => {
           <img
             src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png?updatedAt=1735069174018"
             alt="Company logo"
-            className="h-10"
+            className="h-10 "
           />
         </Link>
       </div>
