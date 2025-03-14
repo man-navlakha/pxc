@@ -4,6 +4,8 @@ import axios from "axios";
 import Sem from "../componets/sem";
 import GoBack from "../componets/GoBack";
 import "./style/sub.css";
+import Sub_card from "../componets/Sub_card";
+import Sub_loader from "../componets/Sub_loader"
 
 
 const Sub = () => {
@@ -71,11 +73,11 @@ const getAccessTokenFromCookies = () => {
     <div className="text-center">
       <GoBack />
       <div className="bg-white p-4 w-full">
-        <h1 className="text-4xl text-left font-bold">
+        <h1 className="text-4xl text-left font-ff font-bold">
           📘 {courseName} 
         </h1>
       </div>
-      <p className="mt-4 text-left pl-3 text-lg">Select Semester</p>
+      <p className="mt-4 text-left pl-3 p-4 text-2xl">Select Semester</p>
 
       {/* Semester Tabs */}
       <div className="z-1 rounded-t-lg -m-sm ">
@@ -128,14 +130,14 @@ const getAccessTokenFromCookies = () => {
                       
                     {selectedSem && apiResponse && (
                         <div className="flex flex-col ">
-                            <p className="text-red-500 mb-6 dark:text-black">Choose your Subject</p>
+                            <p className=" font-ff text-red-500 p-4 text-2xl mb-6 dark:text-black">Choose your Subject</p>
                             {/* <pre>{JSON.stringify(apiResponse, null, 2)}</pre> */}
-                            <ul className="flex flex-col gap-2 items-baseline pl-4">
+                            <ul className="flex flex-col gap-2 items-baseline pl-4 pr-6">
                                 {apiResponse.map((subject) => (
-                                    <li className="p-4 bg-white dark:bg-black dark:text-white rounded-xl cursor-pointer"  onClick={(event) => {
+                                    <Sub_card key={subject.id} subject={subject} onClick={(event) => {
                                         console.log("Div clicked!", subject.id);
                                         handleLinkClick(event, subject.id);
-                                      }} onkey={subject.id}>{subject.name}</li>
+                                      }} />
                                 ))}
                             </ul>
                         </div>
@@ -144,7 +146,11 @@ const getAccessTokenFromCookies = () => {
                     </div>
                 </>
             ) : (
-                <p className="cursor-wait ">Loading course details...</p>
+                // <p className="cursor-wait p-10 font-bold text-xl text-gray-700 ">Loading course details...</p>
+                <div className="p-4">
+
+                <Sub_loader />
+                </div>
             )}
         </div>
   </div>

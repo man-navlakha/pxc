@@ -82,3 +82,16 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
   }
+
+
+  .wrap-text {
+    width: 34ch; /* 34 characters wide */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  @media (min-width: 1024px) {
+    .wrap-text {
+      width: 85ch; /* 50 characters wide on large screens */
+    }
+  }
