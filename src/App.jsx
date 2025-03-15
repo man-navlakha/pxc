@@ -44,7 +44,7 @@ function App() {
   return (
     <div className="App 
     
-     dotted-background 
+     dotted-background  dark:bg-[#1E1E1E] dark:text-white bg-white
     ">
       <Routes>
         

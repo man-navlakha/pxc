@@ -22,6 +22,7 @@ const Pdfs = () => {
     if (subParam) setSub(subParam);
 
     if (courseParam && subParam) {
+      setLoading(true); // Set loading to true before fetching data
       fetch('https://pixel-classes.onrender.com/api/home/QuePdf/Subject_Pdf', {
         method: 'POST',
         headers: {
@@ -38,9 +39,11 @@ const Pdfs = () => {
               fetchPdfSize(pdf.pdf);
             }
           });
+          setLoading(false); // Set loading to false after data is fetched
         })
         .catch((error) => {
           console.error('Error:', error);
+          setLoading(false); // Set loading to false in case of error
         });
     }
   }, []);
@@ -59,6 +62,7 @@ const Pdfs = () => {
       console.error('Error fetching PDF size:', error);
     }
   };
+
   const getAccessTokenFromCookies = () => {
     const accessToken = document.cookie
       .split("; ")
@@ -66,8 +70,9 @@ const Pdfs = () => {
       ?.split("=")[1];
 
     console.log("Access Token:", accessToken);
-    return accessToken || null; // Return null if not found
+    return accessToken || null; // Return null if not found
   };
+
   const handleLinkClick = (event, item, sub, course) => {
     if (!getAccessTokenFromCookies()) {
       console.log("User not authenticated, redirecting to login...");
@@ -79,17 +84,11 @@ const Pdfs = () => {
     }
   };
 
-
-
-
-
-
-
   return (
     <>
       <div className='dark:bg-[#1E1E1E] dark:text-white bg-white h-screen'>
         <GoBack />
-        <div className=" p-4 w-full">
+        <div className="p-4 w-full">
           <h1 className="text-4xl text-left f-black font-bold">
             📘 {course}
           </h1>
@@ -98,10 +97,11 @@ const Pdfs = () => {
           </h2>
         </div>
         <div className='p-6 dark:bg-[#1E1E1E] dark:text-white bg-white h-full'>
-          {loading && <p>Downloading...</p>}
-          {pdfData.length > 0 ? (
+          {loading ? (
+            <Pdf_loader />
+          ) : pdfData.length > 0 ? (
             pdfData.map((pdf, index) => (
-              <div key={index} className="relative flex-wrap w-full flex items-center justify-between border p-6 bg-white rounded-lg shadow-[0px_4px_0px_0px_#065f46] mb-4 p-4">
+              <div key={index} className="relative flex-wrap w-full flex items-center justify-between border p-6 bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46] mb-4 p-4">
                 <div className="flex flex-wrap items-center justify-between w-full space-x-4">
                   <div className="flex items-center space-x-4">
                     <img
@@ -110,25 +110,25 @@ const Pdfs = () => {
                       className="w-12 h-12 object-contain"
                     />
                     <div>
-                      <p className="font-semibold text-xl text-gray-700">
+                      <p className="font-semibold text-xl text-gray-100">
                         {pdf.name || "Unavailable"}
                       </p>
-                      <p className="text-sm text-gray-500">PDF</p>
+                      <p className="text-sm text-gray-400">PDF</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <p className="font-medium text-gray-600">Size:</p>
-                    <p className="text-sm text-gray-500">{pdfSizes[pdf.pdf] || "Unknown"}</p>
+                    <p className="font-medium text-gray-200">Size:</p>
+                    <p className="text-sm text-gray-400">{pdfSizes[pdf.pdf] || "Unknown"}</p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <p className="font-medium text-gray-600">Date:</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="font-medium text-gray-200">Date:</p>
+                    <p className="text-sm text-gray-400">
                       {pdf.dateCreated || "unknown"}
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <p className="font-medium text-gray-600">Time:</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="font-medium text-gray-200">Time:</p>
+                    <p className="text-sm text-gray-400">
                       {pdf.timeCreated || "unknown"}
                     </p>
                   </div>
@@ -139,11 +139,12 @@ const Pdfs = () => {
                     📥 Open this assignment
                   </a>
                 </div>
-
               </div>
             ))
           ) : (
-            <Pdf_loader />
+            <div className="text-center text-gray-400">
+              No files available
+            </div>
           )}
         </div>
       </div>
