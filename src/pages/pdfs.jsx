@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from "react-router-dom";
-import { X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import GoBack from '../componets/GoBack';
 import Pdf_loader from '../componets/Pdf_loader';
 
 const Pdfs = () => {
   const [course, setCourse] = useState('');
   const [sub, setSub] = useState('');
-  const sub_new = useState('');
+  const [choose, setChoose] = useState('');
   const [pdfData, setPdfData] = useState([]);
   const [pdfSizes, setPdfSizes] = useState({}); // State to store PDF sizes
   const [loading, setLoading] = useState(false); // State to manage loading
@@ -17,9 +16,12 @@ const Pdfs = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const courseParam = urlParams.get('course');
     const subParam = urlParams.get('sub');
-
+    const chooseParam = urlParams.get('choose');
+    
     if (courseParam) setCourse(courseParam);
     if (subParam) setSub(subParam);
+    if (chooseParam) setChoose(chooseParam);
+    console.log(chooseParam);
 
     if (courseParam && subParam) {
       setLoading(true); // Set loading to true before fetching data
@@ -79,14 +81,14 @@ const Pdfs = () => {
       event.preventDefault();
       navigate("/login");
     } else {
-      console.log(`/ns?sub=${sub}&id=${item}&course=${course}`);
-      navigate(`/ns?sub=${sub}&id=${item}&course=${course}`);
+      console.log(`/ns?sub=${sub}&id=${item}&course=${course}&choose=${choose}`);
+      navigate(`/ns?sub=${sub}&id=${item}&course=${course}&choose=${choose}`);
     }
   };
 
   return (
     <>
-      <div className='dark:bg-[#1E1E1E] dark:text-white  h-screen'>
+      <div className='dark:bg-[#1E1E1E] dark:text-white h-screen overflow-hidden'>
         <GoBack />
         <div className="p-4 w-full">
           <h1 className="text-4xl text-left f-black font-bold">
@@ -96,77 +98,58 @@ const Pdfs = () => {
             {sub}
           </h2>
         </div>
-        <div className='p-6 dark:bg-[#1E1E1E] dark:text-white  h-full'>
+        <div className='p-6 dark:bg-[#1E1E1E] dark:text-white h-full'>
           {loading ? (
             <Pdf_loader />
           ) : pdfData.length > 0 ? (
-            pdfData.map((pdf, index) => (
-              <>
-              <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-3 '>
-                  <div className="content-center text-center hover:border-[#065f46] w-[120px] lg:w-full h-[100px] p-2 border bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
-                    Notes
-                  </div>
-                  <div className="content-center text-center hover:border-[#065f46] w-[120px] lg:w-full h-[100px] p-2 border bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
-                    Assignments
-                  </div>
-                  <div className="content-center text-center hover:border-[#065f46] w-[120px] lg:w-full h-[100px] p-2 border bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
-                    Exam Papers
-                  </div>
-                  <div className="content-center text-center hover:border-[#065f46] w-[120px] lg:w-full h-[100px] p-2 border bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
-                    Important Questions
-                  </div>
-                  <div className="content-center text-center hover:border-[#065f46] w-[120px] lg:w-full h-[100px] p-2 border bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
-                    Notes
-                  </div>
-
-              </div>
-              <div key={index} className="relative flex-wrap w-full flex items-center justify-between border p-6 bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46] mb-4 p-4">
-                <div className="flex flex-wrap items-center justify-between w-full space-x-4">
-                  <div className="flex items-center space-x-4">
-                    <img
-                      src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
-                      alt="PDF Icon"
-                      className="w-12 h-12 object-contain"
-                    />
-                    <div>
-                      <p className="font-semibold text-xl dark:text-gray-100">
-                        {pdf.name || "Unavailable"}
-                      </p>
-                      <p className="text-sm text-gray-400">PDF</p>
+            pdfData
+              .filter(pdf => pdf.name && pdf.name.toLowerCase().includes(choose.toLowerCase()))
+              .map((pdf, index) => (
+                <div key={index} className="relative flex-wrap w-full flex items-center justify-between border p-6 bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46] mb-4 p-4">
+                  <div className="flex flex-wrap items-center justify-between w-full space-x-4">
+                    <div className="flex items-center space-x-4">
+                      <img
+                        src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
+                        alt="PDF Icon"
+                        className="w-12 h-12 object-contain"
+                      />
+                      <div>
+                        <p className="font-semibold text-xl dark:text-gray-100">
+                          {pdf.name || "Unavailable"}
+                        </p>
+                        <p className="text-sm text-gray-400">PDF</p>
+                      </div>
                     </div>
+                    <div className="flex items-center space-x-2">
+                      <p className="font-medium dark:text-gray-200">Size:</p>
+                      <p className="text-sm text-gray-400">{pdfSizes[pdf.pdf] || "Unknown"}</p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <p className="font-medium dark:text-gray-200">Date:</p>
+                      <p className="text-sm text-gray-400">
+                        {pdf.dateCreated || "unknown"}
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <p className="font-medium dark:text-gray-200">Time:</p>
+                      <p className="text-sm text-gray-400">
+                        {pdf.timeCreated || "unknown"}
+                      </p>
+                    </div>
+                    <a
+                      onClick={(event) => handleLinkClick(event, pdf.id, sub, course)}
+                      className="bg-[#047857] hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
+                    >
+                      📥 Open this {choose}
+                    </a>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <p className="font-medium dark:text-gray-200">Size:</p>
-                    <p className="text-sm text-gray-400">{pdfSizes[pdf.pdf] || "Unknown"}</p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <p className="font-medium dark:text-gray-200">Date:</p>
-                    <p className="text-sm text-gray-400">
-                      {pdf.dateCreated || "unknown"}
-                    </p>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <p className="font-medium dark:text-gray-200">Time:</p>
-                    <p className="text-sm text-gray-400">
-                      {pdf.timeCreated || "unknown"}
-                    </p>
-                  </div>
-                  <a
-                    onClick={(event) => handleLinkClick(event, pdf.id, sub, course)}
-                    className="bg-[#047857] hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                  >
-                    📥 Open this assignment
-                  </a>
                 </div>
-              </div>
-              </>
-
-            ))
+              ))
           ) : (
-            <div className="text-center text-gray-400">
-              No files available
+            <div className="text-center flex flex-col items-center justify-center text-gray-400">
+              <img width="300px" src="https://ik.imagekit.io/pxc/not_eligible.svg" alt="" />
+              No files available for this subject
             </div>
-            
           )}
         </div>
       </div>

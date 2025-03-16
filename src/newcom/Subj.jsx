@@ -64,8 +64,8 @@ const getAccessTokenFromCookies = () => {
           event.preventDefault();
           navigate("/login");
         } else {
-            console.log(`/select?course=${selectedCourse.name}&sub=${item}`)
-          navigate(`/select?course=${selectedCourse.name}&sub=${item}`);
+            console.log(`/choose?course=${selectedCourse.name}&sub=${item}`)
+          navigate(`/choose?course=${selectedCourse.name}&sub=${item}`);
         }
       };
     

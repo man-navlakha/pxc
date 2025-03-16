@@ -24,6 +24,7 @@ import Career from './pages/Career';
 import Help from './pages/Help';
 import Profile from "./pages/profile";
 import Maintainces from "./pages/MaintenancePage";
+import Choose from "./pages/Choose";
 
 function App() {
   // const location = useLocation();
@@ -64,6 +65,7 @@ function App() {
           <Route path='/career' element={<Career />}/>
           <Route path='/ns' element={<NotesSharingPage />}/>
           <Route path='/select' element={<Pdfs />}/>
+          <Route path='/choose' element={<Choose />}/>
           <Route path='/help' element={<Help />}/>
           <Route path='/profile' element={<Profile />} />
       </Routes>

@@ -24,6 +24,7 @@ const NotesSharingPage = () => {
   const [ansPdfData, setAnsPdfData] = useState("");
   const [error, setError] = useState("");
   const sub = queryParams.get("sub");
+  const choose = queryParams.get("choose");
   const handleFileChange = (e) => {
     setFiles(Array.from(e.target.files));
   };
@@ -53,7 +54,7 @@ const NotesSharingPage = () => {
       };
       setNotes([newNote, ...notes]);
       setTitle("");
-      setContent("");
+      setContent(`${content} + ${choose}`);
       setFiles([]);
       setIsModalOpen(false);
     }
@@ -248,19 +249,19 @@ const NotesSharingPage = () => {
 
   return (
     <>
+    <div className='dark:bg-[#1E1E1E] dark:text-white h-screen'>
       <Navbar />
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 ">
         {/* PDF Display Section */}
         <div className=" p-4 w-full">
           <h1 className="text-4xl text-left font-bold mb-10">📘 {sub}</h1>
         
           {/* PDF Display */}
-            <h2 className="text-2xl font-bold text-gray-800 mb-6">
+            <h2 className="text-2xl font-bold text-gray-800 mb-6  dark:text-gray-100">
               Quetions
             </h2>
           {QuePdf ? (
-            <div className="relative flex-wrap
- w-full flex items-center justify-between border p-6 bg-white rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
+            <div className=" relative flex-wrap flex items-center justify-between border p-6  w-full bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46] mb-4 p-4 w-full ">
               {/* PDF Details Row */}
               <div className="flex flex-wrap items-center justify-between w-full space-x-4">
                 {/* File Icon & File Name */}
@@ -271,31 +272,31 @@ const NotesSharingPage = () => {
                     className="w-12 h-12 object-contain"
                   />
                   <div>
-                    <p className="font-semibold text-xl text-gray-700">
+                  <p className="font-semibold text-xl dark:text-gray-100">
                       {QuePdf.name || "Unavailable"}
                     </p>
-                    <p className="text-sm text-gray-500">PDF</p>
+                    <p className="text-sm text-gray-400">PDF</p>
                   </div>
                 </div>
 
                 {/* File Size */}
                 <div className="flex items-center space-x-2">
-                  <p className="font-medium text-gray-600">Size:</p>
-                  <p className="text-sm text-gray-500">{pdfSize}</p>
+                <p className="font-medium dark:text-gray-200">Size:</p>
+                <p className="text-sm text-gray-400">{pdfSize}</p>
                 </div>
 
                 {/* Date Created */}
                 <div className="flex items-center space-x-2">
-                  <p className="font-medium text-gray-600">Date:</p>
-                  <p className="text-sm text-gray-500">
+                <p className="font-medium dark:text-gray-200">Date:</p>
+                <p className="text-sm text-gray-400">
                     {QuePdf.dateCreated || "unknown"}
                   </p>
                 </div>
 
                 {/* Time Created */}
                 <div className="flex items-center space-x-2">
-                  <p className="font-medium text-gray-600">Time:</p>
-                  <p className="text-sm text-gray-500">
+                <p className="font-medium dark:text-gray-200">Time:</p>
+                <p className="text-sm text-gray-400">
                     {QuePdf.timeCreated || "unknown"}
                   </p>
                 </div>
@@ -317,9 +318,18 @@ const NotesSharingPage = () => {
         {/* Notes List */}
         <div className=" p-8 -mt-4">
        
-          <h2 className="text-2xl font-bold mb-6 pt-4 text-center text-gray-800">
+       <div className="flex  justify-between items-center">
+          <h2 className="text-2xl font-bold mb-6 pt-4 text-center text-gray-800  dark:text-gray-100">
             Answer Shared Notes by students
           </h2>
+       <button
+            onClick={() => setIsModalOpen(true)}
+            className="bg-[#047857] hover:bg-[#047857] text-white font-bold py-2 px-4 rounded-xl shadow-[0px_4px_0px_0px_#fff] mb-4"
+          >
+            Add Note
+          </button>
+       </div>
+<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
 
           {ansPdfData.length === 0 ? (
@@ -328,9 +338,10 @@ const NotesSharingPage = () => {
             </p>
           ) : (
             ansPdfData.map((note) => (
+              
               <div
                 key={note.id}
-                className="mb-6 p-6 bg-white border border-gray-200 rounded-lg  flex flex-col sm:flex-row gap-4"
+                className="mb-6 p-6 bg-white dark:bg-[#383838] border border-gray-200 rounded-lg  flex flex-col sm:flex-row gap-4"
 
               >
                 <div className="flex-1">
@@ -343,9 +354,9 @@ const NotesSharingPage = () => {
                 {/* Note Title and Content */}
                 <div className="flex-1">
                 <div className="flex-1">
-                  <p className="text-gray-900">{note.contant}</p>
+                <p className="font-semibold text-xl dark:text-gray-100">{note.contant}</p>
                 </div>
-                  <h3 className="text-lg font-medium text-gray-400 mb-2">
+                  <h3 className="text-lg font-medium text-gray-400 mb-2 dark:text-gray-200">
                     Uploded by,  {note.name}
                   </h3>
                 </div>
@@ -380,20 +391,15 @@ const NotesSharingPage = () => {
             ))
           )}
           {/* Add Note Button */}
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="bg-[#047857] hover:bg-[#047857] text-white font-bold py-2 px-4 rounded-md mb-4"
-          >
-            Add Note
-          </button>
+       
           </div>
           {/* Modal for Adding Notes */}
           {isModalOpen && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-96 relative">
+              <div className="dark:bg-black border dark:border-[#383838] bg-white dark:text-gray-100 p-6 rounded-lg shadow-lg w-96 relative">
                 <button
                   onClick={() => setIsModalOpen(false)}
-                  className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
+                  className="absolute top-2 right-2 text-gray-600 dark:text-gray-100 hover:text-gray-800 dark:hover:text-white "
                 >
                   <X size={24} />
                 </button>
@@ -404,26 +410,26 @@ const NotesSharingPage = () => {
 
                 <form onSubmit={handleSubmit}>
                   <div className="mb-3">
-                    <label className="block text-gray-700 font-semibold">
+                    <label className="block text-gray-700 dark:text-gray-100 font-semibold">
                       Content:
                     </label>
                     <textarea
                       value={content}
                       onChange={(e) => setContent(e.target.value)}
-                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      className="w-full p-2 border border-gray-300 dark:text-gray-100 dark:bg-[#383838] text-gray-800 rounded-lg"
                       rows="4"
                       required
                     />
                   </div>
                   <div className="mb-3">
-                    <label className="block text-gray-700 font-semibold">
+                    <label className="block text-gray-700 dark:text-gray-100 font-semibold">
                       Attach Files:
                     </label>
                     <input
                       type="file"
                       onChange={handleFileChange}
                       multiple
-                      className="w-full p-2 border border-gray-300 rounded-lg"
+                      className="w-full p-2 border border-gray-300 dark:text-gray-100 dark:bg-[#383838]  rounded-lg"
                     />
                   </div>
                   <div className="flex justify-center">
@@ -447,8 +453,11 @@ const NotesSharingPage = () => {
           )}
         </div>
       </div>
+      
+</div>
       <LastF />
       <Footer />
+      </div>
     </>
   );
 };
