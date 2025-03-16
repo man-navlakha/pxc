@@ -105,7 +105,7 @@ const Pdfs = () => {
             pdfData
               .filter(pdf => pdf.name && pdf.name.toLowerCase().includes(choose.toLowerCase()))
               .map((pdf, index) => (
-                <div key={index} className="relative flex-wrap w-full flex items-center justify-between border p-6 bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46] mb-4 p-4">
+                <div key={index} onClick={(event) => handleLinkClick(event, pdf.id, sub, course)} className="relative flex-wrap w-full flex items-center justify-between border p-6 bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46] mb-4 p-4">
                   <div className="flex flex-wrap items-center justify-between w-full space-x-4">
                     <div className="flex items-center space-x-4">
                       <img
@@ -136,12 +136,6 @@ const Pdfs = () => {
                         {pdf.timeCreated || "unknown"}
                       </p>
                     </div>
-                    <a
-                      onClick={(event) => handleLinkClick(event, pdf.id, sub, course)}
-                      className="bg-[#047857] hover:bg-[#065f46] text-white font-semibold py-2.5 px-6 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 cursor-pointer"
-                    >
-                      📥 Open this {choose}
-                    </a>
                   </div>
                 </div>
               ))
