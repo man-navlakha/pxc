@@ -12,7 +12,7 @@ const Sign = () => {
     const [courses, setCourses] = useState([]); // State to store courses
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [course, setcourse] = useState('');
+  const [course, setCourse] = useState('');
   const [loading, setLoading] = useState(false); // Define loading state
   const navigate = useNavigate(); // hook for redirecting
 
@@ -29,64 +29,68 @@ const Sign = () => {
           });
         }, []);  
 
-  const handleSignUpClick = async (e) => {
-    e.preventDefault();
-    
-    setError(''); // Clear any previous error
-    
-
-    if (password !== confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-
-    // Basic email validation
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    if (!emailRegex.test(email)) {
-      alert('Please enter a valid email');
-      return;
-    }
-
-    // Basic password validation
-    if (password.length < 6) {
-      alert('Password must be at least 6 characters long');
-      return;
-    }
-
-    setLoading(true); // Start loading
-    
-
-    try {
-      const response = await fetch('https://pixel-classes.onrender.com/api/user/register/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, email, password, courses }),
-      });
-    
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Network response was not ok');
-      }
-    
-      const data = await response.json();
-      console.log('Signup successful:', data);
-      Cookies.set('username', username); // Save username to cookies
-      Cookies.set('email', email); // Save username to cookies
-      
-      // Redirect to the /verification page and pass the username via state
-      navigate('/verification', { state: { user: { username } } });
-    
-    } catch (error) {
-      console.error('There was a problem with the signup request:', error);
-      setError(error.message);
-      setLoading(false); // End loading
-    } finally {
-      // Any cleanup code if necessary
-      setLoading(false); // End loading
-    }
-  };
+        const handleSignUpClick = async (e) => {
+          e.preventDefault();
+          
+          setError(''); // Clear any previous error
+        
+          if (password !== confirmPassword) {
+            alert('Passwords do not match');
+            return;
+          }
+        
+          // Basic email validation
+          const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+          if (!emailRegex.test(email)) {
+            alert('Please enter a valid email');
+            return;
+          }
+        
+          // Basic password validation
+          if (password.length < 6) {
+            alert('Password must be at least 6 characters long');
+            return;
+          }
+        
+          // Show confirmation popup
+          const isConfirmed = window.confirm('Are you sure you want to sign up with these details? Please verify that the information is correct. Username: ' + username + ' Email: ' + email + ' Course: ' + course);
+          if (!isConfirmed) {
+            return; // Do nothing if the user cancels
+          }
+        
+          setLoading(true); // Start loading
+        
+          try {
+            const response = await fetch('https://pixel-classes.onrender.com/api/user/register/', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ username, email, password, course }),
+            });
+        
+            if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.error || 'Network response was not ok');
+            }
+        
+            const data = await response.json();
+            console.log('Signup successful:', data);
+            Cookies.set('username', username); // Save username to cookies
+            Cookies.set('email', email); // Save email to cookies
+            
+            // Redirect to the /verification page and pass the username via state
+            navigate('/verification', { state: { user: { username } } });
+        
+          } catch (error) {
+            console.error('There was a problem with the signup request:', error);
+            setError(error.message);
+            setLoading(false); // End loading
+          } finally {
+            // Any cleanup code if necessary
+            setLoading(false); // End loading
+          }
+        };
 
   const handleClick = () => {
     navigate('/login');
@@ -151,15 +155,27 @@ const Sign = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium font-ff text-gray-700 dark:text-gray-100 ">Select Your Cource:</label>
-            <select required className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
-              <option className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm" value="Select Your Cource" selected disabled> Select Your Cource</option>
-              {courses
-            .map((course) => (
-              <option key={course.id} onChange={(e) => setcourse(e.target.value)} value={course.name}>{course.name}</option>
-            ))}
-            </select>
-          </div>
+  <label className="block text-sm font-medium font-ff text-gray-700 dark:text-gray-100">Select Your Course:</label>
+  <select
+    required
+    className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+    value={course}
+    onChange={(e) => setCourse(e.target.value)}
+  >
+    <option
+      className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+      value=""
+      disabled
+    >
+      Select Your Course
+    </option>
+    {courses.map((course) => (
+      <option key={course.id} value={course.name}>
+        {course.name}
+      </option>
+    ))}
+  </select>
+</div>
           <div className="flex items-center justify-between">
             <button 
               onClick={handleClick}

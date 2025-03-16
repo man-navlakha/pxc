@@ -95,7 +95,7 @@ const getAccessTokenFromCookies = () => {
                               <button
                               className={`px-4 py-2 transition-all ${
                                   selectedSem === index + 1
-                                      ? "border-2 border-black bg-gray-100 rounded-lg shadow-md"
+                                      ? "border-2 border-black dark:border-white rounded-lg shadow-md"
                                       : ""
                               }`}
                               key={index}
