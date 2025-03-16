@@ -81,7 +81,7 @@ const getAccessTokenFromCookies = () => {
 
       {/* Semester Tabs */}
       <div className="z-1 rounded-t-lg -m-sm ">
-        <div className="block bg-[#999999] dark:bg-[#383838] h-screen shadow-[inset_0px_4px_4px_rgba(0,0,0)] overflow-hidden rounded-t-3xl">
+        <div className="block bg-[#fff] dark:bg-[#383838] h-screen shadow-[inset_0px_4px_4px_rgba(0,0,0)] overflow-hidden rounded-t-3xl">
       
             {/* <h1>Select Semester</h1> */}
             {selectedCourse ? (
