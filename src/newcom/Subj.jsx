@@ -13,13 +13,14 @@ const Sub = () => {
     const courseName = new URLSearchParams(location.search).get('course');
     console.log(courseName);
     const [selectedCourse, setSelectedCourse] = useState(null);
-    const [selectedSem, setSelectedSem] = useState(null);
+    const [selectedSem, setSelectedSem] = useState(1);
     const [semesters, setSemesters] = useState([]);
     const [apiResponse, setApiResponse] = useState(null);
     const navigate = useNavigate();
 
-
+    
     useEffect(() => {
+   
         const fetchCourseDetails = async () => {
             try {
                 const response = await axios.get('https://pixel-classes.onrender.com/api/home/courses');
@@ -131,10 +132,10 @@ const getAccessTokenFromCookies = () => {
                     {selectedSem && apiResponse && (
                         <div className="flex flex-col ">
                             {/* <pre>{JSON.stringify(apiResponse, null, 2)}</pre> */}
-                            <ul className="flex flex-col gap-2 items-baseline pl-4 pr-6">
+                                <p className="fj-black text-gray-800 p-4 text-2xl mb-6 dark:text-white ">Choose your Subject</p>
+                            <ul className="grid lg:grid-cols-2  gap-2 items-baseline pl-4 pr-6">
                             {apiResponse.length > 0 ? (
     <>
-        <p className="fj-black text-gray-800 p-4 text-2xl mb-6 dark:text-white ">Choose your Subject</p>
         {apiResponse.map((subject) => (
             <Sub_card 
                 key={subject.name} 
