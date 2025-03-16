@@ -69,7 +69,7 @@ const Login = () => {
   const token = Cookies.get('access_token');
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-[#1e1e1e] dark:text-white">
       <div className="p-6 w-full max-w-sm">
         <div className="mb-6">
           <h1 className="text-2xl font-ff font-bold">Welcome back, {username || 'to'}</h1>
@@ -83,13 +83,13 @@ const Login = () => {
           {error && <p className="error-message font-bold text-red-600">{error}</p>}
 
           <div>
-            <label className="font-ff block text-sm font-medium text-gray-700">Username</label>
-            <input type="text" name="username" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" onChange={(e) => e.target.value = e.target.value.toLowerCase()} required />
+          <label className="block text-sm font-medium font-ff text-gray-700 dark:text-gray-100 ">Username</label>
+            <input type="text" name="username" className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm" onChange={(e) => e.target.value = e.target.value.toLowerCase()} required />
           </div>
 
           <div>
-            <label className="font-ff block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" name="password" className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required />
+            <label className="block text-sm font-medium font-ff text-gray-700 dark:text-gray-100 ">Password</label>
+            <input type="password" name="password" className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm" required />
           </div>
 
           <div className="flex items-center justify-between">
@@ -129,7 +129,7 @@ const Login = () => {
             <p className="text-emerald-600 text-center m-2">Don't have an account?</p>
             <button 
               onClick={handleSignUpClick}
-              className="font-ff w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm hover:text-md font-medium text-white hover:text-gray-700 bg-emerald-900 hover:bg-emerald-50"
+              className="font-ff w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm hover:text-md font-medium text-white hover:text-gray-700 bg-emerald-900 hover:bg-emerald-50 dark:hover:bg-[#383838] dark:hover:text-gray-200"
             >
               Sign Up
             </button>

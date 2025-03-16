@@ -78,7 +78,7 @@ const Sign = () => {
 
   return (
     <>
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-[#1e1e1e] dark:text-white">
       <div className="p-6 w-full max-w-sm">
         <div className="mb-6">
           <h1 className="text-2xl font-ff font-bold">Welcome to the,</h1>
@@ -91,53 +91,53 @@ const Sign = () => {
         <form className="space-y-4" onSubmit={handleSignUpClick}>
         {error && <p className="error-message font-bold text-red-600">{error}</p>}
           <div>
-            <label className="block text-sm font-medium font-ff text-gray-700">Username</label>
+            <label className="block text-sm font-medium font-ff text-gray-700 dark:text-gray-100 ">Username</label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9]/g, ''))}
               placeholder="Enter username"
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+              className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium font-ff text-gray-700">Email</label>
+            <label className="block text-sm font-medium font-ff text-gray-700 dark:text-gray-100 ">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value.toLowerCase())}
               placeholder="Enter email"
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+              className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium font-ff text-gray-700">Password</label>
+            <label className="block text-sm font-medium font-ff text-gray-700 dark:text-gray-100 ">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter Password"
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+              className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium font-ff text-gray-700">Confirm Password</label>
+            <label className="block text-sm font-medium font-ff text-gray-700 dark:text-gray-100 ">Confirm Password</label>
             <input
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="Enter Confirm Password"
               required
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
+              className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
             />
           </div>
           <div className="flex items-center justify-between">
             <button 
               onClick={handleClick}
-              type="button" className="text-blue-600 hover:underline">
+              type="button" className="text-blue-800 dark:text-blue-500  hover:underline">
               I have an account 
             </button>
             <button
@@ -162,7 +162,7 @@ const Sign = () => {
             <p className="text-emerald-600 text-center m-2">I have an account?</p>
             <button 
               onClick={handleClick}
-              className="font-ff w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm hover:text-md font-medium text-white hover:text-gray-700 bg-emerald-900 hover:bg-emerald-50"
+              className="font-ff w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm hover:text-md font-medium text-white hover:text-gray-700 bg-emerald-900 hover:bg-emerald-50 dark:hover:bg-[#383838] dark:hover:text-gray-200"
             >
              Login 
             </button>

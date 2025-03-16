@@ -40,7 +40,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-40 w-full backdrop-blur transition-colors duration-500 border-b-2 bg-[#e8e8e8ba]/50 supports-backdrop-blur:bg-black/10 p-2 flex justify-between items-center">
+    <nav className="sticky top-0 z-40 w-full backdrop-blur transition-colors duration-500 border-b-2 dark:border-[#000] bg-[#e8e8e8ba]/50 dark:bg-[#434343ba]/50 supports-backdrop-blur:bg-black/10 p-2 flex justify-between items-center">
       <div className="text-white text-5xl font-bold">
         <Link to={'/'}>
           <img
@@ -55,22 +55,22 @@ const Navbar = () => {
         <img
           src="https://ik.imagekit.io/pxc/def.jpg"
           alt="Profile photo"
-          className="h-10 w-10 rounded-full border-2"
+          className="h-10 w-10 rounded-full border-2 bg-traparent"
         />
         {dropdownOpen && (
-          <div className="absolute right-2 top-12 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-20">
+          <div className="absolute right-2 top-12 mt-2 w-48 dark:border-[#000] bg-white dark:bg-[#1e1e1e] rounded-md shadow-lg py-1 z-20">
             {/* Conditionally render Profile and Logout options if logged in */}
             {isLoggedIn ? (
               <>
                 <Link
                   to="/profile"
-                  className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  className="block px-4 py-2 text-gray-800 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-[#383838]"
                 >
                   Profile
                 </Link>
                 <Link
                   to="/logout"
-                  className="block px-4 py-2 text-gray-800 hover:bg-gray-100"
+                  className="block px-4 py-2 text-gray-800 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-[#383838]"
                 >
                   Logout
                 </Link>
