@@ -314,7 +314,64 @@ const NotesSharingPage = () => {
             <p className="text-red-500">{error || "Loading PDF..."}</p>
           )}
      
+ {/* Modal for Adding Notes */}
+          {isModalOpen && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+              <div className="dark:bg-black border-2 dark:border-[#383838] bg-white dark:text-gray-100 p-6 rounded-lg shadow-lg w-96 relative">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="absolute top-2 right-2 text-gray-600 dark:text-gray-100 hover:text-gray-800 dark:hover:text-white "
+                >
+                  <X size={24} />
+                </button>
 
+                <h2 className="text-2xl font-bold mb-4 text-center">
+                  Add a Note
+                </h2>
+
+                <form onSubmit={handleSubmit}>
+                  <div className="mb-3">
+                    <label className="block text-gray-700 dark:text-gray-100 font-semibold">
+                      Content:
+                    </label>
+                    <textarea
+                      value={content}
+                      onChange={(e) => setContent(e.target.value)}
+                      className="w-full p-2 border border-gray-300 dark:text-gray-100 dark:bg-[#383838] text-gray-800 rounded-lg"
+                      rows="4"
+                      required
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="block text-gray-700 dark:text-gray-100 font-semibold">
+                      Attach Files:
+                    </label>
+                    <input
+                      type="file"
+                      onChange={handleFileChange}
+                      multiple
+                      className="w-full p-2 border border-gray-300 dark:text-gray-100 dark:bg-[#383838]  rounded-lg"
+                    />
+                  </div>
+                  <div className="flex justify-center">
+                    <button
+                      type="submit"
+                      className={`bg-[#047857] hover:bg-[#065f46] text-white font-bold py-2 px-4 rounded-md ${
+                        loading ? "cursor-wait" : ""
+                      }`}
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <div className="s-loading"></div> // Display s-loading inside the button
+                      ) : (
+                        "Submit"
+                      )}
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         {/* Notes List */}
         <div className=" p-8 -mt-4">
        
@@ -393,64 +450,7 @@ const NotesSharingPage = () => {
           {/* Add Note Button */}
        
           </div>
-          {/* Modal for Adding Notes */}
-          {isModalOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-              <div className="dark:bg-black border dark:border-[#383838] bg-white dark:text-gray-100 p-6 rounded-lg shadow-lg w-96 relative">
-                <button
-                  onClick={() => setIsModalOpen(false)}
-                  className="absolute top-2 right-2 text-gray-600 dark:text-gray-100 hover:text-gray-800 dark:hover:text-white "
-                >
-                  <X size={24} />
-                </button>
-
-                <h2 className="text-2xl font-bold mb-4 text-center">
-                  Add a Note
-                </h2>
-
-                <form onSubmit={handleSubmit}>
-                  <div className="mb-3">
-                    <label className="block text-gray-700 dark:text-gray-100 font-semibold">
-                      Content:
-                    </label>
-                    <textarea
-                      value={content}
-                      onChange={(e) => setContent(e.target.value)}
-                      className="w-full p-2 border border-gray-300 dark:text-gray-100 dark:bg-[#383838] text-gray-800 rounded-lg"
-                      rows="4"
-                      required
-                    />
-                  </div>
-                  <div className="mb-3">
-                    <label className="block text-gray-700 dark:text-gray-100 font-semibold">
-                      Attach Files:
-                    </label>
-                    <input
-                      type="file"
-                      onChange={handleFileChange}
-                      multiple
-                      className="w-full p-2 border border-gray-300 dark:text-gray-100 dark:bg-[#383838]  rounded-lg"
-                    />
-                  </div>
-                  <div className="flex justify-center">
-                    <button
-                      type="submit"
-                      className={`bg-[#047857] hover:bg-[#065f46] text-white font-bold py-2 px-4 rounded-md ${
-                        loading ? "cursor-wait" : ""
-                      }`}
-                      disabled={loading}
-                    >
-                      {loading ? (
-                        <div className="s-loading"></div> // Display s-loading inside the button
-                      ) : (
-                        "Submit"
-                      )}
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
+         
         </div>
       </div>
       
