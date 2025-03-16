@@ -47,8 +47,8 @@ function App() {
     ">
       <Routes>
         
-          <Route path='*' element={<Maintainces />} />
-          <Route path='/test' element={<Home />}/>
+          <Route path='*' element={<NotFound />} />
+          <Route path='/' element={<Home />}/>
           <Route path='/sub' element={<Subj />}/>
           <Route path='/login' element={<Login />}/>
           <Route path='/open' element={<Open />}/>
