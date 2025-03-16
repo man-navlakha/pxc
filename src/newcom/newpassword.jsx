@@ -58,7 +58,7 @@ const newpassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center dark:text-gray-100 dark:bg-[#383838]">
       <div className="p-6 w-full max-w-sm">
         <div className="mb-6">
           <h1 className="text-2xl font-ff font-bold text-center">Set your new password</h1>
@@ -72,11 +72,11 @@ const newpassword = () => {
         <form className="space-y-4" onSubmit={handleSubmit}>
           {/* Password Input */}
           <div>
-            <label className="font-ff block text-sm font-medium text-gray-700">Enter password</label>
+            <label className="font-ff block text-sm font-medium  text-gray-700 dark:text-gray-100  text-gray-700 dark:text-gray-100 ">Enter password</label>
             <input
               type="password"
               name="password"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               placeholder="Enter your new password"
               required
               value={password}
@@ -86,11 +86,11 @@ const newpassword = () => {
 
           {/* Confirm Password Input */}
           <div>
-            <label className="font-ff block text-sm font-medium text-gray-700">Re-enter password</label>
+            <label className="font-ff block text-sm font-medium  text-gray-700 dark:text-gray-100 ">Re-enter password</label>
             <input
               type="password"
               name="cpassword"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               placeholder="Re-enter your new password"
               required
               value={confirmPassword}
