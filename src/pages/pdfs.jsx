@@ -86,7 +86,7 @@ const Pdfs = () => {
 
   return (
     <>
-      <div className='dark:bg-[#1E1E1E] dark:text-white bg-white h-screen'>
+      <div className='dark:bg-[#1E1E1E] dark:text-white  h-screen'>
         <GoBack />
         <div className="p-4 w-full">
           <h1 className="text-4xl text-left f-black font-bold">
@@ -96,11 +96,30 @@ const Pdfs = () => {
             {sub}
           </h2>
         </div>
-        <div className='p-6 dark:bg-[#1E1E1E] dark:text-white bg-white h-full'>
+        <div className='p-6 dark:bg-[#1E1E1E] dark:text-white  h-full'>
           {loading ? (
             <Pdf_loader />
           ) : pdfData.length > 0 ? (
             pdfData.map((pdf, index) => (
+              <>
+              <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-3 '>
+                  <div className="content-center text-center hover:border-[#065f46] w-[120px] lg:w-full h-[100px] p-2 border bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
+                    Notes
+                  </div>
+                  <div className="content-center text-center hover:border-[#065f46] w-[120px] lg:w-full h-[100px] p-2 border bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
+                    Assignments
+                  </div>
+                  <div className="content-center text-center hover:border-[#065f46] w-[120px] lg:w-full h-[100px] p-2 border bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
+                    Exam Papers
+                  </div>
+                  <div className="content-center text-center hover:border-[#065f46] w-[120px] lg:w-full h-[100px] p-2 border bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
+                    Important Questions
+                  </div>
+                  <div className="content-center text-center hover:border-[#065f46] w-[120px] lg:w-full h-[100px] p-2 border bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
+                    Notes
+                  </div>
+
+              </div>
               <div key={index} className="relative flex-wrap w-full flex items-center justify-between border p-6 bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46] mb-4 p-4">
                 <div className="flex flex-wrap items-center justify-between w-full space-x-4">
                   <div className="flex items-center space-x-4">
@@ -110,24 +129,24 @@ const Pdfs = () => {
                       className="w-12 h-12 object-contain"
                     />
                     <div>
-                      <p className="font-semibold text-xl text-gray-100">
+                      <p className="font-semibold text-xl dark:text-gray-100">
                         {pdf.name || "Unavailable"}
                       </p>
                       <p className="text-sm text-gray-400">PDF</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <p className="font-medium text-gray-200">Size:</p>
+                    <p className="font-medium dark:text-gray-200">Size:</p>
                     <p className="text-sm text-gray-400">{pdfSizes[pdf.pdf] || "Unknown"}</p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <p className="font-medium text-gray-200">Date:</p>
+                    <p className="font-medium dark:text-gray-200">Date:</p>
                     <p className="text-sm text-gray-400">
                       {pdf.dateCreated || "unknown"}
                     </p>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <p className="font-medium text-gray-200">Time:</p>
+                    <p className="font-medium dark:text-gray-200">Time:</p>
                     <p className="text-sm text-gray-400">
                       {pdf.timeCreated || "unknown"}
                     </p>
@@ -140,11 +159,14 @@ const Pdfs = () => {
                   </a>
                 </div>
               </div>
+              </>
+
             ))
           ) : (
             <div className="text-center text-gray-400">
               No files available
             </div>
+            
           )}
         </div>
       </div>

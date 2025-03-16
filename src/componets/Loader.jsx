@@ -2,7 +2,7 @@ import React from 'react'
 
 const Loader = () => {
   return (
-    <div className="text-center">
+    <div className="text-center p-4">
         <div className="mb-8 text-left">
             <div className="skeleton bg-gray-300 h-6 w-32 mb-2"></div>
             <div className="inline-block border-2 border-green-700 p-4 bg-white shadow-lg">
