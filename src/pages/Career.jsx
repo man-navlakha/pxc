@@ -18,8 +18,7 @@ const Career = () => {
         <h1 className="text-2xl">Better Together</h1>
         <h2 className="text-4xl">Join the crew</h2>
       </div>
-      <div className="bg-white 
-      text-black p-10">
+      <div className="bg-white dark:bg-[#1e1e1e] dark:text-white text-black p-10">
       <h1>No matter where you are in your career, we have a role for you.</h1>
       <h3>but not now</h3>
       </div>

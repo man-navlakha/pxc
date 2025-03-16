@@ -15,7 +15,7 @@ backdrop-filter
 bg-opacity-50
 backdrop-saturate-100
 backdrop-contrast-100
-bg-blend-overlay flex items-center justify-center   -mt-[110px] text-white">
+bg-blend-overlay flex items-center justify-center   -mt-[60px] text-white">
                 <div className="mx-auto max-w-screen-xl space-y-8 px-4 py-16 sm:px-6 lg:space-y-16 lg:px-8">
                     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                         <div>
@@ -37,7 +37,7 @@ bg-blend-overlay flex items-center justify-center   -mt-[110px] text-white">
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"
+                                        className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">Facebook</span>
 
@@ -56,7 +56,7 @@ bg-blend-overlay flex items-center justify-center   -mt-[110px] text-white">
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"
+                                        className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">Instagram</span>
 
@@ -75,7 +75,7 @@ bg-blend-overlay flex items-center justify-center   -mt-[110px] text-white">
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"
+                                        className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">Twitter</span>
 
@@ -92,7 +92,7 @@ bg-blend-overlay flex items-center justify-center   -mt-[110px] text-white">
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"
+                                        className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">GitHub</span>
 
@@ -111,19 +111,19 @@ bg-blend-overlay flex items-center justify-center   -mt-[110px] text-white">
 
                         <div className="grid grid-cols-1  gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
                             <div className='hidden lg:block md:hidden sm:hidden'> 
-                                <p className="font-medium fj-black text-[#10b981]">Top cources</p>
+                                <p className="font-medium fj-black text-[#10b981] dark:text-[#00ffab]">Top cources</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
-                                        <a href="#" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> MSCIT </a>
+                                        <a href="#" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> MSCIT </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> BCA </a>
+                                        <a href="#" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> BCA </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> BCOM </a>
+                                        <a href="#" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> BCOM </a>
                                     </li>
 
                                 </ul>
@@ -134,11 +134,11 @@ bg-blend-overlay flex items-center justify-center   -mt-[110px] text-white">
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
-                                        <a href="/career" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> Careers </a>
+                                        <a href="/career" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> Careers </a>
                                     </li>
 
                                     <li>
-                                        <a href="/team" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> Meet the Team </a>
+                                        <a href="/team" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> Meet the Team </a>
                                     </li>
                                 </ul>
                             </div>
@@ -148,11 +148,11 @@ bg-blend-overlay flex items-center justify-center   -mt-[110px] text-white">
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
-                                        <a href="help" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> Help Center </a>
+                                        <a href="help" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> Help Center </a>
                                     </li>
 
                                     <li>
-                                        <a href="faq" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> FAQs </a>
+                                        <a href="faq" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> FAQs </a>
                                     </li>
                                 </ul>
                             </div>
@@ -162,21 +162,21 @@ bg-blend-overlay flex items-center justify-center   -mt-[110px] text-white">
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
-                                        <a href="#" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> Terms of Use </a>
+                                        <a href="#" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> Terms of Use </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-emerald-900 fn-bold hover:text-emerald-700 transition hover:opacity-75"> Policy </a>
+                                        <a href="#" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> Policy </a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
 
-                    <p className="text-xs text-gray-500">&copy; {year}. <span className='text-emerald-700 font-bold fj-black' >
-                        <a href="https://github.com/Dhruv9512" target="_blank" className="text-emerald-900 hover:text-emerald-700 transition hover:opacity-75"> Dhruv </a>
+                    <p className="text-xs text-gray-500 dark:text-gray-300">&copy; {year}. <span className='text-emerald-700 font-bold fj-black' >
+                        <a href="https://github.com/Dhruv9512" target="_blank" className="text-emerald-900 dark:text-emerald-500  hover:text-emerald-700 transition hover:opacity-75"> Dhruv </a>
                         ✌️
-                        <a href="https://github.com/man-navlakha" target="_blank" className="text-emerald-900  hover:text-emerald-700 transition hover:opacity-75"> Man </a>
+                        <a href="https://github.com/man-navlakha" target="_blank" className="text-emerald-900 dark:text-emerald-500   hover:text-emerald-700 transition hover:opacity-75"> Man </a>
                     </span>. All rights reserved.</p>
                 </div>
             </footer>

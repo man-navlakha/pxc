@@ -375,7 +375,7 @@ const NotesSharingPage = () => {
         {/* Notes List */}
         <div className=" p-8 -mt-4">
        
-       <div className="flex  justify-between items-center">
+       <div className="flex  justify-between items-center lg:flex-row flex-col">
           <h2 className="text-2xl font-bold mb-6 pt-4 text-center text-gray-800  dark:text-gray-100">
             Answer Shared Notes by students
           </h2>
@@ -383,14 +383,14 @@ const NotesSharingPage = () => {
             onClick={() => setIsModalOpen(true)}
             className="bg-[#047857] hover:bg-[#047857] text-white font-bold py-2 px-4 rounded-xl shadow-[0px_4px_0px_0px_#fff] mb-4"
           >
-            Add Note
+            Add Your Note
           </button>
        </div>
 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
 
           {ansPdfData.length === 0 ? (
-            <p className="text-gray-700 text-center">
+            <p className="text-gray-700 dark:text-gray-200 text-center">
               No notes shared yet by students.
             </p>
           ) : (

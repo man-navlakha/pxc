@@ -7,7 +7,7 @@ const Team = () => {
   return (
     <>
     <Navbar />
-    <div className=" text-gray-800">
+    <div className=" text-gray-800 dark:text-gray-100">
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-center mb-4">
           Our leadership team
@@ -27,7 +27,7 @@ const Team = () => {
             <h2 className="text-xl fj-black font-bold">
               Dhruv Sharma
             </h2>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-400">
               CO-FOUNDER & CO-CEO
             </p>
           </div>
