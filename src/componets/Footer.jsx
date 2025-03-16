@@ -10,12 +10,12 @@ const Footer = () => {
 
 
             <footer className=" bg-white
+            dark:bg-[#1e1e1e]/85 dark:text-white
 backdrop-filter
-backdrop-blur-sm
 bg-opacity-50
 backdrop-saturate-100
 backdrop-contrast-100
-bg-blend-overlay flex items-center justify-center   -mt-[120px] text-white">
+bg-blend-overlay flex items-center justify-center   -mt-[110px] text-white">
                 <div className="mx-auto max-w-screen-xl space-y-8 px-4 py-16 sm:px-6 lg:space-y-16 lg:px-8">
                     <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
                         <div>

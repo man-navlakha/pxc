@@ -354,7 +354,7 @@ const NotesSharingPage = () => {
                 {/* Note Title and Content */}
                 <div className="flex-1">
                 <div className="flex-1">
-                <p className="font-semibold text-xl dark:text-gray-100">{note.contant}</p>
+                <p className="font-semibold text-xl dark:text-gray-100 wrap-txt">{note.contant}</p>
                 </div>
                   <h3 className="text-lg font-medium text-gray-400 mb-2 dark:text-gray-200">
                     Uploded by,  {note.name}

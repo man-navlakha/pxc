@@ -81,7 +81,7 @@ const getAccessTokenFromCookies = () => {
 
       {/* Semester Tabs */}
       <div className="z-1 rounded-t-lg -m-sm ">
-        <div className="block bg-[#383838] h-screen shadow-[inset_0px_4px_4px_rgba(0,0,0)] overflow-hidden rounded-t-3xl">
+        <div className="block bg-[#999999] dark:bg-[#383838] h-screen shadow-[inset_0px_4px_4px_rgba(0,0,0)] overflow-hidden rounded-t-3xl">
       
             {/* <h1>Select Semester</h1> */}
             {selectedCourse ? (
@@ -134,7 +134,7 @@ const getAccessTokenFromCookies = () => {
                             <ul className="flex flex-col gap-2 items-baseline pl-4 pr-6">
                             {apiResponse.length > 0 ? (
     <>
-        <p className="fj-black text-red-500 p-4 text-2xl mb-6 dark:text-white ">Choose your Subject</p>
+        <p className="fj-black text-gray-800 p-4 text-2xl mb-6 dark:text-white ">Choose your Subject</p>
         {apiResponse.map((subject) => (
             <Sub_card 
                 key={subject.name} 

@@ -89,6 +89,11 @@
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
+  .wrap-txt {
+    width: 18ch; /* 34 characters wide */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
 
   @media (min-width: 1024px) {
     .wrap-text {
