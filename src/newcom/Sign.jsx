@@ -1,18 +1,34 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useNavigate, Link } from 'react-router-dom';
 import Footer from '../componets/Footer';
+import axios from "axios"; // Import axios for API calls
 
 const Sign = () => {
   const [error, setError] = useState('');
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
+  
+    const [courses, setCourses] = useState([]); // State to store courses
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [course, setcourse] = useState('');
   const [loading, setLoading] = useState(false); // Define loading state
   const navigate = useNavigate(); // hook for redirecting
 
-  
+   useEffect(() => {
+      
+          axios.post("https://pixel-classes.onrender.com/api/home/courses", {})
+          .then(response => {
+            setCourses(response.data.CourseList); // Set the courses state with the fetched data
+            setLoading(false); // Set loading to false after data is fetched
+          })
+          .catch(error => {
+            console.error("Error fetching courses:", error);
+            setLoading(false); // Set loading to false in case of error
+          });
+        }, []);  
+
   const handleSignUpClick = async (e) => {
     e.preventDefault();
     
@@ -46,7 +62,7 @@ const Sign = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password, courses }),
       });
     
       if (!response.ok) {
@@ -133,6 +149,16 @@ const Sign = () => {
               required
               className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium font-ff text-gray-700 dark:text-gray-100 ">Select Your Cource:</label>
+            <select required className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm">
+              <option className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm" value="Select Your Cource" selected disabled> Select Your Cource</option>
+              {courses
+            .map((course) => (
+              <option key={course.id} onChange={(e) => setcourse(e.target.value)} value={course.name}>{course.name}</option>
+            ))}
+            </select>
           </div>
           <div className="flex items-center justify-between">
             <button 
