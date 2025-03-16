@@ -249,7 +249,7 @@ const NotesSharingPage = () => {
 
   return (
     <>
-    <div className='dark:bg-[#1E1E1E] dark:text-white h-screen'>
+    <div className='dark:bg-[#1E1E1E] dark:text-white h-full'>
       <Navbar />
       <div className="container mx-auto px-4 py-8 ">
         {/* PDF Display Section */}
