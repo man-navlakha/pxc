@@ -106,7 +106,5 @@
     .wrap-text {
       width: 85ch; /* 50 characters wide on large screens */
     }
-    .wrap-txt {
-      width: 18ch; 
-    }
+   
   }
