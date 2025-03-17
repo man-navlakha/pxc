@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Cookies from 'js-cookie'; // Import js-cookie
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Track login status
   const [userName, setUserName] = useState(''); // To store username from cookie
+    const navigate = useNavigate();
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
   };
+
+  const clickprofile = () => {
+    navigate('/profile'); // Navigate one page back
+  };
+
+  const handleLoginClick = () => {
+    navigate('/Login');
+  };
+
 
   useEffect(() => {
     // Retrieve the 'username' cookie value to check login status
@@ -51,21 +61,24 @@ const Navbar = () => {
         </Link>
       </div>
 
-      <div className="flex items-center relative" onClick={toggleDropdown}>
+      <div className="flex items-center relative">
       {isLoggedIn ? (
         <img
+        onClick={clickprofile}
         src="https://ik.imagekit.io/pxc/def.jpg"
         alt="Profile photo"
         className="h-10 w-10 rounded-full border-2 bg-traparent"
         />
       ) : (
         <>
-        <div className='text-white f-black text-lg bg-[#0f6c38] dark:bg-[#1e1e1e] px-2 py-1 rounded-md cursor-pointer'>
+        <div onClick={handleLoginClick} className='text-white f-black text-lg bg-[#0f6c38] dark:bg-[#1e1e1e] px-2 py-1 rounded-md cursor-pointer'>
 
         Join Now
         </div>
         </>
                 )}
+
+
         {dropdownOpen && (
           <div className="absolute right-2 top-12 mt-2 w-48 dark:border-[#000] bg-white dark:bg-[#1e1e1e] rounded-md shadow-lg py-1 z-20">
             {/* Conditionally render Profile and Logout options if logged in */}
