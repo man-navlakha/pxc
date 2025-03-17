@@ -52,11 +52,20 @@ const Navbar = () => {
       </div>
 
       <div className="flex items-center relative" onClick={toggleDropdown}>
+      {isLoggedIn ? (
         <img
-          src="https://ik.imagekit.io/pxc/def.jpg"
-          alt="Profile photo"
-          className="h-10 w-10 rounded-full border-2 bg-traparent"
+        src="https://ik.imagekit.io/pxc/def.jpg"
+        alt="Profile photo"
+        className="h-10 w-10 rounded-full border-2 bg-traparent"
         />
+      ) : (
+        <>
+        <div className='text-white f-black text-lg bg-[#0f6c38] dark:bg-[#1e1e1e] px-2 py-1 rounded-md cursor-pointer'>
+
+        Join Now
+        </div>
+        </>
+                )}
         {dropdownOpen && (
           <div className="absolute right-2 top-12 mt-2 w-48 dark:border-[#000] bg-white dark:bg-[#1e1e1e] rounded-md shadow-lg py-1 z-20">
             {/* Conditionally render Profile and Logout options if logged in */}
@@ -81,6 +90,7 @@ const Navbar = () => {
                   Logout
                 </button> */}
               </>
+             
             ) : (
               // If not logged in, show Login and Signup options
               <div className="mt-4">
@@ -97,6 +107,7 @@ const Navbar = () => {
                   Signup
                 </Link>
               </div>
+              
             )}
           </div>
         )}

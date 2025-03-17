@@ -52,11 +52,6 @@ const Sign = () => {
             return;
           }
         
-          // Show confirmation popup
-          const isConfirmed = window.confirm('Are you sure you want to sign up with these details? Please verify that the information is correct. Username: ' + username + ' Email: ' + email + ' Course: ' + course);
-          if (!isConfirmed) {
-            return; // Do nothing if the user cancels
-          }
         
           setLoading(true); // Start loading
         
