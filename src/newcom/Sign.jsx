@@ -158,9 +158,6 @@ const Sign = () => {
               required
               className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
             />
-             <button className="-ml-8 drop-shadow drop-shadow-lg rounded-lg " type="button" onClick={togglePasswordVisibility} >
-             {passwordVisible ? '🔒' : '👁️'}
-            </button>
           </div>
           </div>
           <div>
