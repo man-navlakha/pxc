@@ -9,6 +9,12 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState(Cookies.get('username') || ''); // Get username from cookies or default to ''
   const navigate = useNavigate();
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!passwordVisible);
+  };
 
   useEffect(() => {
     const token = Cookies.get('access_token');
@@ -45,10 +51,10 @@ const Login = () => {
       }
     } catch (err) {
       console.error("Login error:", err); // Log the error to see the full response
-      
+
       setError(err.response.data.error);
       console.error("Login error:", err.response.data.error);
-     
+
     } finally {
       setLoading(false); // End loading
     }
@@ -83,13 +89,21 @@ const Login = () => {
           {error && <p className="error-message font-bold text-red-600">{error}</p>}
 
           <div>
-          <label className="block text-sm font-medium font-ff text-gray-700 dark:text-gray-100 ">Username</label>
+            <label className="block text-sm font-medium font-ff text-gray-700 dark:text-gray-100 ">Username</label>
             <input type="text" name="username" className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm" onChange={(e) => e.target.value = e.target.value.toLowerCase()} required />
           </div>
 
-          <div>
+            <div>
             <label className="block text-sm font-medium font-ff text-gray-700 dark:text-gray-100 ">Password</label>
-            <input type="password" name="password" className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm" required />
+          <div class="flex item-center">
+              
+            <input type={passwordVisible ? 'text' : 'password'} name="password" className="dark:text-gray-100 dark:bg-[#383838] mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm" required
+              />
+            <button className="-ml-8 drop-shadow drop-shadow-lg rounded-lg " type="button" onClick={togglePasswordVisibility} >
+              {passwordVisible ? '🔓' : '🔒'}
+            </button>
+              </div>
+
           </div>
 
           <div className="flex items-center justify-between">
@@ -127,7 +141,7 @@ const Login = () => {
         {!token && (
           <div className="mt-[76px]">
             <p className="text-emerald-600 text-center m-2">Don't have an account?</p>
-            <button 
+            <button
               onClick={handleSignUpClick}
               className="font-ff w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm hover:text-md font-medium text-white hover:text-gray-700 bg-emerald-900 hover:bg-emerald-50 dark:hover:bg-[#383838] dark:hover:text-gray-200"
             >
