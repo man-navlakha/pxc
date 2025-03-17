@@ -5,7 +5,7 @@ const Footer = () => {
     const year = new Date().getFullYear();
 
     return (
-        <div className='bg-gradient-to-t from-emerald-500 hover:text-emerald-700  to-transparent  bottom-0  text-white text-center  mt-10 p-4 '>
+        <div className='bg-gradient-to-t from-emerald-500 hover:text-emerald-700  to-transparent  bottom-0  text-white text-center  mt-12 p-4 '>
 
 
 

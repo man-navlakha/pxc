@@ -43,7 +43,7 @@ function App() {
   // }, [location.pathname]); // Runs on every page change
 
   return (
-    <div className="App dotted-background dark:bg-[#1e1e1e] dark:text-white bg-white
+    <div className="App dark:bg-[#1e1e1e] dark:text-white bg-white
     ">
       <Routes>
         
