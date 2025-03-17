@@ -405,7 +405,7 @@ const NotesSharingPage = () => {
                   <img
                     src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
                     alt="PDF Icon"
-                    className="w-12 h-12 object-contain"
+                    className=" lg:w-[5rem] w-12 object-contain"
                   />
                 </div>
                 {/* Note Title and Content */}
