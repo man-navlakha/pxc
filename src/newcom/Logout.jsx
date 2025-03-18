@@ -25,7 +25,7 @@ const Logout = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:text-gray-100 dark:bg-[#1e1e1e]">
       <div className="p-6 w-full max-w-sm">
-        <h1 className="text-2xl font-ff font-bold">Logging out...</h1>
+        <h1 className="text-2xl title-home-home font-bold">Logging out...</h1>
       </div>
     </div>
   );

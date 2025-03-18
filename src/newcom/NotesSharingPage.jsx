@@ -257,7 +257,7 @@ const NotesSharingPage = () => {
           <h1 className="text-4xl text-left font-bold mb-10">📘 {sub}</h1>
         
           {/* PDF Display */}
-            <h2 className="text-2xl font-bold text-gray-800 mb-6  dark:text-gray-100">
+            <h2 className="text-2xl brife font-bold text-gray-800 mb-6  dark:text-gray-100">
               Quetions
             </h2>
           {QuePdf ? (
@@ -272,21 +272,21 @@ const NotesSharingPage = () => {
                     className="w-12 h-12 object-contain"
                   />
                   <div>
-                  <p className="font-semibold text-xl dark:text-gray-100">
+                  <p className="font-semibold  text-xl dark:text-gray-100">
                       {QuePdf.name || "Unavailable"}
                     </p>
-                    <p className="text-sm text-gray-400">PDF</p>
+                    <p className="text-sm brife text-gray-400">PDF</p>
                   </div>
                 </div>
 
                 {/* File Size */}
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center brife space-x-2">
                 <p className="font-medium dark:text-gray-200">Size:</p>
                 <p className="text-sm text-gray-400">{pdfSize}</p>
                 </div>
 
                 {/* Date Created */}
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center brife space-x-2">
                 <p className="font-medium dark:text-gray-200">Date:</p>
                 <p className="text-sm text-gray-400">
                     {QuePdf.dateCreated || "unknown"}
@@ -294,7 +294,7 @@ const NotesSharingPage = () => {
                 </div>
 
                 {/* Time Created */}
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center brife space-x-2">
                 <p className="font-medium dark:text-gray-200">Time:</p>
                 <p className="text-sm text-gray-400">
                     {QuePdf.timeCreated || "unknown"}
@@ -376,7 +376,7 @@ const NotesSharingPage = () => {
         <div className=" p-8 -mt-4">
        
        <div className="flex  justify-between items-center lg:flex-row flex-col">
-          <h2 className="text-2xl font-bold mb-6 pt-4 text-center text-gray-800  dark:text-gray-100">
+          <h2 className="text-2xl brife font-bold mb-6 pt-4 text-center text-gray-800  dark:text-gray-100">
             Answer Shared Notes by students
           </h2>
        <button
@@ -390,7 +390,7 @@ const NotesSharingPage = () => {
 
 
           {ansPdfData.length === 0 ? (
-            <p className="text-gray-700 dark:text-gray-200 text-center">
+            <p className="text-gray-700 brife dark:text-gray-200 text-center">
               No notes shared yet by students.
             </p>
           ) : (
@@ -398,7 +398,7 @@ const NotesSharingPage = () => {
               
               <div
                 key={note.id}
-                className="mb-6 p-6 bg-white dark:bg-[#383838] border border-gray-200 rounded-lg  flex flex-col sm:flex-row gap-4"
+                className="mb-6 p-6  bg-white dark:bg-[#383838] border border-gray-200 rounded-lg  flex flex-col sm:flex-row gap-4"
 
               >
                 <div className="flex-1">
@@ -410,7 +410,7 @@ const NotesSharingPage = () => {
                 </div>
                 {/* Note Title and Content */}
                 <div className="flex-1">
-                <div className="flex-1">
+                <div className="flex-1 brife">
                 <p className="font-semibold text-xl dark:text-gray-100 wrap-txt">{note.contant}</p>
                 </div>
                   <h3 className="text-lg font-medium text-gray-400 mb-2 dark:text-gray-200">

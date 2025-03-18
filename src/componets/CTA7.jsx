@@ -25,7 +25,7 @@ const CTA7 = () => {
                         <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
                         Continue Your Learning Journey
                         </h2>
-                        <p className="mt-4 text-lg text-indigo-100">
+                        <p className="mt-4 brife text-lg text-gray-300">
                         Pick up where you left off. Access your saved courses and explore new study materials.
                         </p>
                     </>
@@ -34,13 +34,13 @@ const CTA7 = () => {
                         <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
                             Join our NotesSharing Community
                         </h2>
-                        <p className="mt-4 text-lg text-indigo-100">
+                        <p className="mt-4 text-lg brife text-gray-300">
                             Share and access valuable study notes. Join our community!
                         </p>
-                        <div className="mt-8 flex justify-center">
+                        <div className="mt-8 flex brife justify-center">
                             <div className="inline-flex rounded-md shadow">
                                 <a
-                                    href="/Login"
+                                    href="/signup"
                                     className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-indigo-600 bg-white hover:bg-indigo-50"
                                 >
                                     Sign Up For Free

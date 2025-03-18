@@ -1,23 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, Link } from 'react-router-dom';
-import axios from "axios"; 
+import axios from "axios";
 
 
 const Footer = () => {
     const year = new Date().getFullYear();
-     const [courses, setCourses] = useState([]); // State to store courses
+    const [courses, setCourses] = useState([]); // State to store courses
 
-     useEffect(() => {
-      
+    useEffect(() => {
+
         axios.post("https://pixel-classes.onrender.com/api/home/courses", {})
-        .then(response => {
-          setCourses(response.data.CourseList); // Set the courses state with the fetched data
-        })
-        .catch(error => {
-          console.error("Error fetching courses:", error);
-       
-        });
-      }, []);  
+            .then(response => {
+                setCourses(response.data.CourseList); // Set the courses state with the fetched data
+            })
+            .catch(error => {
+                console.error("Error fetching courses:", error);
+
+            });
+    }, []);
 
     return (
         <div className='bg-gradient-to-t from-emerald-500 hover:text-emerald-700  to-transparent  bottom-0  text-white text-center  mt-12 p-4 '>
@@ -42,7 +42,7 @@ bg-blend-overlay flex items-center justify-center   -mt-[60px] text-white">
                                 />
                             </div>
 
-                            <p className="mt-4 text-emerald-700 flex items-center justify-center fn-bold">
+                            <p className="mt-4 text-emerald-700 flex items-center justify-center brife font-semibold">
                                 A education notes sharing platform there you can share your notes and get notes of your course.
                             </p>
 
@@ -52,7 +52,7 @@ bg-blend-overlay flex items-center justify-center   -mt-[60px] text-white">
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"
+                                        className="text-emerald-900 dark:text-emerald-500  brife font-semibold hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">Facebook</span>
 
@@ -71,7 +71,7 @@ bg-blend-overlay flex items-center justify-center   -mt-[60px] text-white">
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"
+                                        className="text-emerald-900 dark:text-emerald-500  brife font-semibold hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">Instagram</span>
 
@@ -90,7 +90,7 @@ bg-blend-overlay flex items-center justify-center   -mt-[60px] text-white">
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"
+                                        className="text-emerald-900 dark:text-emerald-500  brife font-semibold hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">Twitter</span>
 
@@ -107,7 +107,7 @@ bg-blend-overlay flex items-center justify-center   -mt-[60px] text-white">
                                         href="#"
                                         rel="noreferrer"
                                         target="_blank"
-                                        className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"
+                                        className="text-emerald-900 dark:text-emerald-500  brife font-semibold hover:text-emerald-700 transition hover:opacity-75"
                                     >
                                         <span className="sr-only">GitHub</span>
 
@@ -125,68 +125,68 @@ bg-blend-overlay flex items-center justify-center   -mt-[60px] text-white">
                         </div>
 
                         <div className="grid grid-cols-1  gap-8 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-4">
-                            <div className='hidden lg:block md:hidden sm:hidden'> 
-                                <p className="font-medium fj-black text-[#10b981] dark:text-[#00ffab]">Top cources</p>
+                            <div className='hidden lg:block md:hidden sm:hidden'>
+                                <p className="font-bold  text-[#10b981] dark:text-[#00ffab]">Top cources</p>
 
-                                <ul className="mt-6 space-y-4 text-sm">
-    {courses.map((course, index) => (
-        <li
-            key={index} // Using index as key (not recommended for dynamic lists)
-            className="text-emerald-900 dark:text-emerald-500 fn-bold hover:text-emerald-700 transition hover:opacity-75"
-        >
-            <Link to={`/sub?course=${course.name}`}>
-                {course.name}
-            </Link>
-        </li>
-    ))}
-</ul>
+                                <ul className="mt-6 brife font-semibold space-y-4 text-sm">
+                                    {courses.map((course, index) => (
+                                        <li
+                                            key={index} // Using index as key (not recommended for dynamic lists)
+                                            className="text-emerald-900 dark:text-emerald-500 brife font-semibold hover:text-emerald-700 transition hover:opacity-75"
+                                        >
+                                            <Link to={`/sub?course=${course.name}`}>
+                                                {course.name}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
 
                             <div >
-                                <p className="font-medium fj-black text-[#10b981]">Company</p>
+                                <p className="font-bold  text-[#10b981]">Company</p>
 
-                                <ul className="mt-6 space-y-4 text-sm">
+                                <ul className="mt-6 brife font-semibold space-y-4 text-sm">
                                     <li>
-                                        <a href="/career" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> Careers </a>
+                                        <a href="/career" className="text-emerald-900 dark:text-emerald-500  brife font-semibold hover:text-emerald-700 transition hover:opacity-75"> Careers </a>
                                     </li>
 
                                     <li>
-                                        <a href="/team" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> Meet the Team </a>
+                                        <a href="/team" className="text-emerald-900 dark:text-emerald-500  brife font-semibold hover:text-emerald-700 transition hover:opacity-75"> Meet the Team </a>
                                     </li>
                                 </ul>
                             </div>
 
                             <div>
-                                <p className="font-medium fj-black text-[#10b981]">Helpful Links</p>
+                                <p className="font-bold  text-[#10b981]">Helpful Links</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
-                                        <a href="help" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> Help Center </a>
+                                        <a href="help" className="text-emerald-900 dark:text-emerald-500  brife font-semibold hover:text-emerald-700 transition hover:opacity-75"> Help Center </a>
                                     </li>
 
                                     <li>
-                                        <a href="faq" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> FAQs </a>
+                                        <a href="faq" className="text-emerald-900 dark:text-emerald-500  brife font-semibold hover:text-emerald-700 transition hover:opacity-75"> FAQs </a>
                                     </li>
                                 </ul>
                             </div>
 
                             <div className='hidden lg:block md:hidden sm:hidden'>
-                                <p className="font-medium fj-black text-[#10b981]">Legal</p>
+                                <p className="font-bold  text-[#10b981]">Legal</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
                                     <li>
-                                        <a href="#" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> Terms of Use </a>
+                                        <a href="#" className="text-emerald-900 dark:text-emerald-500  brife font-semibold hover:text-emerald-700 transition hover:opacity-75"> Terms of Use </a>
                                     </li>
 
                                     <li>
-                                        <a href="#" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> Policy </a>
+                                        <a href="#" className="text-emerald-900 dark:text-emerald-500  brife font-semibold hover:text-emerald-700 transition hover:opacity-75"> Policy </a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                     </div>
 
-                    <p className="text-xs text-gray-500 dark:text-gray-300">&copy; {year}. <span className='text-emerald-700 font-bold fj-black' >
+                    <p className="text-xs text-gray-500 dark:text-gray-300">&copy; {year}. <span className='text-emerald-700 font-bold ' >
                         <a href="https://github.com/Dhruv9512" target="_blank" className="text-emerald-900 dark:text-emerald-500  hover:text-emerald-700 transition hover:opacity-75"> Dhruv </a>
                         ✌️
                         <a href="https://github.com/man-navlakha" target="_blank" className="text-emerald-900 dark:text-emerald-500   hover:text-emerald-700 transition hover:opacity-75"> Man </a>
