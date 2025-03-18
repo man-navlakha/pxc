@@ -62,10 +62,10 @@ function App() {
           <Route path='/newpassword/:token' element={<Newpassword />} />
           <Route path='/footer' element={<Footer />}/>
           <Route path='/team' element={<Team />}/>
-          {/* <Route path='/faq' element={<Faq />}/> */}
+          <Route path='/faq' element={<Faq />}/>
           <Route path='/career' element={<Career />}/>
-          <Route path='/ns' element={<NotesSharingPage />}/>
-          <Route path='/select' element={<Pdfs />}/>
+          {/* <Route path='/ns' element={<NotesSharingPage />}/> */}
+          {/* <Route path='/select' element={<Pdfs />}/> */}
           {/* <Route path='/choose' element={<Choose />}/> */}
           <Route path='/help' element={<Help />}/>
           <Route
@@ -73,6 +73,30 @@ function App() {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+          <Route
+          path="/choose"
+          element={
+            <ProtectedRoute>
+              <Choose />
+            </ProtectedRoute>
+          }
+        />
+          <Route
+          path="/select"
+          element={
+            <ProtectedRoute>
+              <Pdfs />
+            </ProtectedRoute>
+          }
+        />
+          <Route
+          path="/ns"
+          element={
+            <ProtectedRoute>
+              <NotesSharingPage />
             </ProtectedRoute>
           }
         />
