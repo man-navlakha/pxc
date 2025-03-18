@@ -100,14 +100,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-          <Route
-          path="/choose"
-          element={
-            <ProtectedRoute>
-              <Choose />
-            </ProtectedRoute>
-          }
-        />
       </Routes>
     </div>
   )
