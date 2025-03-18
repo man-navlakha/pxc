@@ -1,15 +1,18 @@
 
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jersey+10&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Syne:wght@400..800&family=Yeseva+One&display=swap');
 /* filepath: /c:/Users/navla/Documents/web/PC/first/pxc/src/index.css */
+
+body {
+  /* cursor: url('./assets/cursor/openhand.png'), auto; */
+  font-family: "CustomFont", serif;
+}
+
 @font-face {
   font-family: 'CustomFont';
   src: url('./fonts/nm2d.woff2') format('woff2'),
-       url('./fonts/nm.woff') format('woff');
+  url('./fonts/nm.woff') format('woff');
   font-weight: normal;
   font-style: normal;
-}
-body {
-  font-family: "CustomFont", serif;
 }
 @font-face {
   font-family: 'ff';

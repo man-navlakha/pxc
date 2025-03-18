@@ -3,8 +3,6 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate, Link } from 'react-router-dom';
 import '../App.css';
-import Oeye from "../componets/Oeye";
-import Ceye from "../componets/Ceye";
 
 const Login = () => {
   const [error, setError] = useState('');

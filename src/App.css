@@ -101,10 +101,21 @@
     word-wrap: break-word;
     overflow-wrap: break-word;
   }
+  .btn-h
+  {
+    height: 14px;
+  }
+
+  body {
+    cursor: url('https://ik.imagekit.io/pxc/openhand.png'), auto;
+  }
+  
 
   @media (min-width: 1024px) {
     .wrap-text {
       width: 85ch; /* 50 characters wide on large screens */
     }
+
+    /* profile btn height */
    
   }

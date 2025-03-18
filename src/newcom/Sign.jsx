@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { useNavigate, Link } from 'react-router-dom';
-import Footer from '../componets/Footer';
-import axios from "axios"; // Import axios for API calls{passwordVisible ? '🔒' : '👁️'}
+import axios from "axios"; 
 
 const Sign = () => {
   const [error, setError] = useState('');

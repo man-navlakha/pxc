@@ -1,8 +1,23 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import { useNavigate, Link } from 'react-router-dom';
+import axios from "axios"; 
 
 
 const Footer = () => {
     const year = new Date().getFullYear();
+     const [courses, setCourses] = useState([]); // State to store courses
+
+     useEffect(() => {
+      
+        axios.post("https://pixel-classes.onrender.com/api/home/courses", {})
+        .then(response => {
+          setCourses(response.data.CourseList); // Set the courses state with the fetched data
+        })
+        .catch(error => {
+          console.error("Error fetching courses:", error);
+       
+        });
+      }, []);  
 
     return (
         <div className='bg-gradient-to-t from-emerald-500 hover:text-emerald-700  to-transparent  bottom-0  text-white text-center  mt-12 p-4 '>
@@ -114,18 +129,13 @@ bg-blend-overlay flex items-center justify-center   -mt-[60px] text-white">
                                 <p className="font-medium fj-black text-[#10b981] dark:text-[#00ffab]">Top cources</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
-                                    <li>
-                                        <a href="#" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> MSCIT </a>
+                                      {courses.map((course) => (
+                                          <li className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75">
+                                              <Link to={`/sub?course=${course.name}`}>
+                                            {course.name}
+                                                </Link>
                                     </li>
-
-                                    <li>
-                                        <a href="#" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> BCA </a>
-                                    </li>
-
-                                    <li>
-                                        <a href="#" className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75"> BCOM </a>
-                                    </li>
-
+                                              ))}
                                 </ul>
                             </div>
 
