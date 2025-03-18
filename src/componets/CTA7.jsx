@@ -32,7 +32,7 @@ const CTA7 = () => {
                 ) : (
                     <>
                         <h2 className="text-3xl font-extrabold text-white sm:text-4xl">
-                            Join our NotesSharing Community
+                            Join our Notes Sharing Community
                         </h2>
                         <p className="mt-4 text-lg brife text-gray-300">
                             Share and access valuable study notes. Join our community!

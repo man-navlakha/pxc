@@ -106,7 +106,6 @@ const Home = () => {
        
       </div>
       <CTA7 />
-      <NoteSharingCTA />
       <div className="lg:hidden md:block block">
         <LastF />
       </div>
