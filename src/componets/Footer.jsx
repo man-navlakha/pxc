@@ -129,14 +129,17 @@ bg-blend-overlay flex items-center justify-center   -mt-[60px] text-white">
                                 <p className="font-medium fj-black text-[#10b981] dark:text-[#00ffab]">Top cources</p>
 
                                 <ul className="mt-6 space-y-4 text-sm">
-                                      {courses.map((course) => (
-                                          <li className="text-emerald-900 dark:text-emerald-500  fn-bold hover:text-emerald-700 transition hover:opacity-75">
-                                              <Link to={`/sub?course=${course.name}`}>
-                                            {course.name}
-                                                </Link>
-                                    </li>
-                                              ))}
-                                </ul>
+    {courses.map((course, index) => (
+        <li
+            key={index} // Using index as key (not recommended for dynamic lists)
+            className="text-emerald-900 dark:text-emerald-500 fn-bold hover:text-emerald-700 transition hover:opacity-75"
+        >
+            <Link to={`/sub?course=${course.name}`}>
+                {course.name}
+            </Link>
+        </li>
+    ))}
+</ul>
                             </div>
 
                             <div >

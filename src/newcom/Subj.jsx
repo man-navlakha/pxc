@@ -60,14 +60,8 @@ const getAccessTokenFromCookies = () => {
     return accessToken || null; // Return null if not found
   };
     const handleLinkClick = (event, item) => {
-        if (!getAccessTokenFromCookies()) {
-          console.log("User not authenticated, redirecting to login...");
-          event.preventDefault();
-          navigate("/login");
-        } else {
-            console.log(`/choose?course=${selectedCourse.name}&sub=${item}`)
-          navigate(`/choose?course=${selectedCourse.name}&sub=${item}`);
-        }
+        console.log(`/choose?course=${selectedCourse.name}&sub=${item}`)
+      navigate(`/choose?course=${selectedCourse.name}&sub=${item}`);
       };
     
   return (

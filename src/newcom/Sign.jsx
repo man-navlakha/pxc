@@ -132,7 +132,7 @@ const Sign = () => {
           </div>
           <div>
             <label className="block text-sm font-medium font-ff text-gray-700 dark:text-gray-100 ">Password</label>
-              <div class="flex item-center">
+              <div className="flex item-center">
               <input
                 type={passwordVisible ? 'text' : 'password'}
                 value={password}
@@ -148,7 +148,7 @@ const Sign = () => {
           </div>
           <div>
             <label className="block text-sm font-medium font-ff text-gray-700 dark:text-gray-100 ">Confirm Password</label>
-            <div class="flex item-center">
+            <div className="flex item-center">
             <input
               type={passwordVisible ? 'text' : 'password'}
               value={confirmPassword}

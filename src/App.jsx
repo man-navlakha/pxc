@@ -26,6 +26,9 @@ import Profile from "./pages/profile";
 import Maintainces from "./pages/MaintenancePage";
 import Choose from "./pages/Choose";
 
+import ProtectedRoute from "./ProtectedRoute";
+
+
 function App() {
   // const location = useLocation();
 
@@ -59,13 +62,28 @@ function App() {
           <Route path='/newpassword/:token' element={<Newpassword />} />
           <Route path='/footer' element={<Footer />}/>
           <Route path='/team' element={<Team />}/>
-          <Route path='/faq' element={<Faq />}/>
+          {/* <Route path='/faq' element={<Faq />}/> */}
           <Route path='/career' element={<Career />}/>
           <Route path='/ns' element={<NotesSharingPage />}/>
           <Route path='/select' element={<Pdfs />}/>
-          <Route path='/choose' element={<Choose />}/>
+          {/* <Route path='/choose' element={<Choose />}/> */}
           <Route path='/help' element={<Help />}/>
-          <Route path='/profile' element={<Profile />} />
+          <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+          <Route
+          path="/choose"
+          element={
+            <ProtectedRoute>
+              <Choose />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </div>
   )
