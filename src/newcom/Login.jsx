@@ -73,7 +73,7 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-[#1e1e1e] dark:text-white">
       <div className="p-6 w-full max-w-sm">
       <div className="mb-6">
-          <h1 className="text-2xl font-ff font-bold">Welcome back, {username || 'to'}</h1>
+          <h1 className="text-2xl title-home font-bold">Welcome back, {username || 'to'}</h1>
           <div className="flex items-center justify-center mt-2">
             <Link to={'/'}>
               <img src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png" alt="Pixel Class logo" className="mr-2 w-full h-full " />
@@ -128,7 +128,7 @@ const Login = () => {
             </button>
             <button
               type="submit"
-              className="w-lg flex items-center px-4 py-2 bg-green-700 text-white font-ff rounded-md hover:bg-green-800"
+              className="w-lg flex items-center px-4 py-2 bg-green-700 text-white title-home rounded-md hover:bg-green-800"
               disabled={loading}
             >
               {loading ? <div className="s-loading"></div> : "Log in"}

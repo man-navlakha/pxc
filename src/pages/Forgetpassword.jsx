@@ -92,7 +92,7 @@ const Forgetpassword = () => {
     <div className="min-h-screen flex items-center justify-center  bg-gray-100 dark:bg-[#1e1e1e] dark:text-white">
       <div className="p-6 w-full max-w-sm">
         <div className="mb-6">
-          <h1 className="text-2xl font-ff font-bold text-center">Forgot your password?</h1>
+          <h1 className="text-2xl title-home font-bold text-center">Forgot your password?</h1>
           <div className="flex items-center justify-center mt-2">
             <Link to={"/"}>
               <img
@@ -107,7 +107,7 @@ const Forgetpassword = () => {
         {!isEmailSent ? (
           <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
-              <label className="font-ff block text-sm font-medium  text-gray-700 dark:text-gray-100 ">Email</label>
+              <label className="title-home-home block text-sm font-medium  text-gray-700 dark:text-gray-100 ">Email</label>
               <input
                 type="email"
                 name="email"
@@ -128,7 +128,7 @@ const Forgetpassword = () => {
               </button>
               <button
                 type="submit"
-                className="w-lg flex items-center px-4 py-2 bg-green-700 text-white font-ff rounded-md hover:bg-green-800"
+                className="w-lg flex items-center px-4 py-2 bg-green-700 text-white title-home rounded-md hover:bg-green-800"
                 disabled={loading}
               >
                 {loading ? <div className="s-loading"></div> : <>Send Email <i className="fas fa-arrow-right ml-2"></i></>}

@@ -61,7 +61,7 @@ const newpassword = () => {
     <div className="min-h-screen flex items-center justify-center dark:text-gray-100 dark:bg-[#383838]">
       <div className="p-6 w-full max-w-sm">
         <div className="mb-6">
-          <h1 className="text-2xl font-ff font-bold text-center">Set your new password</h1>
+          <h1 className="text-2xl title-home-home font-bold text-center">Set your new password</h1>
           <div className="flex items-center justify-center mt-2">
             <Link to={'/'}>
               <img src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png" alt="Pixel Class logo" className="mr-2 w-full h-full" />
@@ -72,7 +72,7 @@ const newpassword = () => {
         <form className="space-y-4" onSubmit={handleSubmit}>
           {/* Password Input */}
           <div>
-            <label className="font-ff block text-sm font-medium  text-gray-700 dark:text-gray-100  text-gray-700 dark:text-gray-100 ">Enter password</label>
+            <label className="title-home-home block text-sm font-medium  text-gray-700 dark:text-gray-100  text-gray-700 dark:text-gray-100 ">Enter password</label>
             <input
               type="password"
               name="password"
@@ -86,7 +86,7 @@ const newpassword = () => {
 
           {/* Confirm Password Input */}
           <div>
-            <label className="font-ff block text-sm font-medium  text-gray-700 dark:text-gray-100 ">Re-enter password</label>
+            <label className="title-home-home block text-sm font-medium  text-gray-700 dark:text-gray-100 ">Re-enter password</label>
             <input
               type="password"
               name="cpassword"
@@ -109,7 +109,7 @@ const newpassword = () => {
             </button>
             <button
               type="submit"
-              className="w-lg flex items-center px-4 py-2 bg-green-700 text-white font-ff rounded-md hover:bg-green-800"
+              className="w-lg flex items-center px-4 py-2 bg-green-700 text-white title-home-home rounded-md hover:bg-green-800"
               disabled={loading}
             >
               {loading ? (
