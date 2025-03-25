@@ -25,6 +25,7 @@ import Help from './pages/Help';
 import Profile from "./pages/profile";
 import Maintainces from "./pages/MaintenancePage";
 import Choose from "./pages/Choose";
+import Search from "./pages/Search";
 
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -97,6 +98,14 @@ function App() {
           element={
             <ProtectedRoute>
               <NotesSharingPage />
+            </ProtectedRoute>
+          }
+        />
+          <Route
+          path="/search"
+          element={
+            <ProtectedRoute>
+              <Search />
             </ProtectedRoute>
           }
         />

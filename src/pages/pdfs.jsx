@@ -103,7 +103,7 @@ const Pdfs = () => {
             <Pdf_loader />
           ) : pdfData.length > 0 ? (
             pdfData
-              .filter(pdf => pdf.name && pdf.name.toLowerCase().includes(choose.toLowerCase()))
+              .filter(pdf => pdf.choose === choose)
               .map((pdf, index) => (
                 <div key={index} onClick={(event) => handleLinkClick(event, pdf.id, sub, course)} className="relative flex-wrap w-full flex items-center justify-between border p-6 bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46] mb-4 p-4">
                   <div className="flex flex-wrap items-center justify-between w-full space-x-4">
