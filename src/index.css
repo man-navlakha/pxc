@@ -7,6 +7,11 @@ body {
   font-family: "Unbounded";
 }
 
+html.dark {
+  background-color: #1a202c; /* Example dark background */
+  color: white;
+}
+
 @font-face {
   font-family: 'CustomFont';
   src: url('./fonts/nm2d.woff2') format('woff2'),
@@ -57,7 +62,9 @@ body {
   font-family: 'neue-bold', sans-serif;
   font-weight: bolder;
 }
-  
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 body {
   margin: 0;

@@ -19,6 +19,10 @@ const Choose = () => {
 const navigate = useNavigate();
 
 const handleClick = (choose) => {
+    choose === 'Notes' && navigate(`/select?course=${course}&sub=${sub}&choose=${choose}`);
+    choose === 'Assignment' && navigate(`/select?course=${course}&sub=${sub}&choose=${choose}`);
+    choose === 'Exam' && navigate(`/exam?course=${course}&sub=${sub}&choose=${choose}`);
+    choose === 'I.M.P' &&
     navigate(`/select?course=${course}&sub=${sub}&choose=${choose}`);
 };
 

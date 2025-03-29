@@ -26,6 +26,7 @@ import Profile from "./pages/profile";
 import Maintainces from "./pages/MaintenancePage";
 import Choose from "./pages/Choose";
 import Search from "./pages/Search";
+import Exam from "./pages/exam";
 
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -98,6 +99,14 @@ function App() {
           element={
             <ProtectedRoute>
               <NotesSharingPage />
+            </ProtectedRoute>
+          }
+        />
+          <Route
+          path="/exam"
+          element={
+            <ProtectedRoute>
+              <Exam />
             </ProtectedRoute>
           }
         />
