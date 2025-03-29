@@ -88,7 +88,7 @@ const sanitizedUrl = fullUrl.replace("http://localhost:5173/exam/", "");
 
 // Navigate to the sanitized URL
 window.location.href = sanitizedUrl;
-      // console.log(`/ns?sub=${sub}&id=${item}&course=${course}&choose=${choose}`);
+      console.log(`/ns?sub=${sub}&id=${item}&course=${course}&choose=${choose}`);
       // navigate(`/ns?sub=${sub}&id=${item}&course=${course}&choose=${choose}`);
     }
   };

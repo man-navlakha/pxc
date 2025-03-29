@@ -103,7 +103,7 @@ function App() {
           }
         />
           <Route
-          path="/exam"
+          path="/nss"
           element={
             <ProtectedRoute>
               <Exam />
