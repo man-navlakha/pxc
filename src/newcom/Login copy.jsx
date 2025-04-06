@@ -22,28 +22,27 @@ const Login = () => {
       const res = await axios.post('https://pixel-classes.onrender.com/api/user/google-login/', {
         token: credentialResponse.credential,
       });
-      console.log(res.data); // ✅ Fixed variable name
-  
-      if (res.data.message === "Login successful!") {
+      console.log(res.data);
+      // Save user info or token to localStorage if needed
+      if (response.data.message === "Login successful!") {
         // ✅ Save tokens & username to cookies
-        Cookies.set("access_token", res.data.access_token, { expires: 7 });
-        Cookies.set("username", res.data.username || "Guest", { expires: 7 });
-  
-        setUsername(res.data.username?.toLowerCase() || "");
-  
+        Cookies.set("access_token", response.data.access_token, { expires: 7 });
+        Cookies.set("username", e.target.username.value, { expires: 7 });
+
+        setUsername(e.target.username.value.toLowerCase()); // ✅ Update username state
+
         // ✅ Redirect user to the previous page or default home
         setTimeout(() => {
           const redirectTo = new URLSearchParams(location.search).get("redirect") || "/";
-          navigate(redirectTo, { replace: true });
+        navigate(redirectTo, { replace: true });
         }, 100);
       } else {
         setError("Invalid login credentials.");
       }
-    } catch (err) {
-      console.error("Login error:", err);
-      setError(err.response?.data?.error || "An error occurred");
+    } catch (error) {
+      console.error('Login failed:', error);
     }
-  }; 
+  };  
 
 
   // ✅ Handle redirection if user is already logged in
@@ -97,6 +96,7 @@ const Login = () => {
         }, 100);
       } else {
         setError("Invalid login credentials.");
+
       }
     } catch (err) {
       console.error("Login error:", err);
