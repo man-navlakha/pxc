@@ -17,18 +17,34 @@ const Login = () => {
 
    // Handle google login
 
- const handleLoginSuccess = async (credentialResponse) => {
-  try {
-    const res = await axios.post('https://pixel-classes.onrender.com/api/user/google-login', {
-      token: credentialResponse.credential,
-    });
-    console.log(res.data);
-    // Save user info or token to localStorage if needed
-  } catch (error) {
-    console.error('Login failed:', error);
-  }
+   const handleLoginSuccess = async (credentialResponse) => {
+    try {
+      const res = await axios.post('https://pixel-classes.onrender.com/api/user/google-login/', {
+        token: credentialResponse.credential,
+      });
+      console.log(res.data);
+      // Save user info or token to localStorage if needed
+      if (response.data.message === "Login successful!") {
+        // ✅ Save tokens & username to cookies
+        Cookies.set("access_token", response.data.access_token, { expires: 7 });
+        Cookies.set("username", e.target.username.value, { expires: 7 });
 
-}
+        setUsername(e.target.username.value.toLowerCase()); // ✅ Update username state
+
+        // ✅ Redirect user to the previous page or default home
+        setTimeout(() => {
+          const redirectTo = new URLSearchParams(location.search).get("redirect") || "/";
+        navigate(redirectTo, { replace: true });
+        }, 100);
+      } else {
+        setError("Invalid login credentials.");
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  };  
+
+
   // ✅ Handle redirection if user is already logged in
   useEffect(() => {
     const token = Cookies.get("access_token");
@@ -80,6 +96,7 @@ const Login = () => {
         }, 100);
       } else {
         setError("Invalid login credentials.");
+
       }
     } catch (err) {
       console.error("Login error:", err);
