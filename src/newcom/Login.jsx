@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { GoogleLogin } from '@react-oauth/google';
 import Cookies from "js-cookie";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import "../App.css";
@@ -13,6 +14,21 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation(); // ✅ Fix: Ensure `location` is available
 
+
+   // Handle google login
+
+ const handleLoginSuccess = async (credentialResponse) => {
+  try {
+    const res = await axios.post('https://pixel-classes.onrender.com/api/user/google-login', {
+      token: credentialResponse.credential,
+    });
+    console.log(res.data);
+    // Save user info or token to localStorage if needed
+  } catch (error) {
+    console.error('Login failed:', error);
+  }
+
+}
   // ✅ Handle redirection if user is already logged in
   useEffect(() => {
     const token = Cookies.get("access_token");
@@ -27,6 +43,11 @@ const Login = () => {
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
+
+
+
+
+
 
   // ✅ Handle Login
   const handleLogin = async (e) => {
@@ -135,7 +156,13 @@ const Login = () => {
             </button>
           </div>
         </form>
-
+        <div>
+      <h2>Login</h2>
+      <GoogleLogin
+        onSuccess={handleLoginSuccess}
+        onError={() => console.log('Login Failed')}
+      />
+    </div>
         <div className="mt-6 text-center">
           <p className="text-emerald-600">Don't have an account?</p>
           <button
