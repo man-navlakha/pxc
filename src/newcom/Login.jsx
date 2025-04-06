@@ -156,8 +156,7 @@ const Login = () => {
             </button>
           </div>
         </form>
-        <div>
-      <h2>Login</h2>
+        <div className="my-5">
       <GoogleLogin
         onSuccess={handleLoginSuccess}
         onError={() => console.log('Login Failed')}
