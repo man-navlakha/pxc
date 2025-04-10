@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
-// import { deleteNonVerifiedUsers } from "./utils/api";
+import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Cookies from "js-cookie";
+import axios from "axios";
 import './App.css';
 import NotFound from './NotFound';
 import Sign from './newcom/Sign';
@@ -27,100 +27,118 @@ import Maintainces from "./pages/MaintenancePage";
 import Choose from "./pages/Choose";
 import Search from "./pages/Search";
 import Exam from "./pages/exam";
+import Load from './componets/Timer'
 
 import ProtectedRoute from "./ProtectedRoute";
 
-
 function App() {
-  // const location = useLocation();
+    const [loading, setLoading] = useState(true); // Add loading state
+    const [userName, setUserName] = useState("");
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [courses, setCourses] = useState([]);
 
-  // useEffect(() => {
-  //   // Call API immediately when page loads
-  //   deleteNonVerifiedUsers();
+    useEffect(() => {
+        // Retrieve the 'username' cookie value
+        const storedUserName = Cookies.get("username");
+        console.log("Retrieved userName from cookie:", storedUserName); // Log the cookie value
 
-  //   // Set interval to call API every 1 minute
-  //   const interval = setInterval(() => {
-  //     deleteNonVerifiedUsers();
-  //   }, 86400000); // 86,400,000ms = 24 hours
+        if (storedUserName && storedUserName !== "undefined") {
+            setUserName(storedUserName); // Set the username from cookie
+            setIsLoggedIn(true); // Mark the user as logged in
+        } else {
+            setUserName("Guest"); // Default name if cookie is not found
+            setIsLoggedIn(false); // Mark the user as not logged in
+        }
 
-  //   // Cleanup interval when component unmounts or route changes
-  //   return () => clearInterval(interval);
-  // }, [location.pathname]); // Runs on every page change
+        axios.post("https://pixel-classes.onrender.com/api/home/courses", {})
+            .then(response => {
+                setCourses(response.data.CourseList); // Set the courses state with the fetched data
+                setLoading(false); // Set loading to false after data is fetched
+            })
+            .catch(error => {
+                console.error("Error fetching courses:", error);
+                setLoading(false); // Set loading to false in case of error
+            });
+    }, []);
 
-  return (
-    <div className="App dark:bg-[#1e1e1e] dark:text-white bg-white
-    ">
-      <Routes>
-        
-          <Route path='*' element={<NotFound />} />
-          <Route path='/' element={<Home />}/>
-          <Route path='/sub' element={<Subj />}/>
-          <Route path='/login' element={<Login />}/>
-          <Route path='/open' element={<Open />}/>
-          <Route path='/signup' element={<Sign />}/>
-          <Route path='/verification' element={<Verify />}/>
-          <Route path='/logout' element={<Logout />}/>
-          <Route path='/fgpassword' element={<Forgetpassword />}/>
-          <Route path='/newpassword/:token' element={<Newpassword />} />
-          <Route path='/footer' element={<Footer />}/>
-          <Route path='/team' element={<Team />}/>
-          <Route path='/faq' element={<Faq />}/>
-          <Route path='/career' element={<Career />}/>
-          {/* <Route path='/ns' element={<NotesSharingPage />}/> */}
-          {/* <Route path='/select' element={<Pdfs />}/> */}
-          {/* <Route path='/choose' element={<Choose />}/> */}
-          <Route path='/help' element={<Help />}/>
-          <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-          <Route
-          path="/choose"
-          element={
-            <ProtectedRoute>
-              <Choose />
-            </ProtectedRoute>
-          }
-        />
-          <Route
-          path="/select"
-          element={
-            <ProtectedRoute>
-              <Pdfs />
-            </ProtectedRoute>
-          }
-        />
-          <Route
-          path="/ns"
-          element={
-            <ProtectedRoute>
-              <NotesSharingPage />
-            </ProtectedRoute>
-          }
-        />
-          <Route
-          path="/nss"
-          element={
-            <ProtectedRoute>
-              <Exam />
-            </ProtectedRoute>
-          }
-        />
-          <Route
-          path="/search"
-          element={
-            <ProtectedRoute>
-              <Search />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-    </div>
-  )
+    return (
+
+            loading ? (
+                <div>
+                    <Load />
+                </div>
+            ) : (
+                <>
+                    <div className="App dark:bg-[#1e1e1e] dark:text-white bg-white">
+                        <Routes>
+                            <Route path="*" element={<NotFound />} />
+                            <Route path="/" element={<Home />} />
+                            <Route path="/sub" element={<Subj />} />
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/open" element={<Open />} />
+                            <Route path="/signup" element={<Sign />} />
+                            <Route path="/verification" element={<Verify />} />
+                            <Route path="/logout" element={<Logout />} />
+                            <Route path="/fgpassword" element={<Forgetpassword />} />
+                            <Route path="/newpassword/:token" element={<Newpassword />} />
+                            <Route path="/footer" element={<Footer />} />
+                            <Route path="/team" element={<Team />} />
+                            <Route path="/faq" element={<Faq />} />
+                            <Route path="/career" element={<Career />} />
+                            <Route path="/help" element={<Help />} />
+                            <Route
+                                path="/profile"
+                                element={
+                                    <ProtectedRoute>
+                                        <Profile />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/choose"
+                                element={
+                                    <ProtectedRoute>
+                                        <Choose />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/select"
+                                element={
+                                    <ProtectedRoute>
+                                        <Pdfs />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/ns"
+                                element={
+                                    <ProtectedRoute>
+                                        <NotesSharingPage />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/nss"
+                                element={
+                                    <ProtectedRoute>
+                                        <Exam />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/search"
+                                element={
+                                    <ProtectedRoute>
+                                        <Search />
+                                    </ProtectedRoute>
+                                }
+                            />
+                        </Routes>
+                    </div>
+                </>
+            )
+    );
 }
 
 export default App;
