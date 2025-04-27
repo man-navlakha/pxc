@@ -15,7 +15,7 @@ import NotesSharingPage from './newcom/NotesSharingPage';
 import Pdfs from "./pages/pdfs";
 import './index.css';
 import Logout from './newcom/Logout';
-import Forgetpassword from './pages/Forgetpassword'; 
+import Forgetpassword from './pages/Forgetpassword';
 import Newpassword from './newcom/newpassword';
 import Footer from './componets/Footer';
 import Team from './pages/Team';
@@ -30,12 +30,30 @@ import Exam from "./pages/exam";
 import Load from './componets/Timer'
 
 import ProtectedRoute from "./ProtectedRoute";
+import Bettary from "./utils/Bettary";
 
 function App() {
     const [loading, setLoading] = useState(true); // Add loading state
     const [userName, setUserName] = useState("");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [courses, setCourses] = useState([]);
+    const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+
+    useEffect(() => {
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        // Cleanup: Remove event listeners when the component unmounts
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []); // Empty dependency array means this effect runs only once on mount
+
 
     useEffect(() => {
         // Retrieve the 'username' cookie value
@@ -62,8 +80,14 @@ function App() {
     }, []);
 
     return (
-
-            loading ? (
+        <>
+            {isOnline ? (
+                <></>
+            ) : (
+                <p className="w-screen text-center p-2 bg-red-500 text-white">You are offline!</p>
+            )}
+         <Bettary/>
+            {loading ? (
                 <div>
                     <Load />
                 </div>
@@ -137,7 +161,9 @@ function App() {
                         </Routes>
                     </div>
                 </>
-            )
+            )}
+
+        </>
     );
 }
 
