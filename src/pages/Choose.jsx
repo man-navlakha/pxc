@@ -22,7 +22,7 @@ const handleClick = (choose) => {
     choose === 'Notes' && navigate(`/nss?course=${course}&sub=${sub}&choose=${choose}`);
     choose === 'Assignment' && navigate(`/select?course=${course}&sub=${sub}&choose=${choose}`);
     choose === 'Exam' && navigate(`/nss?course=${course}&sub=${sub}&choose=${choose}`);
-    choose === 'Genaral' && navigate(`/nss?course=${course}&sub=${sub}&choose=${choose}`);
+    choose === 'practical' && navigate(`/nss?course=${course}&sub=${sub}&choose=${choose}`);
     choose === 'I.M.P' &&
     navigate(`/select?course=${course}&sub=${sub}&choose=${choose}`);
 };
@@ -52,7 +52,7 @@ return (
                 <div onClick={() => handleClick('I.M.P')} className="content-center text-center hover:border-[#065f46] w-man h-[100px] p-2 border bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
                     Important Questions
                 </div>
-                <div onClick={() => handleClick('Genaral')} className="content-center text-center hover:border-[#065f46] w-man h-[100px] p-2 border bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
+                <div onClick={() => handleClick('practical')} className="content-center text-center hover:border-[#065f46] w-man h-[100px] p-2 border bg-white dark:bg-[#383838] rounded-lg shadow-[0px_4px_0px_0px_#065f46]">
                 Genaral Book
                 </div>
             </div>

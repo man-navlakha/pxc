@@ -14,7 +14,7 @@ const Exam = () => {
       </h1>
     </div> */}
 
-    <a href="nss?course=B.C.A&sub=Introduction%20to%20Core%20Java%20(ICJ)&choose=Genaral">
+    <a href="nss?course=B.C.A&sub=Introduction%20to%20Core%20Java%20(ICJ)&choose=practical">
 
           <div className="group w-full bg-white flex flex-col items-center space-y-4 rounded-2xl border border-gray-200 p-6 hover:shadow-lg dark:hover:shadow-xl shadow-emerald-600 transition-shadow duration-300 focus:outline-none focus:ring-2 focus:ring-red-600"
    >
@@ -25,7 +25,7 @@ const Exam = () => {
       </h1>
     </div>
        </a>
-    <a href="nss?course=B.C.A&sub=Introduction%20to%20Operating%20System%20(IOS)&choose=Genaral">
+    <a href="nss?course=B.C.A&sub=Introduction%20to%20Operating%20System%20(IOS)&choose=practical">
 
           <div className="group w-full bg-white flex flex-col items-center space-y-4 rounded-2xl border border-gray-200 p-6 hover:shadow-lg dark:hover:shadow-xl shadow-emerald-600 transition-shadow duration-300 focus:outline-none focus:ring-2 focus:ring-red-600"
    >
