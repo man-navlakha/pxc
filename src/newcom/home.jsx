@@ -92,11 +92,6 @@ const Home = () => {
           )}
         </div>
 
-        <div  className="">
-        <p className="mt-4  text-2xl brife font-black">Start your exam preparation </p>
-        <p className="mb-4 text-xl brife font-medium">select and good to go!!!</p>
-        <Exam/>
-        </div>
         
         <p className="mt-4 text-sm brife font-bold">Select your course</p>
         <div className="grid grid-cols-2 p-4 lg:grid-cols-6 gap-4 mt-4">
@@ -108,7 +103,12 @@ const Home = () => {
         </div>
         </>
         )}
-
+<div  className="">
+        <p className="mt-4  text-2xl brife font-black">Start your exam preparation </p>
+        <p className="mb-4 text-xl brife font-medium">select and good to go!!!</p>
+        <Exam/>
+        </div>
+        
        
       </div>
       <div className="lg:hidden md:block block">

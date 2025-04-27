@@ -86,7 +86,7 @@ function App() {
             ) : (
                 <p className="w-screen text-center p-2 bg-red-500 text-white">You are offline!</p>
             )}
-         <Bettary/>
+         {/* <Bettary/> */}
             {loading ? (
                 <div>
                     <Load />
