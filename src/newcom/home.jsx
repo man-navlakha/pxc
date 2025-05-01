@@ -103,12 +103,13 @@ const Home = () => {
         </div>
         </>
         )}
+{/*         
 <div  className="">
         <p className="mt-4  text-2xl brife font-black">Start your exam preparation </p>
         <p className="mb-4 text-xl brife font-medium">select and good to go!!!</p>
         <Exam/>
         </div>
-        
+         */}
        
       </div>
       <div className="lg:hidden md:block block">
