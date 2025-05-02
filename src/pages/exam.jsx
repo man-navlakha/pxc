@@ -21,7 +21,7 @@ const Pdfs = () => {
     if (courseParam) setCourse(courseParam);
     if (subParam) setSub(subParam);
     if (chooseParam) setChoose(chooseParam);
-    console.log(chooseParam);
+    // console.log(chooseParam);
 
     if (courseParam && subParam) {
       setLoading(true); // Set loading to true before fetching data
@@ -34,7 +34,7 @@ const Pdfs = () => {
       })
         .then(response => response.json())
         .then(data => {
-          console.log('Success:', data);
+          // console.log('Success:', data);
           setPdfData(data); // Update state with fetched data
           data.forEach(pdf => {
             if (pdf.pdf) {
@@ -77,7 +77,7 @@ const Pdfs = () => {
 
   const handleLinkClick = (event, item, sub, course) => {
     if (!getAccessTokenFromCookies()) {
-      console.log("User not authenticated, redirecting to login...");
+      // console.log("User not authenticated, redirecting to login...");
       event.preventDefault();
       navigate("/login");
     } else {
@@ -152,7 +152,7 @@ window.location.href = sanitizedUrl;
       {/* {loading2 ? 'Loading...' : '📥 Download PDF'} */}
     </a>
     {choose == 'Notes' ? 
-    <a href={`https://document-to-ai.vercel.app/url?url=${pdf.pdf}`}>
+    <a href={`https://document-to-ai.vercel.app/url?url=${pdf.pdf}`} >
 <button
   class="group relative outline-0 bg-sky-200 [--sz-btn:68px] [--space:calc(var(--sz-btn)/5.5)] [--gen-sz:calc(var(--space)*2)] [--sz-text:calc(var(--sz-btn)-var(--gen-sz))] h-[var(--sz-btn)] w-[var(--sz-btn)] border border-solid border-transparent rounded-xl flex items-center justify-center aspect-square cursor-pointer transition-transform duration-200 active:scale-[0.95] bg-[linear-gradient(45deg,#efad21,#ffd60f)] [box-shadow:#3c40434d_0_1px_2px_0,#3c404326_0_2px_6px_2px,#0000004d_0_30px_60px_-30px,#34343459_0_-2px_6px_0_inset]"
 >
