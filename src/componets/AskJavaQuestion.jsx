@@ -1,4 +1,8 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {faUpRightFromSquare
+} from '@fortawesome/free-solid-svg-icons';
+
 
 const AskJavaQuestion = () => {
   return (
@@ -8,7 +12,7 @@ const AskJavaQuestion = () => {
 
         <h2 style={styles.heading}>Ask any Java questions here</h2>
         <a href="https://document-to-ai.vercel.app/chat?sourceId=src_a5vF4GsplYmAr8EJni0AA&name=Java%20BCA.pdf">
-        <button >Open in new tab</button>
+        <button > <FontAwesomeIcon icon={faUpRightFromSquare} className=" text-xl mr-3" /> Open in new tab</button>
         </a>
         </div>
         <iframe

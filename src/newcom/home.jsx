@@ -105,7 +105,7 @@ const Home = () => {
         </>
         )}
 
-        <AskJavaQuestion/>
+        {/* <AskJavaQuestion/> */}
 {/*         
 <div  className="">
         <p className="mt-4  text-2xl brife font-black">Start your exam preparation </p>

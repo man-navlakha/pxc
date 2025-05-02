@@ -2,6 +2,7 @@
 import GoBack from '../componets/GoBack'
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
+import AskJavaQuestion from '../componets/AskJavaQuestion';
 
 const Choose = () => {
     const [course, setCourse] = useState('');
@@ -29,7 +30,7 @@ const handleClick = (choose) => {
 
 return (
     <div>
-        <div className='dark:bg-[#1E1E1E] dark:text-white h-screen overflow-hidden'>
+        <div className='dark:bg-[#1E1E1E] dark:text-white h-screen overflow-scroll'>
             <GoBack />
             <div className="p-4 w-full">
                 <h1 className="text-4xl text-left f-black font-bold">
@@ -56,6 +57,7 @@ return (
                 Genaral Book
                 </div>
             </div>
+                {sub == 'Introduction to Core Java (ICJ)' ? <AskJavaQuestion/> : ''}
         </div>
     </div>
 );
