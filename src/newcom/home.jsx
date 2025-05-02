@@ -13,6 +13,7 @@ import axios from "axios"; // Import axios for API calls
 import CTA7 from "../componets/CTA7";
 import NoteSharingCTA from "../componets/NoteSharingCTA";
 import Exam from "../componets/Exam";
+import AskJavaQuestion from "../componets/AskJavaQuestion";
 
 const Home = () => {
   const [userName, setUserName] = useState("");
@@ -103,6 +104,8 @@ const Home = () => {
         </div>
         </>
         )}
+
+        <AskJavaQuestion/>
 {/*         
 <div  className="">
         <p className="mt-4  text-2xl brife font-black">Start your exam preparation </p>
