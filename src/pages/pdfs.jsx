@@ -88,7 +88,7 @@ const Pdfs = () => {
 
   return (
     <>
-      <div className='dark:bg-[#1E1E1E] dark:text-white h-screen overflow-hidden'>
+      <div className='dark:bg-[#1E1E1E] dark:text-white  h-full overflow-y-scroll'>
         <GoBack />
         <div className="p-4 w-full">
           <h1 className="text-4xl text-left f-black font-bold">

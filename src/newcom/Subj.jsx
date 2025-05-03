@@ -11,7 +11,7 @@ import Sub_loader from "../componets/Sub_loader"
 const Sub = () => {
   const location = useLocation();
     const courseName = new URLSearchParams(location.search).get('course');
-    console.log(courseName);
+    // console.log(courseName);
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [selectedSem, setSelectedSem] = useState(1);
     const [semesters, setSemesters] = useState([]);
@@ -25,13 +25,13 @@ const Sub = () => {
             try {
                 const response = await axios.get('https://pixel-classes.onrender.com/api/home/courses');
                 const data = response.data;
-                console.log('Fetched data:', data);
+                // console.log('Fetched data:', data);
 
                 if (data.CourseList && Array.isArray(data.CourseList)) {
                     const course = data.CourseList.find(course => course.name === courseName);
                     if (course) {
-                        console.log('Course found:', course);
-                        console.log('Semester:', course.number_sem);
+                        // console.log('Course found:', course);
+                        // console.log('Semester:', course.number_sem);
                         setSelectedCourse(course);
                         setSemesters(Array.isArray(course.number_sem) ? course.number_sem : [course.number_sem]);
                     } else {
@@ -56,16 +56,16 @@ const getAccessTokenFromCookies = () => {
       .find((row) => row.startsWith("access_token="))
       ?.split("=")[1];
   
-    console.log("Access Token:", accessToken);
+    // console.log("Access Token:", accessToken);
     return accessToken || null; // Return null if not found
   };
     const handleLinkClick = (event, item) => {
-        console.log(`/choose?course=${selectedCourse.name}&sub=${item}`)
+        // console.log(`/choose?course=${selectedCourse.name}&sub=${item}`)
       navigate(`/choose?course=${selectedCourse.name}&sub=${item}`);
       };
     
   return (
-    <div className=" bg-white dark:bg-[#1E1E1E] dark:text-white">
+    <div className=" bg-white dark:bg-[#1E1E1E] dark:text-white   h-screen overflow-y-scroll">
       <GoBack />
       <div className=" p-4 w-full">
         <h1 className="text-4xl text-left f-black font-bold">
@@ -127,7 +127,7 @@ const getAccessTokenFromCookies = () => {
                         <div className="flex flex-col ">
                             {/* <pre>{JSON.stringify(apiResponse, null, 2)}</pre> */}
                                 <p className="fj-black text-gray-800 p-4 text-2xl mb-6 dark:text-white ">Choose your Subject</p>
-                            <ul className="grid lg:grid-cols-2 pb-4 gap-2 items-baseline pl-4 pr-6">
+                            <ul className="grid lg:grid-cols-2 pb-4 gap-2 items-baseline pl-4 pr-6 mb-20">
                             {apiResponse.length > 0 ? (
     <>
         {apiResponse.map((subject) => (
@@ -135,7 +135,7 @@ const getAccessTokenFromCookies = () => {
                 key={subject.name} 
                 subject={subject} 
                 onClick={(event) => {
-                    console.log("Div clicked!", subject.name);
+                    // console.log("Div clicked!", subject.name);
                     handleLinkClick(event, subject.name);
                 }} 
             />
