@@ -105,7 +105,7 @@ window.location.href = sanitizedUrl;
             {sub}
           </h2>
         </div>
-        <div className='p-6 dark:bg-[#1E1E1E] dark:text-white  mb-15'>
+        <div className='p-6 dark:bg-[#1E1E1E] dark:text-white  h-screen overflow-y-scroll  mb-15'>
           {loading ? (
             <Pdf_loader />
           ) : pdfData.length > 0 ? (
