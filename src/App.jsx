@@ -38,7 +38,7 @@ import Load from './componets/Timer'
 
 import ProtectedRoute from "./ProtectedRoute";
 import Bettary from "./utils/Bettary";
-import MainPage from "./beta/page/home";
+import MainPage from "./beta/page/MainPage";
 
 function App() {
     const [loading, setLoading] = useState(false); // Add loading state
