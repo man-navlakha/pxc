@@ -8,7 +8,7 @@ const Navbar = () => {
       </div>
 
       <div>
-        <a href="auth/login">
+        <a href="/beta/auth/login">
       <button className='border px-3 py-1 bg-black ease-in-out hover:shadow-[5px_5px_0px_#fff]'>
           Login/Signup
       </button>
