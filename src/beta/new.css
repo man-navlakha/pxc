@@ -1,27 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
 
-.geist{
+.geist {
   font-family: "Geist", sans-serif;
 }
+
 .border-gradient {
   border-bottom: 2px solid;
   border-image: linear-gradient(to right, rgb(255, 0, 0), purple, rgba(255, 0, 0, 0)) 1;
 }
+
 .border-gradient-l {
   border-bottom: 2px solid;
   border-image: linear-gradient(to right, rgba(0, 0, 255, 0), purple, rgb(255, 0, 0)) 1;
 }
 
 
-.bg-pattern{
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 20px 20px;
-    pointer-events: none;
-    z-index: 0;
+.bg-pattern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+  z-index: 0;
 }

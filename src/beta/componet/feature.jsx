@@ -14,22 +14,22 @@ const Feature = () => {
             </div>
 
             <div className='flex  gap-2'>
-                <span className='bg-linear-to-b from-violet-500 to-fuchsia-500'></span>
-<marquee behavior=""  direction="">
-    <div className='flex gap-2'>
-                <div className='flex items-center gap-1.5 text-sm text-gray-500 p-1 pl-2 pr-3 rounded-full bg-white bg-opacity-80 shadow backdrop-blur max-sm:hidden'>
-                    Trusted by <span className='text-black'>67+</span> users.
-                </div>
-                <div className='flex items-center gap-1.5 text-sm text-gray-500 p-1 pl-2 pr-3 rounded-full bg-white bg-opacity-80 shadow backdrop-blur max-sm:hidden'>
-                    Top <span className='text-black'>15+</span> subjects.
-                </div>
-                <div className='flex items-center gap-1.5 text-sm text-gray-500 p-1 pl-2 pr-3 rounded-full bg-white bg-opacity-80 shadow backdrop-blur max-sm:hidden'>
-                    <span className='text-black'>AI</span> implemented.
-                </div>
-                <div className='flex items-center gap-1.5 text-sm text-gray-500 p-1 pl-2 pr-3 rounded-full bg-white bg-opacity-80 shadow backdrop-blur max-sm:hidden'>
-                   Experience premium <span className='text-black'>handwritten</span> notes.
-                </div>
-                </div>
+
+                <marquee behavior="" direction="">
+                    <div className='flex gap-2'>
+                        <div className='flex items-center gap-1.5 text-sm text-gray-500 p-1 pl-2 pr-3 rounded-full bg-white bg-opacity-80 shadow backdrop-blur max-sm:hidden'>
+                            Trusted by <span className='text-black'>67+</span> users.
+                        </div>
+                        <div className='flex items-center gap-1.5 text-sm text-gray-500 p-1 pl-2 pr-3 rounded-full bg-white bg-opacity-80 shadow backdrop-blur max-sm:hidden'>
+                            Top <span className='text-black'>15+</span> subjects.
+                        </div>
+                        <div className='flex items-center gap-1.5 text-sm text-gray-500 p-1 pl-2 pr-3 rounded-full bg-white bg-opacity-80 shadow backdrop-blur max-sm:hidden'>
+                            <span className='text-black'>AI</span> implemented.
+                        </div>
+                        <div className='flex items-center gap-1.5 text-sm text-gray-500 p-1 pl-2 pr-3 rounded-full bg-white bg-opacity-80 shadow backdrop-blur max-sm:hidden'>
+                            Experience premium <span className='text-black'>handwritten</span> notes.
+                        </div>
+                    </div>
                 </marquee>
                 <span className='bg-linear-to-b from-violet-500 to-fuchsia-500'></span>
             </div>
