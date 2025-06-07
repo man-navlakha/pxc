@@ -3,6 +3,15 @@
 .geist{
   font-family: "Geist", sans-serif;
 }
+.border-gradient {
+  border-bottom: 2px solid;
+  border-image: linear-gradient(to right, rgb(255, 0, 0), purple, rgba(255, 0, 0, 0)) 1;
+}
+.border-gradient-l {
+  border-bottom: 2px solid;
+  border-image: linear-gradient(to right, rgba(0, 0, 255, 0), purple, rgb(255, 0, 0)) 1;
+}
+
 
 .bg-pattern{
     position: fixed;
