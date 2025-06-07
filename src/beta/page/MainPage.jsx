@@ -1,10 +1,7 @@
 import React from 'react'
-import Navbar from '../componet/navbar'
-import Welcome from '../componet/Welcome'
-import Search from '../componet/search'
+import Navbar from '../componet/Navbar'
 import Hero from '../componet/Hero'
 import '../new.css'
-import Top from '../componet/Top-H'
 
 const MainPage = () => {
   return (
