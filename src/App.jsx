@@ -3,6 +3,13 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
 import './App.css';
+
+// Beta configs
+import Signup from './beta/auth/signup';
+import Blogin from './beta/auth/Login';
+
+
+//Normal 
 import NotFound from './NotFound';
 import Sign from './newcom/Sign';
 import Verify from './newcom/veri';
@@ -31,9 +38,10 @@ import Load from './componets/Timer'
 
 import ProtectedRoute from "./ProtectedRoute";
 import Bettary from "./utils/Bettary";
+import MainPage from "./beta/page/home";
 
 function App() {
-    const [loading, setLoading] = useState(true); // Add loading state
+    const [loading, setLoading] = useState(false); // Add loading state
     const [userName, setUserName] = useState("");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [courses, setCourses] = useState([]);
@@ -97,6 +105,14 @@ function App() {
                         <Routes>
                             <Route path="*" element={<NotFound />} />
                             <Route path="/" element={<Home />} />
+
+                            {/* Beta */}
+                            <Route path="/beta/auth/signup" element={<Signup />} />
+                            <Route path="/beta/auth/login" element={<Blogin />} />
+                            <Route path="/beta/" element={<MainPage />} />
+
+
+
                             <Route path="/sub" element={<Subj />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/open" element={<Open />} />
