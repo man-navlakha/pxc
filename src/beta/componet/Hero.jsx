@@ -6,7 +6,7 @@ const Hero = () => {
     <div className='p-4 flex flex-col text-center content-center flex-nowrap jusify-center gap-3 items-center '>
       <Top />
       <div>
-        <span className='text-center m-3 text-3xl md:text-lg lg:text-3xl font-black'>Access Top-Quality PDF Notes Instantly!!</span>
+        <span className='text-center m-3 text-3xl md:text-lg lg:text-3xl font-black bg-clip-text bg-gradient-to-br from-white to-zinc-500 text-transparent Mont '>Access Top-Quality PDF Notes Instantly!!</span>
       </div>
       <div>
         <span className='text-center text-md my-3 font-medium'>Experience premium handwritten notes! 🚀</span>
@@ -17,7 +17,7 @@ const Hero = () => {
         <div className="flex items-center justify-center">
           <div className="relative group">
             <button
-              className="relative inline-block p-px font-semibold leading-6 text-white bg-gray-800 shadow cursor-pointer shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95"
+              className="relative inline-block p-px font-semibold leading-6 text-zinc-400\80 bg-gray-800 shadow cursor-pointer shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95"
             >
               <span
                 className="absolute inset-0  bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 p-[2px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
