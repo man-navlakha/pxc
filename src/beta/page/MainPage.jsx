@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Navbar from '../componet/Navbar'
+import Navbar from '../componet/navbar'
 import Hero from '../componet/Hero'
 import '../new.css'
 import Cookies from "js-cookie";
