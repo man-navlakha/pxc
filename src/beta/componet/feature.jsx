@@ -13,7 +13,11 @@ const Feature = () => {
                     </span>
 
                 </div>
-                <div className='grid grid-flow-col grid-rows-3 gap-4 text-white items-center'>
+                <div className='grid gap-4 text-white items-center 
+     grid-cols-1 
+     sm:grid-cols-2 
+     md:grid-cols-3 
+     lg:grid-flow-cols'>
                     <div className='flex-1 flex max-w-[100vw]  p-4  flex-col justify-between overflow-hidden rounded-2xl border border-canvas-blue-900/[.06] bg-gray-100
 bg-clip-padding
 backdrop-filter
