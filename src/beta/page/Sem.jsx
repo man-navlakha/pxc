@@ -60,7 +60,7 @@ const Semester = () => {
         Cookies.set("latest_sem", sem, { expires: 7 }); // Update the cookie
     };
     const handlechooose = (choose,sub) => {
-       nav(`/nss?choose=${choose}&subject=${sub}`);
+       nav(`/nss?course=B.C.A&choose=${choose}&sub=${sub}`);
     };
 
     return (
@@ -100,10 +100,10 @@ const Semester = () => {
                         ))}
                     </div>
 
-                    <div className={` ${selectedSem ? 'visible mt-10 h-full' : 'hidden'} text-3xl lg:text-5xl text-white`}>
+                    <div className={` ${selectedSem ? 'visible mt-10 h-full' : 'hidden'} text-2xl lg:text-3xl text-white`}>
                         <div>
                             {selectedSem && ( // Only show the title if a semester is selected
-                                <span ref={sectionRef} className="font-bold">Choose your subject for Semester {selectedSem}</span>
+                                <span ref={sectionRef} className="font-bold mb-8">Choose your subject for Semester {selectedSem}</span>
                             )}
                             {loading && <p className="text-xl mt-4  cursor-progress ">  <div className=" " >
                                                     <div class="book">
