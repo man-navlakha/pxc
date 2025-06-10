@@ -119,6 +119,8 @@ const Semester = () => {
                                                         </div>
                                                     </div></div></p>}
                             {error && <p className="text-xl mt-4 text-red-500">{error}</p>}
+                            <div className={`${loading ? 'hidden' : ''}`}>
+                                
                             {apiResponse && (
                                 <div className="mt-4 text-xl">
 
@@ -146,6 +148,7 @@ const Semester = () => {
 
                                 </div>
                             )}
+                            </div>
                         </div>
                     </div>
                 </div>
