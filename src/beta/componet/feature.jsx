@@ -6,7 +6,7 @@ const Feature = () => {
             <div className=' Mont mesh p-5'>
                 <div className='flex flex-col text-left p-6 font-bold text-3xl lg:text-4xl  bg-clip-text bg-gradient-to-t from-[#fff] to-[#fff] text-transparent'>
                     <span>
-                        What us makes
+                        What makes us
                     </span>
                     <span className='font-black bg-clip-text bg-gradient-to-t from-[#000] to-[#607D8B ] text-transparent'>
                         different

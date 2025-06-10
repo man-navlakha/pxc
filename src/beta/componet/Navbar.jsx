@@ -13,9 +13,6 @@ const Navbar = () => {
       setOpen(true);
     }
   };
-  useEffect(() => {
-  console.log(open);
-}, [open]);
 
   return (
     <>
