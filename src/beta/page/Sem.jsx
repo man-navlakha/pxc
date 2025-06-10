@@ -4,6 +4,7 @@ import axios from "axios";
 import '../new.css';
 import Footer from '../componet/Footer';
 import Navbar from '../componet/Navbar';
+import { useNavigate, useLocation, Link } from "react-router-dom";
 
 const Semester = () => {
     const Semesters = ["3", "4", "5", "6"];
@@ -12,6 +13,7 @@ const Semester = () => {
     const [apiResponse, setApiResponse] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const nav = useNavigate();
 
     // Effect to fetch subjects when the component mounts or selectedSem changes
     useEffect(() => {
@@ -26,7 +28,6 @@ const Semester = () => {
                     });
                     const result = response.data;
                     setApiResponse(result);
-                    console.log('API Response:', result);
                 } catch (err) {
                     console.error('Error fetching subjects:', err);
                     setError('Failed to load subjects. Please try again.');
@@ -57,6 +58,9 @@ const Semester = () => {
     const handleSemClick = (sem) => {
         setSelectedSem(sem); // This will trigger the useEffect to fetch data
         Cookies.set("latest_sem", sem, { expires: 7 }); // Update the cookie
+    };
+    const handlechooose = (choose,sub) => {
+       nav(`/nss?choose=${choose}&subject=${sub}`);
     };
 
     return (
@@ -101,27 +105,39 @@ const Semester = () => {
                             {selectedSem && ( // Only show the title if a semester is selected
                                 <span ref={sectionRef} className="font-bold">Choose your subject for Semester {selectedSem}</span>
                             )}
-                            {loading && <p className="text-xl mt-4">Loading subjects...</p>}
+                            {loading && <p className="text-xl mt-4  cursor-progress ">  <div className=" " >
+                                                    <div class="book">
+                                                          <div className="flex flex-col gap-4 text-md cursor-progress  ">
+                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} ></div>
+                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} ></div>
+                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} ></div>
+                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} ></div>
+                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} ></div>
+                                                        </div>
+                                                        <div className=" p-2 cover border border-gray-300/60">
+                                                            <p>Loading...</p>
+                                                        </div>
+                                                    </div></div></p>}
                             {error && <p className="text-xl mt-4 text-red-500">{error}</p>}
                             {apiResponse && (
                                 <div className="mt-4 text-xl">
 
                                     {apiResponse && apiResponse.length > 0 ? (
-                                        <div className="grid gap-5 grid-cols-3 mx-8 fc md:grid-cols-2 lg:grid-cols-3">
+                                        <div className="grid gap-5 grid-cols-1 mx-8 fc md:grid-cols-1 lg:grid-cols-3">
                                             {apiResponse.map((subject) => (
                                                 <div className="" key={subject.id}>
- <div class="book">
-    <div className="flex flex-col gap-3 text-md cursor-pointer ">
-<button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >📚 Assignments</button>
-<button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >📝 Notes</button>
-<button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >❓ IMP Q&A </button>
-<button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >📄 Exam Papers</button>
-<button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >🧑‍💻 Genaral Book</button>
-    </div>
-    <div className=" p-2 cover border border-gray-300/60">
-        <p>{subject.name}</p>
-    </div>
-   </div></div>
+                                                    <div class="book">
+                                                        <div className="flex flex-col gap-3 text-md cursor-pointer ">
+                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Assignments", subject.name)} >📚 Assignments</button>
+                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Notes", subject.name)} >📝 Notes</button>
+                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("IMP", subject.name)} >❓ IMP Q&A </button>
+                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Exam", subject.name)} >📄 Exam Papers</button>
+                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Genaral", subject.name)} >🧑‍💻 Genaral Book</button>
+                                                        </div>
+                                                        <div className=" p-2 cover border border-gray-300/60">
+                                                            <p>{subject.name}</p>
+                                                        </div>
+                                                    </div></div>
                                             ))}
                                         </div>
                                     ) : (
