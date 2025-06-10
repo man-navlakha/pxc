@@ -60,7 +60,12 @@ const Semester = () => {
         Cookies.set("latest_sem", sem, { expires: 7 }); // Update the cookie
     };
     const handlechooose = (choose,sub) => {
-       nav(`/nss?course=B.C.A&choose=${choose}&sub=${sub}`);
+       choose === 'Notes' && nav(`/nss?course=B.C.A&sub=${sub}&choose=${choose}`);
+    choose === 'Assignment' && nav(`/select?course=B.C.A&sub=${sub}&choose=${choose}`);
+    choose === 'Exam' && nav(`/nss?course=B.C.A&sub=${sub}&choose=${choose}`);
+    choose === 'practical' && nav(`/nss?course=B.C.A&sub=${sub}&choose=${choose}`);
+    choose === 'I.M.P' &&
+    nav(`/select?course=B.C.A&sub=${sub}&choose=${choose}`);
     };
 
     return (
@@ -130,11 +135,11 @@ const Semester = () => {
                                                 <div className="" key={subject.id}>
                                                     <div class="book">
                                                         <div className="flex flex-col gap-3 text-md cursor-pointer ">
-                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Assignments", subject.name)} >📚 Assignments</button>
+                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Assignment", subject.name)} >📚 Assignments</button>
                                                             <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Notes", subject.name)} >📝 Notes</button>
-                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("IMP", subject.name)} >❓ IMP Q&A </button>
+                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("I.M.P", subject.name)} >❓ IMP Q&A </button>
                                                             <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Exam", subject.name)} >📄 Exam Papers</button>
-                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Genaral", subject.name)} >🧑‍💻 Genaral Book</button>
+                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("practical", subject.name)} >🧑‍💻 Genaral Book</button>
                                                         </div>
                                                         <div className=" p-2 cover border border-gray-300/60">
                                                             <p>{subject.name}</p>
@@ -143,7 +148,7 @@ const Semester = () => {
                                             ))}
                                         </div>
                                     ) : (
-                                        <p>No subjects found for this semester.</p>
+                                        <p className="text-xs text-red-500">No subjects found for this semester.</p>
                                     )}
 
                                 </div>
