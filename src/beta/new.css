@@ -1,23 +1,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 .geist {
   font-family: "Geist", sans-serif;
 }
+
 .Mont {
   font-family: "Montserrat", sans-serif;
 }
-.mesh_2{
-  
-      background: radial-gradient(at 88% 0%, #000000 0px, transparent 50%), radial-gradient(at 41% 38%, #012111 30px, transparent 100%), radial-gradient(at 75% 100%, #602080 30px, transparent 50%), radial-gradient(at 62% 66%, #b030b0 0px, transparent 50%), #000000;
+
+.mesh_sem {
+
+      background:#09203f;
     
+
 }
-.mesh{
-  
-      
-      background: radial-gradient(at 1.4547413793103448% 60%, #766161 0px, transparent 50%), radial-gradient(at 85.9375% 54.58333333333333%, #87a7b3 0px, transparent 50%), #000000;
+
+.mesh_sem2 {
+
+      background: radial-gradient(at 23.976293103448278% 36.666666666666664%, #17032c 0px, transparent 50%), radial-gradient(at 76.99353448275862% 58.54166666666667%, #d7b7ff 0px, transparent 50%), radial-gradient(at 41.43318965517241% 57.49999999999999%, #9078ec 0px, transparent 50%), radial-gradient(at 100% 100%, #000000 0px, transparent 50%), radial-gradient(at 0% 61.04166666666667%, #62b339 0px, transparent 50%), radial-gradient(at 0% 100%, #000000 0px, transparent 50%), #09203f;
     
-    
+
 }
+
+.mesh_2 {
+
+  background: radial-gradient(at 88% 0%, #000000 0px, transparent 50%), radial-gradient(at 41% 38%, #012111 30px, transparent 100%), radial-gradient(at 75% 100%, #602080 30px, transparent 50%), radial-gradient(at 62% 66%, #b030b0 0px, transparent 50%), #000000;
+
+}
+
+.mesh {
+
+
+  background: radial-gradient(at 1.4547413793103448% 60%, #766161 0px, transparent 50%), radial-gradient(at 85.9375% 54.58333333333333%, #87a7b3 0px, transparent 50%), #000000;
+
+
+}
+
 .border-gradient {
   border-bottom: 2px solid;
   border-image: linear-gradient(to right, rgb(255, 0, 0), purple, rgba(255, 0, 0, 0)) 1;

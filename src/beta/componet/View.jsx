@@ -2,13 +2,13 @@ import React from 'react'
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import Top from './Top-H'
 
-const Hero = () => {
+const View = () => {
   
       const navigate = useNavigate();
       const location = useLocation();
 
       const handleflow = () =>{
-        navigate("/beta/auth/login");
+        navigate("/beta/sem");
       }
   return (
     <div className='p-4 flex flex-col text-center content-center flex-nowrap jusify-center gap-3 items-center '>
@@ -16,15 +16,15 @@ const Hero = () => {
       <div>
         <span className='text-center m-3 text-3xl md:text-lg lg:text-3xl font-black bg-clip-text bg-gradient-to-br from-white to-zinc-500 text-transparent Mont '>Access Top-Quality PDF Notes Instantly!!</span>
       </div>
-      <div>
+      {/* <div>
         <span className='text-center text-md my-3 font-medium'>Experience premium handwritten notes! 🚀</span>
-      </div>
+      </div> */}
 
-      <div className='flex gap-3 mt-5'>
+      <div className='flex gap-3 mt-5' >
 
-        <div onClick={() => handleflow()}  className="flex items-center justify-center">
+        <div  onClick={() => handleflow()} className="flex items-center justify-center">
           <div className="relative group">
-            <button
+            <button 
               className="relative inline-block p-px font-semibold leading-6 text-zinc-400\80 bg-gray-800 shadow cursor-pointer shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95"
             >
               <span
@@ -34,7 +34,7 @@ const Hero = () => {
               <span className="relative z-0 block px-6 py-3  bg-gray-950">
                 <div className="relative z-10 flex items-center space-x-2">
                   <span className="transition-all duration-500 group-hover:translate-x-1"
-                  >Let's get started</span>
+                  >Browse all resources</span>
                   <svg
                     className="w-6 h-6 transition-transform duration-500 group-hover:translate-x-1"
                     data-slot="icon"
@@ -63,4 +63,4 @@ const Hero = () => {
   )
 }
 
-export default Hero
+export default View

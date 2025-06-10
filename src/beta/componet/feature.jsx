@@ -4,36 +4,20 @@ const Feature = () => {
     return (
         <>
             <div className=' Mont mesh p-5'>
-                <div className='flex flex-col text-left p-6 font-bold text-3xl  bg-clip-text bg-gradient-to-t from-[#fff] to-[#fff ] text-transparent'>
+                <div className='flex flex-col text-left p-6 font-bold text-3xl lg:text-4xl  bg-clip-text bg-gradient-to-t from-[#fff] to-[#fff] text-transparent'>
                     <span>
                         What us makes
                     </span>
-                    <span className='font-black bg-clip-text bg-gradient-to-t from-[#fff] to-[#607D8B ] text-transparent'>
+                    <span className='font-black bg-clip-text bg-gradient-to-t from-[#000] to-[#607D8B ] text-transparent'>
                         different
                     </span>
 
                 </div>
-                <div className='grid gap-4 text-white items-center 
-     grid-cols-1 
-     sm:grid-cols-2 
-     md:grid-cols-3 
-     lg:grid-flow-cols'>
-                    <div className='flex-1 flex max-w-[100vw]  p-4  flex-col justify-between overflow-hidden rounded-2xl border border-canvas-blue-900/[.06] bg-gray-100
-bg-clip-padding
-backdrop-filter
-backdrop-blur
-bg-opacity-10
-backdrop-saturate-100
-backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]'>
+                <div className='grid gap-4 text-white items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-flow-cols'>
+                    <div className='flex-1 flex max-w-[100vw]  p-4  flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/50 bg-gray-100 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]'>
 
                         <div className='flex pb-3'>
-                            <span className="material-symbols-outlined left-0 p-2 bg-green
-bg-clip-padding
-backdrop-filter
-backdrop-blur
-bg-opacity-10
-backdrop-saturate-100
-backdrop-contrast-100    border-2 border-[#f7fefc] rounded-xl shadow-[5px_5px_1px_0px_rgba(33,_33,_33,_1)] ">
+                            <span className="material-symbols-outlined left-0 p-2 bg-green bg-clip-padding backdrop-filter backdrop-blur bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100    border-2 border-[#f7fefc] rounded-xl shadow-[5px_5px_1px_0px_rgba(33,_33,_33,_1)] ">
                                 content_paste
                             </span>
                         </div>
@@ -51,7 +35,7 @@ backdrop-contrast-100    border-2 border-[#f7fefc] rounded-xl shadow-[5px_5px_1p
                         </div>
 
                     </div>
-                    <div className='flex-1 flex max-w-[100vw]  p-4  flex-col justify-between overflow-hidden rounded-2xl border border-canvas-blue-900/[.06] bg-gray-500
+                    <div className='flex-1 flex max-w-[100vw]  p-4  flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/50 bg-gray-500
 bg-clip-padding
 backdrop-filter
 backdrop-blur
@@ -84,7 +68,7 @@ backdrop-contrast-100 border-2 border-[#f7fefc] rounded-xl shadow-[5px_5px_1px_0
                         </div>
 
                     </div>
-                    <div className='flex-1 flex max-w-[100vw]  p-4  flex-col justify-between overflow-hidden rounded-2xl border border-canvas-blue-900/[.06] bg-gray-500
+                    <div className='flex-1 flex max-w-[100vw]  p-4  flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/50 bg-gray-500
 bg-clip-padding
 backdrop-filter
 backdrop-blur
@@ -117,7 +101,7 @@ backdrop-contrast-100 border-2 border-[#f7fefc] rounded-xl shadow-[5px_5px_1px_0
                         </div>
 
                     </div>
-                    <div className='flex-1 flex max-w-[100vw]  p-4  flex-col justify-between overflow-hidden rounded-2xl border border-canvas-blue-900/[.06] bg-gray-500
+                    <div className='flex-1 flex max-w-[100vw]  p-4  flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/50 bg-gray-500
 bg-clip-padding
 backdrop-filter
 backdrop-blur
@@ -150,7 +134,7 @@ backdrop-contrast-100 border-2 border-[#f7fefc] rounded-xl shadow-[5px_5px_1px_0
                         </div>
 
                     </div>
-                    <div className='flex-1 flex max-w-[100vw]  p-4  flex-col justify-between overflow-hidden rounded-2xl border border-canvas-blue-900/[.06] bg-gray-500
+                    <div className='flex-1 flex max-w-[100vw]  p-4  flex-col justify-between overflow-hidden rounded-2xl border border-gray-200/50 bg-gray-500
 bg-clip-padding
 backdrop-filter
 backdrop-blur
@@ -183,7 +167,7 @@ backdrop-contrast-100 border-2 border-[#f7fefc] rounded-xl shadow-[5px_5px_1px_0
                         </div>
 
                     </div>
-                      </div>
+                </div>
             </div>
         </>
         // <div className='flex flex-col justify-center content-center  items-center'>

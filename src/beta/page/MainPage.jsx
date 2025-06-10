@@ -6,6 +6,8 @@ import Cookies from "js-cookie";
 import Feature from '../componet/feature'
 import AskJavaQuestion from '../../componets/AskJavaQuestion'
 import Footer from '../componet/Footer';
+import Semester from './Sem';
+import View from '../componet/View';
 
 const MainPage = () => {
 
@@ -21,7 +23,7 @@ const MainPage = () => {
       <div className='geist text-white overflow-scroll flex flex-col text-center content-center flex-nowrap  gap-3 mb-2 bg-gradient-to-b from-green-900  to-transparent' >
         <Navbar />
 {
-  token ? '' : <>
+  token ? <View/> : <>
         <Hero />
         {/* <Feature /> */}
   </>

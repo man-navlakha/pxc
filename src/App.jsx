@@ -7,6 +7,7 @@ import './App.css';
 // Beta configs
 import Signup from './beta/auth/signup';
 import Blogin from './beta/auth/Login';
+import Sem from './beta/page/Sem';
 
 
 //Normal 
@@ -110,6 +111,7 @@ function App() {
                             <Route path="/beta/auth/signup" element={<Signup />} />
                             <Route path="/beta/auth/login" element={<Blogin />} />
                             <Route path="/beta/" element={<MainPage />} />
+                            <Route path="/beta/sem" element={<Sem />} />
 
 
 
