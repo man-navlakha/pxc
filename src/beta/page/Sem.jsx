@@ -111,14 +111,14 @@ const Semester = () => {
                                             {apiResponse.map((subject) => (
                                                 <div className="" key={subject.id}>
  <div class="book">
-    <div className="flex flex-col gap-2 cursor-pointer ">
-<button className="p-2 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >📚 Assignments</button>
-<button className="p-2 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >📝 Notes</button>
-<button className="p-2 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >❓ IMP Q&A </button>
-<button className="p-2 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >📄 Exam Papers</button>
-<button className="p-2 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >🧑‍💻 Genaral Book</button>
+    <div className="flex flex-col gap-3 text-md cursor-pointer ">
+<button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >📚 Assignments</button>
+<button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >📝 Notes</button>
+<button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >❓ IMP Q&A </button>
+<button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >📄 Exam Papers</button>
+<button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >🧑‍💻 Genaral Book</button>
     </div>
-    <div className=" p-2 cover">
+    <div className=" p-2 cover border border-gray-300/60">
         <p>{subject.name}</p>
     </div>
    </div></div>
