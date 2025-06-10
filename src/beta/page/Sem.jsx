@@ -56,7 +56,7 @@ const Semester = () => {
 
     const handleSemClick = (sem) => {
         setSelectedSem(sem); // This will trigger the useEffect to fetch data
-        Cookies.set("latest_sem", sem); // Update the cookie
+        Cookies.set("latest_sem", sem, { expires: 7 }); // Update the cookie
     };
 
     return (
@@ -77,7 +77,7 @@ const Semester = () => {
                 <div className='mesh_sem2 h-full p-5'>
                     <div className='grid gap-4 text-white items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-flow-cols'>
                         {Semesters.map((sem, index) => (
-                            <div className="relative" key={index}>
+                            <button className="relative" key={index}>
                                 <div
                                     className="absolute -inset-2 rounded-2xl bg-gradient-to-tr from-pink-600 via-green-600 to-pink-600 opacity-50 blur-2xl"
                                 ></div>
@@ -92,7 +92,7 @@ const Semester = () => {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </button>
                         ))}
                     </div>
 
@@ -107,11 +107,17 @@ const Semester = () => {
                                 <div className="mt-4 text-xl">
 
                                     {apiResponse && apiResponse.length > 0 ? (
-                                        <div className="grid gap-5 grid-cols-3 mx-8">
+                                        <div className="grid gap-5 grid-cols-3 mx-8 fc md:grid-cols-2 lg:grid-cols-3">
                                             {apiResponse.map((subject) => (
                                                 <div className="" key={subject.id}>
  <div class="book">
-    <p>Hello</p>
+    <div className="flex flex-col gap-2 cursor-pointer ">
+<button className="p-2 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >📚 Assignments</button>
+<button className="p-2 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >📝 Notes</button>
+<button className="p-2 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >❓ IMP Q&A </button>
+<button className="p-2 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >📄 Exam Papers</button>
+<button className="p-2 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={handleSemClick} >🧑‍💻 Genaral Book</button>
+    </div>
     <div className=" p-2 cover">
         <p>{subject.name}</p>
     </div>
