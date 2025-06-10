@@ -92,7 +92,7 @@ const Semester = () => {
                                     >
                                         <div className='text-xl font-bold flex items-center justify-center'>
                                             <span className="mr-1">Semester {sem}</span> {/* Added "Semester" prefix for display */}
-                                            <span className={` ${Cookies.get("latest_sem") === sem ? 'visible' : 'hidden'} border-green-600 text-green-600 bg-green-900/50 border rounded mr-1 p-1 text-xs`}>Last time Used</span>
+                                            <span className={` ${Cookies.get("latest_sem") === sem ? 'visible' : 'hidden'} border-green-600 text-green-600 bg-green-900/50 border rounded mr-1 p-1 text-xs`}>Active</span>
                                         </div>
                                     </div>
                                 </div>
