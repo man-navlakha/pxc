@@ -64,33 +64,35 @@ const Ns = () => {
 
 
 
-    const handleDownload = async (pdfUrl, pdfName, pdfId) => {
-        // Set loading state for the specific PDF
-        setLoadingStates(prevStates => ({ ...prevStates, [pdfId]: true }));
-        setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'downloading' }));
+  const handleDownload = async (pdfUrl, pdfName, pdfId) => {
+    setLoadingStates(prevStates => ({ ...prevStates, [pdfId]: true }));
+    setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'downloading' }));
 
-        try {
-            const response = await fetch(pdfUrl);
-            const blob = await response.blob();
-            const anchor = document.createElement("a");
-            anchor.href = URL.createObjectURL(blob);
-            anchor.download = pdfName || "download";
-            document.body.appendChild(anchor);
-            anchor.click();
-            document.body.removeChild(anchor);
+    try {
+        const response = await fetch(pdfUrl);
+        const arrayBuffer = await response.arrayBuffer(); // Get as ArrayBuffer
 
-            // Set download status to done for the specific PDF
-            setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'download_done' }));
-        } catch (error) {
-            console.error("Download failed:", error);
-            // Set download status to failed for the specific PDF
-            setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'error' }));
-        } finally {
-            // Always set loading to false for the specific PDF
-            setLoadingStates(prevStates => ({ ...prevStates, [pdfId]: false }));
-        }
-    };
+        // Create a Blob with a generic MIME type to encourage download
+        const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
 
+        const anchor = document.createElement("a");
+        anchor.href = URL.createObjectURL(blob);
+        anchor.download = `${pdfName}.pdf` || "download.pdf"; // Ensure a .pdf extension
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+
+        // Clean up the object URL
+        URL.revokeObjectURL(anchor.href);
+
+        setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'download_done' }));
+    } catch (error) {
+        console.error("Download failed:", error);
+        setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'error' }));
+    } finally {
+        setLoadingStates(prevStates => ({ ...prevStates, [pdfId]: false }));
+    }
+};
     return (
         <>
             <div className='mesh_ns h-screen Mont overflow-y-scroll '>
@@ -149,9 +151,9 @@ const Ns = () => {
                                             <p className='flex-1 text-xl'>{pdf.name}</p>
                                             <div className='flex gap-2 '>
 
-                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Size:</span> <span className='text-sm '> {pdfSizes[pdf.pdf] || "N/A"}</span></div>
-                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>type:</span> <span className='text-sm '> PDF</span></div>
-                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Year:</span> <span className='text-sm '> {pdf.year}</span></div>
+                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Size:</span> <span className='text-xs '> {pdfSizes[pdf.pdf] || "N/A"}</span></div>
+                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>type:</span> <span className='text-xs '> PDF</span></div>
+                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Year:</span> <span className='text-xs '> {pdf.year}</span></div>
                                             </div>
 
                                         </div>
