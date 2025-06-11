@@ -62,12 +62,12 @@ const Semester = () => {
     const handlechooose = (choose,sub) => {
         Cookies.set("sub",sub)
         Cookies.set("choose",choose)
-       choose === 'Notes' && nav(`/beta/nss?course=B.C.A&sub=${sub}&choose=${choose}`);
-    choose === 'Assignment' && nav(`/select?course=B.C.A&sub=${sub}&choose=${choose}`);
-    choose === 'Exam' && nav(`nss?course=B.C.A&sub=${sub}&choose=${choose}`);
-    choose === 'practical' && nav(`nss?course=B.C.A&sub=${sub}&choose=${choose}`);
+       choose === 'Notes' && nav(`/beta/nss`);
+    choose === 'Assignment' && nav(`/select`);
+    choose === 'Exam' && nav(`/beta/nss`);
+    choose === 'practical' && nav(`/beta/nss`);
     choose === 'I.M.P' &&
-    nav(`/select?course=B.C.A&sub=${sub}&choose=${choose}`);
+    nav(`/select`);
     };
 
     return (

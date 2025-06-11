@@ -146,7 +146,74 @@ background-image: radial-gradient(at 36% 6%, #000000 0%, transparent 60%), radia
   transform: rotatey(-80deg);
 }
 
-p {
-  font-size: 20px;
-  font-weight: bolder;
+/* From Uiverse.io by Enashpinal */ 
+.button_d {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 5.3em;
+  height: 5.3em;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.4em;
+  background: rgba(240, 240, 240, 0.9);
+}
+
+.window {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+
+.button_d:focus .container {
+  animation: wow 1s forwards;
+}
+
+@keyframes wow {
+  20% {
+    scale: 0.8;
+  }
+
+  30% {
+    scale: 1;
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+
+  65% {
+    transform: translateY(4px);
+  }
+
+  80% {
+    transform: translateY(0);
+  }
+
+  100% {
+    scale: 1;
+  }
+}
+
+.text {
+  content: "";
+  position: absolute;
+  top: -4.5em;
+  width: 7.7em;
+  height: 2.6em;
+  background-color: #666;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 5px;
+  text-shadow: 0 0 10px rgb(0, 0, 0);
+  opacity: 0;
+  transition: all 0.25s linear;
+}
+
+.button_d:hover .text {
+  opacity: 1;
 }
