@@ -51,9 +51,9 @@ const Select = () => {
             const response = await fetch(url, { method: 'HEAD' });
             const contentLength = response.headers.get('Content-Length');
             if (contentLength) {
-                setPdfSizes(prevSizes => ({
-                    ...prevSizes,
-                    [url]: (contentLength / 1024).toFixed(2) + ' KB' // Convert bytes to KB
+               setPdfSizes(prevSizes => ({
+          ...prevSizes,
+          [url]: (contentLength / (1024 * 1024)).toFixed(2) + ' MB' // Convert bytes to MB
                 }));
             }
 
@@ -152,12 +152,12 @@ const Select = () => {
                             className="w-12 h-12 object-contain"
                         />
                         <div className='flex-1 flex flex-col ml-2'>
-                            <p className='flex-1 text-2xl mb-2'>{pdfname}</p>
+                            <p className='flex-1 text-md mb-2'>{pdfname}</p>
                             <div className='flex gap-2 '>
 
-                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Size:</span> <span className='text-sm '>{pdfsize}</span></div>
-                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>type:</span> <span className='text-sm '>PDF</span></div>
-                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Year:</span> <span className='text-sm '> {pdfyear}</span></div>
+                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col '><span className='text-xs text-gray-300'>Size:</span> <span className='text-sm '>{pdfsize}</span></div>
+                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col '><span className='text-xs text-gray-300'>type:</span> <span className='text-sm '>PDF</span></div>
+                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col '><span className='text-xs text-gray-300'>Year:</span> <span className='text-sm '> {pdfyear}</span></div>
                             </div>
 
                         </div>
@@ -174,7 +174,7 @@ const Select = () => {
                 <div className='mx-6 font-bold text-white py-4'>
                     <span >Answers of {pdfname}</span>
                 </div>
-                <div className='grid gap-2 nd:grid-cols-1  lg:grid-cols-3 w-full text-white px-6 '>
+                <div className='grid gap-2 nd:grid-cols-1  lg:grid-cols-3 w-full text-white px-6 mb-6'>
                     {loading ? <div className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-green-600 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
 
                         <img
@@ -186,9 +186,9 @@ const Select = () => {
                             <p className='flex-1 text-xl'>loading...</p>
                             <div className='flex gap-2 '>
 
-                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Size:</span> <span className='text-sm '>loading...</span></div>
-                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>type:</span> <span className='text-sm '>loading...</span></div>
-                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Year:</span> <span className='text-sm '> loading...</span></div>
+                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>Size:</span> <span className='text-sm '>...</span></div>
+                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>type:</span> <span className='text-sm '>...</span></div>
+                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>Year:</span> <span className='text-sm '> ...</span></div>
                             </div>
 
                         </div>
@@ -212,12 +212,12 @@ const Select = () => {
                                             className="w-12 h-12 object-contain"
                                         />
                                         <div className='flex-1 flex flex-col'>
-                                            <p className='flex-1 text-md text-gray-400'> Description: <span className='text-gray-100'>{pdf.name}</span></p>
-                                            <div className='flex gap-2 '>
+                                            <p className='flex-1 text-md text-gray-400 pb-1'> Description: <span className='text-gray-100'>{pdf.name}</span></p>
+                                            <div className='flex gap-1'>
 
-                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Size:</span> <span className='text-xs '> {pdfSizes[pdf.pdf] || "N/A"}</span></div>
-                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>type:</span> <span className='text-xs '> PDF</span></div>
-                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Year:</span> <span className='text-xs '> {pdfyear}</span></div>
+                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>Size:</span> <span className='text-xs concat '> {pdfSizes[pdf.pdf] || "N/A"}</span></div>
+                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>type:</span> <span className='text-xs concat '> PDF</span></div>
+                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>Year:</span> <span className='text-xs concat '> {pdfyear}</span></div>
                                             </div>
 
                                         </div>
