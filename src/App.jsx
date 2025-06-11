@@ -41,6 +41,7 @@ import Load from './componets/Timer'
 import ProtectedRoute from "./ProtectedRoute";
 import Bettary from "./utils/Bettary";
 import MainPage from "./beta/page/MainPage";
+import Ns from "./beta/page/mainpages/Ns";
 
 function App() {
     const [loading, setLoading] = useState(false); // Add loading state
@@ -114,6 +115,7 @@ function App() {
                             <Route path="/beta/" element={<MainPage />} />
                             <Route path="/beta/sem" element={<Sem />} />
                             <Route path="/beta/profile" element={<Prof />} />
+                            <Route path="/beta/nss" element={<Ns />} />
 
 
 

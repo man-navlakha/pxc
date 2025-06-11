@@ -60,10 +60,12 @@ const Semester = () => {
         Cookies.set("latest_sem", sem, { expires: 7 }); // Update the cookie
     };
     const handlechooose = (choose,sub) => {
-       choose === 'Notes' && nav(`/nss?course=B.C.A&sub=${sub}&choose=${choose}`);
+        Cookies.set("sub",sub)
+        Cookies.set("choose",choose)
+       choose === 'Notes' && nav(`/beta/nss?course=B.C.A&sub=${sub}&choose=${choose}`);
     choose === 'Assignment' && nav(`/select?course=B.C.A&sub=${sub}&choose=${choose}`);
-    choose === 'Exam' && nav(`/nss?course=B.C.A&sub=${sub}&choose=${choose}`);
-    choose === 'practical' && nav(`/nss?course=B.C.A&sub=${sub}&choose=${choose}`);
+    choose === 'Exam' && nav(`nss?course=B.C.A&sub=${sub}&choose=${choose}`);
+    choose === 'practical' && nav(`nss?course=B.C.A&sub=${sub}&choose=${choose}`);
     choose === 'I.M.P' &&
     nav(`/select?course=B.C.A&sub=${sub}&choose=${choose}`);
     };
