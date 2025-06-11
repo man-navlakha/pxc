@@ -5,8 +5,6 @@ import Top from './Top-H'
 const Hero = () => {
   
       const navigate = useNavigate();
-      const location = useLocation();
-
       const handleflow = () =>{
         navigate("/beta/auth/login");
       }

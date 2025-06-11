@@ -42,6 +42,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import Bettary from "./utils/Bettary";
 import MainPage from "./beta/page/MainPage";
 import Ns from "./beta/page/mainpages/Ns";
+import Nss from "./beta/page/mainpages/Nss";
+import Select from "./beta/page/mainpages/Select";
 
 function App() {
     const [loading, setLoading] = useState(false); // Add loading state
@@ -115,7 +117,9 @@ function App() {
                             <Route path="/beta/" element={<MainPage />} />
                             <Route path="/beta/sem" element={<Sem />} />
                             <Route path="/beta/profile" element={<Prof />} />
-                            <Route path="/beta/nss" element={<Ns />} />
+                            <Route path="/beta/ns" element={<Ns />} />
+                            <Route path="/beta/nss" element={<Nss />} />
+                            <Route path="/beta/select" element={<Select />} />
 
 
 
