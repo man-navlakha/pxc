@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import '../new.css'
 import Cookies from "js-cookie";
 import Navbar from '../componet/Navbar'
@@ -7,6 +7,7 @@ import Footer from '../componet/Footer'
 const Profile = () => {
     const Username = Cookies.get("username");
     const sem = Cookies.get("latest_sem");
+
   return (
     <>
             <div className="bg-pattern"></div>
@@ -46,6 +47,7 @@ timeline
       <div className='text-center p-2 bg-green-900 font-medium border border-green-600 text-green-200 rounded-lg'>
         Last selected sem is: <strong>{sem}</strong>
       </div>
+     
       </div>
     </div>
     <Footer/>

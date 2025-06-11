@@ -65,6 +65,31 @@ const Ns = () => {
 
 
   const handleDownload = async (pdfUrl, pdfName, pdfId) => {
+    // Helper function to get download history from Local Storage
+    const getDownloadHistory = () => {
+        try {
+            const historyString = localStorage.getItem('downloadHistory');
+            return historyString ? JSON.parse(historyString) : [];
+        } catch (error) {
+            console.error("Error parsing download history from Local Storage:", error);
+            return [];
+        }
+    };
+
+    // Helper function to save download history to Local Storage
+    const saveDownloadHistory = (history) => {
+        try {
+            // Optional: Limit the number of items to prevent Local Storage from growing too large
+            const MAX_HISTORY_ITEMS = 50; // Adjust this number as needed
+            if (history.length > MAX_HISTORY_ITEMS) {
+                history = history.slice(0, MAX_HISTORY_ITEMS); // Keep only the most recent items
+            }
+            localStorage.setItem('downloadHistory', JSON.stringify(history));
+        } catch (error) {
+            console.error("Error saving download history to Local Storage:", error);
+        }
+    };
+
     setLoadingStates(prevStates => ({ ...prevStates, [pdfId]: true }));
     setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'downloading' }));
 
@@ -86,6 +111,18 @@ const Ns = () => {
         URL.revokeObjectURL(anchor.href);
 
         setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'download_done' }));
+
+        // --- Store download details in Local Storage ---
+        const history = getDownloadHistory();
+        const newDownload = {
+            pdfName: pdfName,
+            pdfUrl: pdfUrl,
+            downloadDate: new Date().toISOString() // Store date and time in ISO format
+        };
+        history.unshift(newDownload); // Add new item to the beginning (most recent first)
+        saveDownloadHistory(history);
+        // --- End Local Storage logic ---
+
     } catch (error) {
         console.error("Download failed:", error);
         setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'error' }));
