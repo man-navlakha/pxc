@@ -152,7 +152,7 @@ const Select = () => {
                             className="w-12 h-12 object-contain"
                         />
                         <div className='flex-1 flex flex-col ml-2'>
-                            {/* <p className='flex-1 text-2xl mb-2'>{pdfname}</p> */}
+                            <p className='flex-1 text-2xl mb-2'>{pdfname}</p>
                             <div className='flex gap-2 '>
 
                                 <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Size:</span> <span className='text-sm '>{pdfsize}</span></div>
