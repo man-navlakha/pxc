@@ -10,6 +10,8 @@ const Ns = () => {
     const choose = Cookies.get("choose");
 
     const [loading, setLoading] =useState(false);
+    const [downloadStates, setDownloadStates] = useState({});
+  const [loadingStates, setLoadingStates] = useState({});
     const [pdfData, setPdfData] = useState([]);
 
 
@@ -36,20 +38,33 @@ const Ns = () => {
         });
     }
   }, []);
-const handleDownload = async (url, fileName) => {
-  try {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const anchor = document.createElement("a");
-    anchor.href = URL.createObjectURL(blob);
-    anchor.download = fileName || "download";
-    document.body.appendChild(anchor);
-    anchor.click();
-    document.body.removeChild(anchor);
-  } catch (error) {
-    console.error("Download failed:", error);
-  }
-};
+  const handleDownload = async (pdfUrl, pdfName, pdfId) => {
+    // Set loading state for the specific PDF
+    setLoadingStates(prevStates => ({ ...prevStates, [pdfId]: true }));
+    setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'downloading' }));
+
+    try {
+      const response = await fetch(pdfUrl);
+      const blob = await response.blob();
+      const anchor = document.createElement("a");
+      anchor.href = URL.createObjectURL(blob);
+      anchor.download = pdfName || "download";
+      document.body.appendChild(anchor);
+      anchor.click();
+      document.body.removeChild(anchor);
+
+      // Set download status to done for the specific PDF
+      setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'download_done' }));
+    } catch (error) {
+      console.error("Download failed:", error);
+      // Set download status to failed for the specific PDF
+      setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'error' }));
+    } finally {
+      // Always set loading to false for the specific PDF
+      setLoadingStates(prevStates => ({ ...prevStates, [pdfId]: false }));
+    }
+  };
+
     return (
         <>
             <div className='mesh_ns h-screen Mont overflow-y-scroll '>
@@ -73,17 +88,28 @@ const handleDownload = async (url, fileName) => {
   pdfData
    .filter(pdf => pdf.choose === choose)    
   .map((pdf, index) => (
-    <div key={index} className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-600 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
+    <div key={index} className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-green-600 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
 
                       <img
                         src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
                         alt="PDF Icon"
                         className="w-12 h-12 object-contain"
                       />
-      <p className='flex-1'>{pdf.name}</p>
-  <div onClick={() => handleDownload(pdf.pdf, pdf.name)} class="group relative mr-31">
+                      <div className='flex-1 flex flex-col'>
+<p className='flex-1 text-xl'>{pdf.name}</p>
+<div className='flex gap-2 '>
+
+<div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Size:</span> <span className='text-sm '> N/A</span></div>
+<div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>type:</span> <span className='text-sm '> PDF</span></div>
+<div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Year:</span> <span className='text-sm '> {pdf.year}</span></div>
+</div>
+
+                      </div>
+  <div onClick={() => handleDownload(pdf.pdf, pdf.name,pdf.id)} class="group relative mr-31">
     <button>
-      <span class="material-symbols-outlined">download</span>
+       <span className="material-symbols-outlined">
+              {loadingStates[pdf.id] ? 'arrow_circle_down' : (downloadStates[pdf.id] || 'download')}
+            </span>
     </button>
   </div>
 
