@@ -9,61 +9,87 @@ const Ns = () => {
     const Subject = Cookies.get("sub");
     const choose = Cookies.get("choose");
 
-    const [loading, setLoading] =useState(false);
+    const [loading, setLoading] = useState(false);
     const [downloadStates, setDownloadStates] = useState({});
-  const [loadingStates, setLoadingStates] = useState({});
+    const [loadingStates, setLoadingStates] = useState({});
     const [pdfData, setPdfData] = useState([]);
+    const [pdfSizes, setPdfSizes] = useState({});
 
 
 
-     useEffect(() => {
-    if (Subject) {
-      setLoading(true); // Set loading to true before fetching data
-      fetch('https://pixel-classes.onrender.com/api/home/QuePdf/Subject_Pdf', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ course_name: "B.C.A", sub: Subject }),
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log('Success:', data);
-          setPdfData(data); 
-          setLoading(false); 
-        })
-        .catch((error) => {
-          console.error('Error:', error);
-          setLoading(false); // Set loading to false in case of error
-        });
-    }
-  }, []);
-  const handleDownload = async (pdfUrl, pdfName, pdfId) => {
-    // Set loading state for the specific PDF
-    setLoadingStates(prevStates => ({ ...prevStates, [pdfId]: true }));
-    setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'downloading' }));
+    useEffect(() => {
+        if (Subject) {
+            setLoading(true); // Set loading to true before fetching data
+            fetch('https://pixel-classes.onrender.com/api/home/QuePdf/Subject_Pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ course_name: "B.C.A", sub: Subject }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Success:', data);
+                    setPdfData(data);
+                    data.forEach(pdf => {
+                        if (pdf.pdf) {
+                            fetchPdfSize(pdf.pdf);
+                        }
+                    });
+                    setLoading(false);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    setLoading(false); // Set loading to false in case of error
+                });
+        }
+    }, []);
 
-    try {
-      const response = await fetch(pdfUrl);
-      const blob = await response.blob();
-      const anchor = document.createElement("a");
-      anchor.href = URL.createObjectURL(blob);
-      anchor.download = pdfName || "download";
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
 
-      // Set download status to done for the specific PDF
-      setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'download_done' }));
-    } catch (error) {
-      console.error("Download failed:", error);
-      // Set download status to failed for the specific PDF
-      setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'error' }));
-    } finally {
-      // Always set loading to false for the specific PDF
-      setLoadingStates(prevStates => ({ ...prevStates, [pdfId]: false }));
-    }
-  };
+    const fetchPdfSize = async (url) => {
+        try {
+            const response = await fetch(url, { method: 'HEAD' });
+            const contentLength = response.headers.get('Content-Length');
+            if (contentLength) {
+                setPdfSizes(prevSizes => ({
+                    ...prevSizes,
+                    [url]: (contentLength / 1024).toFixed(2) + ' KB' // Convert bytes to KB
+                }));
+            }
+          
+        } catch (error) {
+            console.error('Error fetching PDF size:', error);
+        }
+    };
+
+
+
+    const handleDownload = async (pdfUrl, pdfName, pdfId) => {
+        // Set loading state for the specific PDF
+        setLoadingStates(prevStates => ({ ...prevStates, [pdfId]: true }));
+        setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'downloading' }));
+
+        try {
+            const response = await fetch(pdfUrl);
+            const blob = await response.blob();
+            const anchor = document.createElement("a");
+            anchor.href = URL.createObjectURL(blob);
+            anchor.download = pdfName || "download";
+            document.body.appendChild(anchor);
+            anchor.click();
+            document.body.removeChild(anchor);
+
+            // Set download status to done for the specific PDF
+            setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'download_done' }));
+        } catch (error) {
+            console.error("Download failed:", error);
+            // Set download status to failed for the specific PDF
+            setDownloadStates(prevStates => ({ ...prevStates, [pdfId]: 'error' }));
+        } finally {
+            // Always set loading to false for the specific PDF
+            setLoadingStates(prevStates => ({ ...prevStates, [pdfId]: false }));
+        }
+    };
 
     return (
         <>
@@ -81,70 +107,70 @@ const Ns = () => {
                 </div>
 
 
-                <div className='flex gap-2 md:flex-col flex-col w-full lg:max-w-[360px] lg:flex-row text-white p-6 '>
-                        {loading ?  <div className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-green-600 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
+                <div className='grid gap-2 nd:grid-cols-1  lg:grid-cols-3 w-full text-white p-6 '>
+                    {loading ? <div className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-green-600 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
 
-                      <img
-                        src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
-                        alt="PDF Icon"
-                        className="w-12 h-12 object-contain"
-                      />
-                      <div className='flex-1 flex flex-col'>
-<p className='flex-1 text-xl'>loading...</p>
-<div className='flex gap-2 '>
+                        <img
+                            src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
+                            alt="PDF Icon"
+                            className="w-12 h-12 object-contain"
+                        />
+                        <div className='flex-1 flex flex-col'>
+                            <p className='flex-1 text-xl'>loading...</p>
+                            <div className='flex gap-2 '>
 
-<div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Size:</span> <span className='text-sm '>loading...</span></div>
-<div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>type:</span> <span className='text-sm '>loading...</span></div>
-<div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Year:</span> <span className='text-sm '> loading...</span></div>
-</div>
+                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Size:</span> <span className='text-sm '>loading...</span></div>
+                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>type:</span> <span className='text-sm '>loading...</span></div>
+                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Year:</span> <span className='text-sm '> loading...</span></div>
+                            </div>
 
-                      </div>
-  <div  class="group relative mr-31">
-    <button>
-       <span className="material-symbols-outlined"> arrow_circle_down
-            </span>
-    </button>
-  </div>
+                        </div>
+                        <div class="group relative mr-31">
+                            <button>
+                                <span className="material-symbols-outlined"> arrow_circle_down
+                                </span>
+                            </button>
+                        </div>
 
-    </div> : 
-                        
-                       pdfData.length > 0 ? (
-  pdfData
-   .filter(pdf => pdf.choose === choose)    
-  .map((pdf, index) => (
-    <div key={index} className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-green-600 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
+                    </div> :
 
-                      <img
-                        src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
-                        alt="PDF Icon"
-                        className="w-12 h-12 object-contain"
-                      />
-                      <div className='flex-1 flex flex-col'>
-<p className='flex-1 text-xl'>{pdf.name}</p>
-<div className='flex gap-2 '>
+                        pdfData.length > 0 ? (
+                            pdfData
+                                .filter(pdf => pdf.choose === choose)
+                                .map((pdf, index) => (
+                                    <div key={index} className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-green-600 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
 
-<div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Size:</span> <span className='text-sm '> N/A</span></div>
-<div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>type:</span> <span className='text-sm '> PDF</span></div>
-<div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Year:</span> <span className='text-sm '> {pdf.year}</span></div>
-</div>
+                                        <img
+                                            src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
+                                            alt="PDF Icon"
+                                            className="w-12 h-12 object-contain"
+                                        />
+                                        <div className='flex-1 flex flex-col'>
+                                            <p className='flex-1 text-xl'>{pdf.name}</p>
+                                            <div className='flex gap-2 '>
 
-                      </div>
-  <div onClick={() => handleDownload(pdf.pdf, pdf.name,pdf.id)} class="group relative mr-31">
-    <button>
-       <span className="material-symbols-outlined">
-              {loadingStates[pdf.id] ? 'arrow_circle_down' : (downloadStates[pdf.id] || 'download')}
-            </span>
-    </button>
-  </div>
+                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Size:</span> <span className='text-sm '> {pdfSizes[pdf.pdf] || "N/A"}</span></div>
+                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>type:</span> <span className='text-sm '> PDF</span></div>
+                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl '><span className='text-xs text-gray-300'>Year:</span> <span className='text-sm '> {pdf.year}</span></div>
+                                            </div>
 
-    </div>
-  ))
-) : (
-  <p>No file for this</p>
-)
+                                        </div>
+                                        <div onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)} class="group relative mr-31">
+                                            <button>
+                                                <span className="material-symbols-outlined">
+                                                    {loadingStates[pdf.id] ? 'arrow_circle_down' : (downloadStates[pdf.id] || 'download')}
+                                                </span>
+                                            </button>
+                                        </div>
 
-                        
-                        }
+                                    </div>
+                                ))
+                        ) : (
+                            <p>No file for this</p>
+                        )
+
+
+                    }
                 </div>
 
             </div>
