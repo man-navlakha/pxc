@@ -67,9 +67,13 @@ const Ns = () => {
 
 
 
-  const handleDownload = async (pdfId) => {
-    navigate(`/beta/select`)
-    Cookies.set("pdfid" , pdfId)
+  const handleDownload = async (pdfId, pdfSizes, pdfurl, pdfname, pdfyear) => {
+      Cookies.set("pdfid" , pdfId)
+      Cookies.set("pdfSizes" , pdfSizes)
+      Cookies.set("pdfurl" , pdfurl)
+      Cookies.set("pdfname" , pdfname)
+      Cookies.set("pdfyear" , pdfyear)
+      navigate(`/beta/select`)
 };
     return (
         <>
@@ -135,7 +139,7 @@ const Ns = () => {
                                             </div>
 
                                         </div>
-                                        <div onClick={() => handleDownload(pdf.id)} class="group relative mr-31">
+                                        <div onClick={() => handleDownload(pdf.id, pdfSizes[pdf.pdf], pdf.pdf, pdf.name, pdf.year)} class="group relative mr-31">
                                             <button>
                                                 <span className="material-symbols-outlined">
                                                     open_in_new

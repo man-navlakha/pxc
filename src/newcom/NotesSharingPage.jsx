@@ -11,10 +11,10 @@ const NotesSharingPage = () => {
   const queryParams = new URLSearchParams(location.search);
   const [loading, setLoading] = useState(false);
   const [loading2, setLoading2] = useState(false);
-  const subb = queryParams.get("sub");
+  // const subb = queryParams.get("sub");
   const idFromUrl = queryParams.get("id");
-  const course = queryParams.get("course");
-  const [title, setTitle] = useState("");
+  // const course = queryParams.get("course");
+  // const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [files, setFiles] = useState([]);
   const [notes, setNotes] = useState([]);
@@ -25,9 +25,12 @@ const NotesSharingPage = () => {
   const [error, setError] = useState("");
   const sub = queryParams.get("sub");
   const choose = queryParams.get("choose");
+
   const handleFileChange = (e) => {
     setFiles(Array.from(e.target.files));
   };
+
+
   function getCookie(name) {
     // Create a regular expression to search for the cookie by name
     const nameEQ = name + "=";
@@ -44,21 +47,21 @@ const NotesSharingPage = () => {
     // Return null if cookie is not found
     return null;
   }
-  const handleAddNote = () => {
-    if (title.trim() && content.trim()) {
-      const newNote = {
-        id: Date.now(),
-        title,
-        content,
-        files,
-      };
-      setNotes([newNote, ...notes]);
-      setTitle("");
-      setContent(`${content} + ${choose}`);
-      setFiles([]);
-      setIsModalOpen(false);
-    }
-  };
+  // const handleAddNote = () => {
+  //   if (title.trim() && content.trim()) {
+  //     const newNote = {
+  //       id: Date.now(),
+  //       title,
+  //       content,
+  //       files,
+  //     };
+  //     setNotes([newNote, ...notes]);
+  //     setTitle("");
+  //     setContent(`${content} + ${choose}`);
+  //     setFiles([]);
+  //     setIsModalOpen(false);
+  //   }
+  // };
 
   const handleDeleteNote = (id) => {
     setNotes(notes.filter((note) => note.id !== id));
