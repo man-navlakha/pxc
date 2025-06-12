@@ -144,7 +144,7 @@ const Select = () => {
                 </div>
 
                 <div className='mx-6'>
-                    <div className="flex gap-2 max-w-[100vw] text-white items-center  px-6 p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-blue-600 hover:shadow-lg hover:bg-blue-500/20 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
+                    <div onClick={() => handleDownload(pdfurl, pdfname, pdfid)} className="flex gap-2 max-w-[100vw] text-white items-center  px-6 p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-blue-600 hover:shadow-lg hover:bg-blue-500/20 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
 
                         <img
                             src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
@@ -188,7 +188,7 @@ const Select = () => {
 
                                 <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>Size:</span> <span className='text-sm '>...</span></div>
                                 <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>type:</span> <span className='text-sm '>...</span></div>
-                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>Year:</span> <span className='text-sm '> ...</span></div>
+                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>Year:</span> <span className='text-sm '>...</span></div>
                             </div>
 
                         </div>
@@ -204,7 +204,7 @@ const Select = () => {
                         pdfData.length > 0 ? (
                             pdfData
                                 .map((pdf, index) => (
-                                    <div key={index} className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-green-600 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
+                                    <div key={index} onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)} className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-green-600 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
 
                                         <img
                                             src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"

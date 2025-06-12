@@ -73,7 +73,7 @@ const Semester = () => {
     return (
         <>
             <div className="bg-pattern"></div>
-            <div className='mesh_sem Mont h-max'>
+            <div className='mesh_sem Mont h-full min-h-screen'>
                 <Navbar />
                 <div className='mont'>
                     <div className='p-4 py-16 flex flex-col text-center content-center flex-nowrap justify-center gap-3 items-center'>
@@ -85,7 +85,7 @@ const Semester = () => {
                         </div>
                     </div>
                 </div>
-                <div className='mesh_sem2 h-full p-5'>
+                <div className={`${selectedSem ? 'visible mt-10 h-max' : 'h-screen'} mesh_sem2  p-5`}>
                     <div className='grid gap-4 text-white items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-flow-cols'>
                         {Semesters.map((sem, index) => (
                             <button className="relative" key={index}>
@@ -107,7 +107,7 @@ const Semester = () => {
                         ))}
                     </div>
 
-                    <div className={` ${selectedSem ? 'visible mt-10 h-full' : 'hidden'} text-2xl lg:text-3xl text-white`}>
+                    <div className={` ${selectedSem ? 'visible mt-10' : 'hidden'} mx-20 text-2xl lg:text-3xl text-white`}>
                         <div>
                             {selectedSem && ( // Only show the title if a semester is selected
                                 <span ref={sectionRef} className="font-bold mb-8">Choose your subject for Semester {selectedSem}</span>
