@@ -25,14 +25,11 @@ const MainPage = () => {
 {
   token ? <View/> : <>
         <Hero />
-        {/* <Feature /> */}
        <Feature />
   </>
   
 }
       </div>
-      {/* <div className='geist h-screen text-white overflow-scroll flex flex-col text-center content-center flex-nowrap  gap-3  ' style={{ background: "radial-gradient(circle, rgb(10, 121, 45), #000)" }}>
-      </div> */}
       <Footer/>
 
       </div>

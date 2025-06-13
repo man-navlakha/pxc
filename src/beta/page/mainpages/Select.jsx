@@ -161,7 +161,7 @@ const Select = () => {
                             </div>
 
                         </div>
-                        <div onClick={() => handleDownload(pdfurl, pdfname, pdfid)} class="group relative mr-31">
+                        <div onClick={() => handleDownload(pdfurl, pdfname, pdfid)} className="group relative mr-31">
                             <button>
                                 <span className="material-symbols-outlined">
                                     {loadingStates[pdfid] ? 'arrow_circle_down' : (downloadStates[pdfid] || 'download')}
@@ -192,7 +192,7 @@ const Select = () => {
                             </div>
 
                         </div>
-                        <div class="group relative mr-31">
+                        <div className="group relative mr-31">
                             <button>
                                 <span className="material-symbols-outlined"> arrow_circle_down
                                 </span>
@@ -204,7 +204,7 @@ const Select = () => {
                         pdfData.length > 0 ? (
                             pdfData
                                 .map((pdf, index) => (
-                                    <div key={index} onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)} className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-green-600 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
+                                    <div key={index} onClick={() => handleDownload(pdf.pdf, `Answer of ${pdfname} by ${pdf.name}`, pdf.id)} className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-green-600 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
 
                                         <img
                                             src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
@@ -221,7 +221,7 @@ const Select = () => {
                                             </div>
 
                                         </div>
-                                        <div onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)} class="group relative mr-31">
+                                        <div onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)} className="group relative mr-31">
                                             <button>
                                                 <span className="material-symbols-outlined">
                                                     {loadingStates[pdf.id] ? 'arrow_circle_down' : (downloadStates[pdf.id] || 'download')}

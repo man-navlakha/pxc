@@ -27,12 +27,12 @@ const Profile = () => {
 </div>
       <div className='flex font-bold'>
             <div className='py-2 flex items-center gap-2 text-md px-3 bg-red-500 rounded-l'>
-                <span class="material-symbols-outlined">
+                <span className="material-symbols-outlined">
 logout
 </span> Logout
             </div>
             <div className='py-2 flex items-center gap-2 text-md px-3 bg-white rounded-r'>
-              <span class="material-symbols-outlined">
+              <span className="material-symbols-outlined">
 edit_square
 </span>  Update
             </div>
@@ -41,7 +41,7 @@ edit_square
       </div>
       <div className='p-6 rounded-t-[40px] border-t-2 h-max overflow-scroll mt-10 profile_2'>
 
-        <span className='text-center text-md my-3 font-bold text-white flex items-center gap-2 text-xl'> <span class="material-symbols-outlined">
+        <span className='text-center text-md my-3 font-bold text-white flex items-center gap-2 text-xl'> <span className="material-symbols-outlined">
 timeline
 </span> Your activity</span>
       <div className='text-center p-2 bg-green-900 font-medium border border-green-600 text-green-200 rounded-lg'>

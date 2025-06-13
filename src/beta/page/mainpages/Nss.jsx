@@ -109,7 +109,7 @@ const Ns = () => {
                             </div>
 
                         </div>
-                        <div class="group relative mr-31">
+                        <div className="group relative mr-31">
                             <button>
                                 <span className="material-symbols-outlined"> arrow_circle_down
                                 </span>
@@ -139,7 +139,7 @@ const Ns = () => {
                                             </div>
 
                                         </div>
-                                        <div onClick={() => handleDownload(pdf.id, pdfSizes[pdf.pdf], pdf.pdf, pdf.name, pdf.year)} class="group relative mr-31">
+                                        <div onClick={() => handleDownload(pdf.id, pdfSizes[pdf.pdf], pdf.pdf, pdf.name, pdf.year)} className="group relative mr-31">
                                             <button>
                                                 <span className="material-symbols-outlined">
                                                     open_in_new

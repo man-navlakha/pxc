@@ -14,6 +14,7 @@ const login = () => {
     const [loading, setLoading] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [error, setError] = useState(null);
+    const [last, setLast] = useState(Cookies.get("last") || null);
     const [sucsses, setSucsses] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
@@ -45,6 +46,7 @@ const login = () => {
                 Cookies.set("username", res.data.username);
 
                 setSucsses("Login Sucssesful");
+                Cookies.set("last","Google");
                 setTimeout(() => {
 
                     const redirectTo = "/beta";
@@ -60,6 +62,7 @@ const login = () => {
 
     }
 
+    console.error(last)
 
    const logmein = async (e) => {
     e.preventDefault();
@@ -77,6 +80,7 @@ const login = () => {
             Cookies.set("username", ress.data.username);
 
             setSucsses("Login Sucssesful");
+            Cookies.set("last","email");
             setTimeout(() => {
                 const redirectTo = "/beta";
                 navigate(redirectTo, { replace: true });
@@ -90,6 +94,8 @@ const login = () => {
     } finally {
         setLoading(false);
     }
+    console.error(last)
+
 }
     return (
         <>
@@ -112,23 +118,32 @@ const login = () => {
                         {sucsses && <p className="text-green-600 text-center font-bold m-2 text-md">{sucsses}</p>}
 
        {loading ? <div className="flex justify-center">
-<div class=" border-t-2 rounded-full border-gray-500 bg-gray-300 animate-spin
+<div className=" border-t-2 rounded-full border-gray-500 bg-gray-300 animate-spin
 aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
-                                </div> :<>
+                                </div> :
+                                
+                                
+                                <>
+
                         <GoogleLogin
                             onSuccess={googlelogin}
                             onError={() => console.log('Login Failed')}
                             />
                         
+
+
                         <div className='flex my-4 items-center gap-2 text-center text-gray-500 '>
                             <span className='border-b-2 border-gray-200 flex-1'></span>
                             <div className='text-xs'>Or use email</div>
                             <span className='border-b-2 border-gray-200 flex-1'></span>
                         </div>
 
+
+
                         <div>
                          
-                            <form onSubmit={logmein} className={`flex flex-col gap-3 ${loading ? 'hidden' : ''}`}>
+                            <form onSubmit={logmein} className={`flex flex-col ${last === "email" ? 'border border-green-500 p-2' : '' } gap-3 ${loading ? 'hidden' : ''}`}>
+                                {last === "email" ? "Last Used" : ""}
                                 <div className='flex flex-col gap-1'>
                                     <div>
 

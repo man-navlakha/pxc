@@ -46,7 +46,7 @@ import Nss from "./beta/page/mainpages/Nss";
 import Select from "./beta/page/mainpages/Select";
 
 function App() {
-    const [loading, setLoading] = useState(false); // Add loading state
+    const [loading, setLoading] = useState(true); // Add loading state
     const [userName, setUserName] = useState("");
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [courses, setCourses] = useState([]);
@@ -99,13 +99,8 @@ function App() {
             ) : (
                 <p className="w-screen text-center p-2 bg-red-500 text-white">You are offline!</p>
             )}
-         {/* <Bettary/> */}
-            {loading ? (
-                <div>
-                    <Load />
-                </div>
-            ) : (
-                <>
+        {/* <p className={` ${loading ? 'visible ':'hidden'} w-screen text-center p-2 bg-blue-500 text-white`} ><span className="m-2">Please wait!</span> <span className="m-2">Please wait!</span> <span className="m-2">Please wait!</span></p> */}
+
                     <div className="App dark:bg-[#1e1e1e] dark:text-white bg-white">
                         <Routes>
                             <Route path="*" element={<NotFound />} />
@@ -186,9 +181,6 @@ function App() {
                             />
                         </Routes>
                     </div>
-                </>
-            )}
-
         </>
     );
 }

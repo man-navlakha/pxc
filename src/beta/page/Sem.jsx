@@ -113,7 +113,7 @@ const Semester = () => {
                                 <span ref={sectionRef} className="font-bold mb-8">Choose your subject for Semester {selectedSem}</span>
                             )}
                             {loading && <p className="text-xl mt-4  cursor-progress ">  <div className=" " >
-                                                    <div class="book">
+                                                    <div className="book">
                                                           <div className="flex flex-col gap-4 text-md cursor-progress  ">
                                                             <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} ></div>
                                                             <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} ></div>
@@ -135,7 +135,7 @@ const Semester = () => {
                                         <div className="grid gap-5 grid-cols-1 mx-8 fc md:grid-cols-1 lg:grid-cols-3">
                                             {apiResponse.map((subject) => (
                                                 <div className="" key={subject.id}>
-                                                    <div class="book">
+                                                    <div className="book">
                                                         <div className="flex flex-col gap-3 text-md cursor-pointer ">
                                                             <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Assignment", subject.name)} >📚 Assignments</button>
                                                             <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Notes", subject.name)} >📝 Notes</button>

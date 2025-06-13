@@ -164,7 +164,7 @@ const Ns = () => {
                             </div>
 
                         </div>
-                        <div class="group relative mr-31">
+                        <div className="group relative mr-31">
                             <button>
                                 <span className="material-symbols-outlined"> arrow_circle_down
                                 </span>
@@ -194,7 +194,7 @@ const Ns = () => {
                                             </div>
 
                                         </div>
-                                        <div onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)} class="group relative mr-31">
+                                        <div onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)} className="group relative mr-31">
                                             <button>
                                                 <span className="material-symbols-outlined">
                                                     {loadingStates[pdf.id] ? 'arrow_circle_down' : (downloadStates[pdf.id] || 'download')}
