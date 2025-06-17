@@ -2,14 +2,18 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
 
+.ccf {
+  font-family: "Bricolage Grotesque", sans-serif;
+}
 
 .geist {
   font-family: "Geist", sans-serif;
 }
 
 .fc {
-  font-family: "Sour Gummy" ,"Dancing Script", "Pacifico", "Bradley Hand", cursive;
+  font-family: "Sour Gummy", "Dancing Script", "Pacifico", "Bradley Hand", cursive;
 }
 
 .Mont {
@@ -18,21 +22,35 @@
 
 .mesh_sem {
 
-      background:#09203f;
-    
+  background: #09203f;
+
 
 }
 
 .mesh_sem2 {
 
-      background: radial-gradient(at 23.976293103448278% 36.666666666666664%, #17032c 0px, transparent 50%), radial-gradient(at 76.99353448275862% 58.54166666666667%, #d7b7ff 0px, transparent 50%), radial-gradient(at 41.43318965517241% 57.49999999999999%, #9078ec 0px, transparent 50%), radial-gradient(at 100% 100%, #000000 0px, transparent 50%), radial-gradient(at 0% 61.04166666666667%, #62b339 0px, transparent 50%), radial-gradient(at 0% 100%, #000000 0px, transparent 50%), #09203f;
-    
+  background: radial-gradient(at 23.976293103448278% 36.666666666666664%, #17032c 0px, transparent 50%), radial-gradient(at 76.99353448275862% 58.54166666666667%, #d7b7ff 0px, transparent 50%), radial-gradient(at 41.43318965517241% 57.49999999999999%, #9078ec 0px, transparent 50%), radial-gradient(at 100% 100%, #000000 0px, transparent 50%), radial-gradient(at 0% 61.04166666666667%, #62b339 0px, transparent 50%), radial-gradient(at 0% 100%, #000000 0px, transparent 50%), #09203f;
+
+
+}
+
+.mesh_hero {
+
+
+background-color:hsla(138,0%,0%,1);
+background-image:
+radial-gradient(at 2% 45%, hsla(91,0%,0%,1) 0px, transparent 50%),
+radial-gradient(at 55% 9%, hsla(91,0%,0%,1) 0px, transparent 50%),
+radial-gradient(at 27% 48%, hsla(181,0%,0%,1) 0px, transparent 50%),
+radial-gradient(at 0% 0%, hsla(151,100%,20%,1) 0px, transparent 50%);
+
+
 
 }
 
 .mesh_2 {
 
-  background: radial-gradient(at 88% 0%, #000000 0px, transparent 50%), radial-gradient(at 41% 38%, #012111 30px, transparent 100%), radial-gradient(at 75% 100%, #602080 30px, transparent 50%), radial-gradient(at 62% 66%, #b030b0 0px, transparent 50%), #000000;
+  background: radial-gradient(at 88% 0%, #000000 0px, transparent 50%), radial-gradient(at 41% 38%, #01211100 0px, transparent 100%), radial-gradient(at 95% 100%, #b030b069 50px, transparent 80%), radial-gradient(at 62% 66%, #b030b069 0px, transparent 50%), #000000;
 
 }
 
@@ -43,27 +61,29 @@
 
 
 }
-.mesh_profile{
-  
-      
-      background: radial-gradient(at 75.16163793103449% 8.125%, #0315b9 0px, transparent 50%), radial-gradient(at 15.463362068965516% 10.625%, #012c11 0px, transparent 50%), radial-gradient(at 45.63577586206897% 32.916666666666664%, #7874f2 0px, transparent 50%), #2F9599;
-    
-    
+
+.mesh_profile {
+
+
+  background: radial-gradient(at 75.16163793103449% 8.125%, #0315b9 0px, transparent 50%), radial-gradient(at 15.463362068965516% 10.625%, #012c11 0px, transparent 50%), radial-gradient(at 45.63577586206897% 32.916666666666664%, #7874f2 0px, transparent 50%), #2F9599;
+
+
 }
 
-.mesh_select{
-  
-      background: radial-gradient(at 8.243534482758621% 69.375%, #380e7f 0px, transparent 50%), radial-gradient(at 51.34698275862068% 30%, #6915cf 0px, transparent 50%), radial-gradient(at 30.226293103448278% 51.041666666666664%, #d62196 0px, transparent 50%), radial-gradient(at 78.60991379310344% 54.37499999999999%, #e497cd 0px, transparent 50%), #000;
-    
+.mesh_select {
+
+  background: radial-gradient(at 8.243534482758621% 69.375%, #380e7f 0px, transparent 50%), radial-gradient(at 51.34698275862068% 30%, #6915cf 0px, transparent 50%), radial-gradient(at 30.226293103448278% 51.041666666666664%, #d62196 0px, transparent 50%), radial-gradient(at 78.60991379310344% 54.37499999999999%, #e497cd 0px, transparent 50%), #000;
+
 }
-.profile_2{
+
+.profile_2 {
   background-color: #254336;
-background-image: radial-gradient(at 35% 31%, #254336 0%, transparent 60%), radial-gradient(at 88% 42%, #6b8a7a 0%, transparent 50%), radial-gradient(at 55% 10%, #b7b597 0%, transparent 40%), radial-gradient(at 44% 4%, #dad3be 0%, transparent 30%);
+  background-image: radial-gradient(at 35% 31%, #254336 0%, transparent 60%), radial-gradient(at 88% 42%, #6b8a7a 0%, transparent 50%), radial-gradient(at 55% 10%, #b7b597 0%, transparent 40%), radial-gradient(at 44% 4%, #dad3be 0%, transparent 30%);
 }
 
-.mesh_ns{
-background-color: #000000;
-background-image: radial-gradient(at 36% 6%, #000000 0%, transparent 60%), radial-gradient(at 74% 21%, #4e4feb 0%, transparent 50%), radial-gradient(at 48% 81%, #068fff 0%, transparent 40%), radial-gradient(at 90% 61%, #eeeeee 0%, transparent 30%);
+.mesh_ns {
+  background-color: #000000;
+  background-image: radial-gradient(at 36% 6%, #000000 0%, transparent 60%), radial-gradient(at 74% 21%, #4e4feb 0%, transparent 50%), radial-gradient(at 48% 81%, #068fff 0%, transparent 40%), radial-gradient(at 90% 61%, #eeeeee 0%, transparent 30%);
 }
 
 
@@ -96,7 +116,7 @@ background-image: radial-gradient(at 36% 6%, #000000 0%, transparent 60%), radia
 
 
 
-/* From Uiverse.io by eslam-hany */ 
+/* From Uiverse.io by eslam-hany */
 .book {
   position: relative;
   border-radius: 10px;
@@ -152,7 +172,7 @@ background-image: radial-gradient(at 36% 6%, #000000 0%, transparent 60%), radia
   transform: rotatey(-80deg);
 }
 
-/* From Uiverse.io by Enashpinal */ 
+/* From Uiverse.io by Enashpinal */
 .button_d {
   position: relative;
   display: flex;

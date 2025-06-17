@@ -3,7 +3,7 @@ import React from 'react'
 const Feature = () => {
     return (
         <>
-            <div className=' Mont mesh p-5'>
+            <div className=' ccf mesh p-5'>
                 <div className='flex flex-col text-left p-6 font-bold text-3xl lg:text-4xl  bg-clip-text bg-gradient-to-t from-[#fff] to-[#fff] text-transparent'>
                     <span>
                         What makes us

@@ -101,12 +101,12 @@ const login = () => {
         <>
             <div className="bg-pattern "></div>
 
-            <div className='geist flex flex-col bg-[#000]/20' style={{ background: "radial-gradient(circle, rgb(10, 121, 45), #000)" }}>
+            <div className='ccf flex flex-col bg-[#000]/20' style={{ background: "radial-gradient(circle, rgb(10, 121, 45), #000)" }}>
 
                 <div className='flex items-center flex-col  min-h-screen justify-center p-6'>
                     <div>
                         <div className="flex items-center justify-center mt-2 max-w-[360px]">
-                            <Link to={'/'}>
+                            <Link to={'/beta'}>
                                 <img src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png" alt="Pixel Class logo" className="mr-2 w-full h-full " />
                             </Link>
                         </div>

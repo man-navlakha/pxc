@@ -11,10 +11,10 @@ const View = () => {
         navigate("/beta/sem");
       }
   return (
-    <div className='p-4 flex h-screen text-white flex-col text-center content-center flex-nowrap jusify-center gap-3 items-center '>
+    <div className='p-4 flex h-max text-white flex-col text-center content-center flex-nowrap jusify-center gap-3 items-center '>
       <Top />
       <div>
-        <span className='text-center m-3 text-3xl md:text-lg lg:text-3xl font-black bg-clip-text bg-gradient-to-br from-white to-zinc-500 text-transparent Mont '>Access Top-Quality PDF Notes Instantly!!</span>
+        <span className='text-center m-3 text-3xl md:text-lg lg:text-5xl font-black bg-clip-text bg-gradient-to-br from-white to-zinc-500 text-transparent ccf '>Access Top-Quality PDF Notes Instantly!!</span>
       </div>
       {/* <div>
         <span className='text-center text-md my-3 font-medium'>Experience premium handwritten notes! 🚀</span>

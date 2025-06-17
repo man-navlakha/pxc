@@ -133,12 +133,12 @@ const Select = () => {
 
     return (
         <>
-            <div className='mesh_select h-screen Mont overflow-y-scroll '>
+            <div className='mesh_select h-screen ccf overflow-y-scroll '>
                 <Navbar />
-                <div className='mont'>
+                <div className='ccf'>
                     <div className='py-16 flex flex-col text-center content-center flex-nowrap justify-center items-center'>
                         <div>
-                            <span className='text-center text-3xl md:text-lg lg:text-3xl font-black bg-clip-text bg-gradient-to-tr from-slate-100 to-stone-500 text-transparent Mont '>Get Answer of {pdfname} for free?</span>
+                            <span className='text-center text-3xl md:text-lg lg:text-3xl font-black bg-clip-text bg-gradient-to-tr from-slate-100 to-stone-500 text-transparent ccf '>Get Answer of {pdfname} for free?</span>
                         </div>
                     </div>
                 </div>

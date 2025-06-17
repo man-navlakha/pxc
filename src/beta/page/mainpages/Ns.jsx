@@ -132,15 +132,15 @@ const Ns = () => {
 };
     return (
         <>
-            <div className='mesh_ns h-screen Mont overflow-y-scroll '>
+            <div className='mesh_ns h-screen ccf overflow-y-scroll '>
                 <Navbar />
-                <div className='mont'>
+                <div className='ccf'>
                     <div className='p-4 py-16 flex flex-col text-center content-center flex-nowrap justify-center gap-3 items-center'>
                         <div>
-                            <span className='text-center m-3 text-3xl md:text-lg lg:text-3xl font-black bg-clip-text bg-gradient-to-tr from-slate-100 to-stone-500 text-transparent Mont '>Dowmload Free {choose}?</span>
+                            <span className='text-center m-3 text-3xl md:text-lg lg:text-5xl font-black bg-clip-text bg-gradient-to-tr from-slate-100 to-stone-500 text-transparent ccf '>Dowmload Free {choose}?</span>
                         </div>
                         <div>
-                            <span className='text-center text-md my-3 text-gray-300 font-medium'>for {Subject},({sem})</span>
+                            <span className='text-center text-xl md:text-xl lg:text-2xl my-3 text-gray-300 font-medium'>for {Subject},({sem})</span>
                         </div>
                     </div>
                 </div>

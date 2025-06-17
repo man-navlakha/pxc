@@ -8,29 +8,34 @@ import AskJavaQuestion from '../../componets/AskJavaQuestion'
 import Footer from '../componet/Footer';
 import Semester from './Sem';
 import View from '../componet/View';
+import Faq from '../componet/Faq';
 
 const MainPage = () => {
 
-          const token = Cookies.get("access_token");
-        
+  const token = Cookies.get("access_token");
+
 
   return (
     <>
-    <div className='bg-black Mont'>
+      <div className='mesh_hero ccf'>
 
 
-      <div className="bg-pattern "></div>
-        <div className='geist text-white overflow-scroll flex flex-col text-center content-center flex-nowrap  gap-3 mb-2 bg-gradient-to-b from-green-900  to-transparent' >
-        <Navbar />
-{
-  token ? <View/> : <>
-        <Hero />
-       <Feature />
-  </>
-  
-}
-      </div>
-      <Footer/>
+        <div className="bg-pattern "></div>
+        <div className='ccf text-white flex flex-col text-center content-center flex-nowrap  gap-3 mb-2' >
+          <Navbar />
+          {
+            token ? <>
+              <View />
+            </>
+              : <>
+                <Hero />
+                <Feature />
+              </>
+
+          }
+<Faq />
+        </div>
+        <Footer />
 
       </div>
     </>

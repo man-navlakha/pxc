@@ -73,15 +73,15 @@ const Semester = () => {
     return (
         <>
             <div className="bg-pattern"></div>
-            <div className='mesh_sem Mont h-full min-h-screen'>
+            <div className='mesh_sem ccf h-full min-h-screen'>
                 <Navbar />
-                <div className='mont'>
+                <div className='ccf'>
                     <div className='p-4 py-16 flex flex-col text-center content-center flex-nowrap justify-center gap-3 items-center'>
                         <div>
-                            <span className='text-center m-3 text-3xl md:text-lg lg:text-3xl font-black bg-clip-text bg-gradient-to-tr from-slate-100 to-stone-500 text-transparent Mont '>Ready to Conquer Your BCA Semester?</span>
+                            <span className='text-center m-3 text-3xl md:text-lg lg:text-5xl font-black bg-clip-text bg-gradient-to-tr from-slate-100 to-stone-500 text-transparent ccf '>Ready to Conquer Your BCA Semester?</span>
                         </div>
                         <div>
-                            <span className='text-center text-md my-3 text-gray-300 font-medium'>Tap your Semester to unlock all essential study materials. 🚀</span>
+                            <span className='text-center text-xl md:text-xl lg:text-2xl my-3 text-gray-300 font-medium'>Tap your semester to unlock study materials. 🚀</span>
                         </div>
                     </div>
                 </div>
@@ -107,7 +107,7 @@ const Semester = () => {
                         ))}
                     </div>
 
-                    <div className={` ${selectedSem ? 'visible mt-10' : 'hidden'} mx-20 text-2xl lg:text-3xl text-white`}>
+                    <div className={` ${selectedSem ? 'visible mt-10' : 'hidden'}  text-2xl lg:text-3xl text-white`}>
                         <div>
                             {selectedSem && ( // Only show the title if a semester is selected
                                 <span ref={sectionRef} className="font-bold mb-8">Choose your subject for Semester {selectedSem}</span>
@@ -129,10 +129,10 @@ const Semester = () => {
                             <div className={`${loading ? 'hidden' : ''}`}>
                                 
                             {apiResponse && (
-                                <div className="mt-4 text-xl">
+                                <div className="mt-4 ml-10 text-xl">
 
                                     {apiResponse && apiResponse.length > 0 ? (
-                                        <div className="grid gap-5 grid-cols-1 mx-8 fc md:grid-cols-1 lg:grid-cols-3">
+                                        <div className="grid gap-5 grid-cols-1 fc md:grid-cols-1 lg:grid-cols-3">
                                             {apiResponse.map((subject) => (
                                                 <div className="" key={subject.id}>
                                                     <div className="book">

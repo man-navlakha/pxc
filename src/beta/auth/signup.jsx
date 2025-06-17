@@ -35,7 +35,7 @@ const signup = () => {
         <>
             <div className="bg-pattern "></div>
 
-            <div className='geist flex flex-col bg-[#000]/20' style={{ background: "radial-gradient(circle, rgb(10, 121, 45), #000)" }}>
+            <div className='ccf flex flex-col bg-[#000]/20' style={{ background: "radial-gradient(circle, rgb(10, 121, 45), #000)" }}>
 
                 <div className='flex items-center flex-col  min-h-screen justify-center p-6'>
                     <div>

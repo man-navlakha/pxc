@@ -12,14 +12,14 @@ const Profile = () => {
     <>
             <div className="bg-pattern"></div>
 
-    <div className='mesh_profile Mont text-white h-full min-h-screen'>
+    <div className='mesh_profile ccf text-white h-full min-h-screen'>
     <Navbar/>
     <div className='flex flex-col items-center mt-10 justify-center'>
       <div>
         <span className='text-center text-md my-3 font-medium'>Hello 👋,</span>
       </div>
            <div>
-        <span className='text-center m-3 text-4xl md:text-lg lg:text-5xl font-black bg-clip-text bg-gradient-to-tr from-blue-300 to-green-500 text-transparent Mont '>{Username || "Guest"}</span>
+        <span className='text-center m-3 text-4xl md:text-lg lg:text-5xl font-black bg-clip-text bg-gradient-to-tr from-blue-300 to-green-500 text-transparent ccf '>{Username || "Guest"}</span>
       </div>
       <div className='flex flex-col items-center justify-center text-black'>
 <div className='max-w-[60px] rounded-3xl'>
