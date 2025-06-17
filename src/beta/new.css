@@ -36,14 +36,10 @@
 
 .mesh_hero {
 
-
 background-color:hsla(138,0%,0%,1);
 background-image:
-radial-gradient(at 2% 45%, hsla(91,0%,0%,1) 0px, transparent 50%),
-radial-gradient(at 55% 9%, hsla(91,0%,0%,1) 0px, transparent 50%),
-radial-gradient(at 27% 48%, hsla(181,0%,0%,1) 0px, transparent 50%),
-radial-gradient(at 0% 0%, hsla(151,100%,20%,1) 0px, transparent 50%);
-
+radial-gradient(at 0% 100%, hsla(181,0%,0%,1) 0px, transparent 50%),
+radial-gradient(at 50% 56%, hsla(151,100%,20%,1) 50px, transparent 50%);
 
 
 }

@@ -17,11 +17,11 @@ const MainPage = () => {
 
   return (
     <>
-      <div className='mesh_hero ccf'>
+      <div className='bg-black ccf'>
 
 
         <div className="bg-pattern "></div>
-        <div className='ccf text-white flex flex-col text-center content-center flex-nowrap  gap-3 mb-2' >
+        <div className='ccf text-white flex flex-col text-center content-center flex-nowrap' >
           <Navbar />
           {
             token ? <>
@@ -33,7 +33,7 @@ const MainPage = () => {
               </>
 
           }
-<Faq />
+          <Faq />
         </div>
         <Footer />
 

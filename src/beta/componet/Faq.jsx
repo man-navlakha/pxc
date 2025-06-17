@@ -11,7 +11,7 @@ const Faq = () => {
 
     return (
 
-        <div className="bg-black h-max min-h-screen text-white py-3 -my-3">
+        <div className="bg-black h-max min-h-screen text-white py-3">
             {/* <div className="flex justify-center space-x-4 mb-10">
         <button className="border border-white px-4 py-2">SHIPPING + RETURNS</button>
         <button className="border border-white px-4 py-2">PRODUCT</button>

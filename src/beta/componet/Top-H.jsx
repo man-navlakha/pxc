@@ -3,7 +3,7 @@ import React from 'react'
 const Top = () => {
   return (
     <div>
-      <div className='mt-10 bg-neutral-800  w-max-[360px] w-full py-1 px-2 flex flex-nowrap flex-row mx-auto content-center items-center justify-center rounded-3xl border '>
+      <div className='mt-10 bg-neutral-800  w-[200px]  py-1 px-2 flex flex-nowrap flex-row mx-auto content-center items-center justify-center rounded-3xl border '>
         
         <div className='font-bold overflow-hidden'>
             <span className='bg-green-700 text-white font-bold px-2 rounded-3xl' style={{background: 'linear-gradient(135deg, rgb(122, 105, 249), rgb(242, 99, 120), rgb(245, 131, 63))'}} >New</span> 
