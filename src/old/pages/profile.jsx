@@ -1,9 +1,9 @@
 import React from 'react';
 import 'tailwindcss/tailwind.css';
 import Cookies from 'js-cookie';
-import GoBack from '../componets/GoBack';
-import LastF from '../componets/LastF';
-import Footer from '../componets/Footer';
+import GoBack from '../old/componets/GoBack';
+import LastF from '../old/componets/LastF';
+import Footer from '../old/componets/Footer';
 import { useNavigate } from 'react-router-dom'; // Make sure to import useNavigate
 import { useEffect } from 'react'; // Import useEffect
 

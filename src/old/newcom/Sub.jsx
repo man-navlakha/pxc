@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import GoBack from "../componets/GoBack";
-import Sem from "../componets/sem";
-import Sub_loader from "../componets/Sub_loader";
+import GoBack from "../old/componets/GoBack";
+import Sem from "../old/componets/sem";
+import Sub_loader from "../old/componets/Sub_loader";
 
 const Sub = () => {
   const location = useLocation();

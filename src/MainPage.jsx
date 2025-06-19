@@ -1,14 +1,12 @@
 import React, { useState } from 'react'
-import Navbar from '../componet/Navbar'
-import Hero from '../componet/Hero'
-import '../new.css'
+import Navbar from './componet/Navbar'
+import Hero from './componet/Hero'
+import './new.css'
 import Cookies from "js-cookie";
-import Feature from '../componet/feature'
-import AskJavaQuestion from '../../componets/AskJavaQuestion'
-import Footer from '../componet/Footer';
-import Semester from './Sem';
-import View from '../componet/View';
-import Faq from '../componet/Faq';
+import Feature from './componet/feature'
+import Footer from './componet/Footer';
+import View from './componet/View';
+import Faq from './componet/Faq';
 
 const MainPage = () => {
 

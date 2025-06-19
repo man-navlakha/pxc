@@ -5,45 +5,50 @@ import axios from "axios";
 import './App.css';
 
 // Beta configs
-import Signup from './beta/auth/signup';
-import Blogin from './beta/auth/Login';
-import Sem from './beta/page/Sem';
-import Prof from './beta/page/Profile';
-
+import Signup from './auth/signup';
+import Blogin from './auth/Login';
+import Sem from './Sem';
+import Prof from './Profile';
 
 //Normal 
 import NotFound from './NotFound';
-import Sign from './newcom/Sign';
-import Verify from './newcom/veri';
-import Login from './newcom/Login';
-import Home from './newcom/home';
-import Subj from './newcom/Subj';
-import Sub from './newcom/Sub';
-import Open from './newcom/open';
-import NotesSharingPage from './newcom/NotesSharingPage';
-import Pdfs from "./pages/pdfs";
-import './index.css';
-import Logout from './newcom/Logout';
-import Forgetpassword from './pages/Forgetpassword';
-import Newpassword from './newcom/newpassword';
-import Footer from './componets/Footer';
-import Team from './pages/Team';
-import Faq from './pages/Faq';
-import Career from './pages/Career';
-import Help from './pages/Help';
-import Profile from "./pages/profile";
-import Maintainces from "./pages/MaintenancePage";
-import Choose from "./pages/Choose";
-import Search from "./pages/Search";
-import Exam from "./pages/exam";
-import Load from './componets/Timer'
 
+
+
+
+// import Sign from './old/newcom/Sign';
+// import Verify from './old/newcom/veri';
+// import Login from './old/newcom/Login';
+// import Home from './old/newcom/home';
+// import Subj from './old/newcom/Subj';
+// import Sub from './old/newcom/Sub';
+// import Open from './old/newcom/open';
+// import NotesSharingPage from './old/newcom/NotesSharingPage';
+// import Pdfs from "./pages/pdfs";
+import './index.css';
+import Logout from './old/newcom/Logout';
+// import Forgetpassword from './pages/Forgetpassword';
+// import Newpassword from './old/newcom/newpassword';
+// import Exam from "./old/pages/exam";
+// import Load from './old/componets/Timer'
+// import Bettary from "./utils/Bettary";
+// import Footer from './old/componets/Footer';
+// import Profile from "./pages/profile";
+// import Maintainces from "./pages/MaintenancePage";
+// import Choose from "./pages/Choose";
+// import Faq from './old/pages/Faq';
+// import Help from './old/pages/Help';
+import Team from './old/pages/Team';
+import Career from './old/pages/Career';
+import Search from "./old/pages/Search";
 import ProtectedRoute from "./ProtectedRoute";
-import Bettary from "./utils/Bettary";
-import MainPage from "./beta/page/MainPage";
-import Ns from "./beta/page/mainpages/Ns";
-import Nss from "./beta/page/mainpages/Nss";
-import Select from "./beta/page/mainpages/Select";
+
+
+import Ns from "./page/mainpages/Ns";
+import Nss from "./page/mainpages/Nss";
+import Select from "./page/mainpages/Select";
+
+import MainPage from "./MainPage";
 
 function App() {
     const [loading, setLoading] = useState(true); // Add loading state
@@ -104,33 +109,35 @@ function App() {
                     <div className="App dark:bg-[#1e1e1e] dark:text-white bg-white">
                         <Routes>
                             <Route path="*" element={<NotFound />} />
-                            <Route path="/" element={<Home />} />
+                            {/* <Route path="/" element={<Home />} /> */}
 
                             {/* Beta */}
-                            <Route path="/beta/auth/signup" element={<Signup />} />
-                            <Route path="/beta/auth/login" element={<Blogin />} />
-                            <Route path="/beta/" element={<MainPage />} />
-                            <Route path="/beta/sem" element={<Sem />} />
-                            <Route path="/beta/profile" element={<Prof />} />
-                            <Route path="/beta/ns" element={<Ns />} />
-                            <Route path="/beta/nss" element={<Nss />} />
-                            <Route path="/beta/select" element={<Select />} />
+                            <Route path="/auth/signup" element={<Signup />} />
+                            <Route path="/auth/login" element={<Blogin />} />
+                            <Route path="/" element={<MainPage />} />
+                            <Route path="/sem" element={<Sem />} />
+                            <Route path="/profile" element={<Prof />} />
+                            <Route path="/ns" element={<Ns />} />
+                            <Route path="/nss" element={<Nss />} />
+                            <Route path="/select" element={<Select />} />
 
 
 
-                            <Route path="/sub" element={<Subj />} />
+                            <Route path="/logout" element={<Logout />} />
+                            {/* <Route path="/sub" element={<Subj />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/open" element={<Open />} />
                             <Route path="/signup" element={<Sign />} />
                             <Route path="/verification" element={<Verify />} />
-                            <Route path="/logout" element={<Logout />} />
                             <Route path="/fgpassword" element={<Forgetpassword />} />
                             <Route path="/newpassword/:token" element={<Newpassword />} />
-                            <Route path="/footer" element={<Footer />} />
+                            <Route path="/footer" element={<Footer />} /> */}
+
                             <Route path="/team" element={<Team />} />
-                            <Route path="/faq" element={<Faq />} />
+                            {/* <Route path="/faq" element={<Faq />} /> */}
                             <Route path="/career" element={<Career />} />
-                            <Route path="/help" element={<Help />} />
+                            {/* <Route path="/help" element={<Help />} /> */}
+{/*                             
                             <Route
                                 path="/profile"
                                 element={
@@ -170,7 +177,7 @@ function App() {
                                         <Exam />
                                     </ProtectedRoute>
                                 }
-                            />
+                            /> */}
                             <Route
                                 path="/search"
                                 element={

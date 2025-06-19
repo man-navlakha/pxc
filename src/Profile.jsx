@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import '../new.css'
+import './new.css'
 import Cookies from "js-cookie";
-import Navbar from '../componet/Navbar'
-import Footer from '../componet/Footer'
+import Navbar from './componet/Navbar'
+import Footer from './componet/Footer'
 
 const Profile = () => {
     const Username = Cookies.get("username");

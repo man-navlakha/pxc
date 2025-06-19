@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Navbar from "../componets/Navbar";
-import LastF from "../componets/LastF";
-import Card from "../componets/Card";
-import Cbtn from "../componets/Cbtn";
+import Navbar from "../old/componets/Navbar";
+import LastF from "../old/componets/LastF";
+import Card from "../old/componets/Card";
+import Cbtn from "../old/componets/Cbtn";
 import Cookies from "js-cookie"; // Importing js-cookie library
 import "../index.css"; // Import css file
-import Footer from "../componets/Footer";
+import Footer from "../old/componets/Footer";
 import Team from "../pages/Team";
-import Load from "../componets/Loader";
+import Load from "../old/componets/Loader";
 import axios from "axios"; // Import axios for API calls
-import CTA7 from "../componets/CTA7";
-import NoteSharingCTA from "../componets/NoteSharingCTA";
-import Exam from "../componets/Exam";
-import AskJavaQuestion from "../componets/AskJavaQuestion";
+import CTA7 from "../old/componets/CTA7";
+import NoteSharingCTA from "../old/componets/NoteSharingCTA";
+import Exam from "../old/componets/Exam";
+import AskJavaQuestion from "../old/componets/AskJavaQuestion";
 
 const Home = () => {
   const [userName, setUserName] = useState("");

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import Navbar from '../componets/Navbar';
-import Okmain from '../componets/feqq';
-import Footer from '../componets/Footer';
-import LastF from '../componets/LastF';
+import Navbar from '../old/componets/Navbar';
+import Okmain from '../old/componets/feqq';
+import Footer from '../old/componets/Footer';
+import LastF from '../old/componets/LastF';
 
 const Faq = () => {
  

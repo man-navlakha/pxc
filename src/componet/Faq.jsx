@@ -36,17 +36,17 @@ const Faq = () => {
                         ></i>
                     </div>
                     <p id="content-payment-methods" className={`mt-2 ${openSection === 'works' ? '' : 'hidden'}`}>
-                    <span class="font-semibold">Here’s how Pixel Class works for downloading study materials:</span>
+                    <span className="font-semibold">Here’s how Pixel Class works for downloading study materials:</span>
     <br />
-    <span class="text-blue-600 font-medium">Browse Resources:</span> Click on the <span class="font-semibold">"Browse all resources"</span> button.
+    <span className="text-blue-600 font-medium">Browse Resources:</span> Click on the <span className="font-semibold">"Browse all resources"</span> button.
     <br />
-    <span class="text-green-600 font-medium">Select Semester:</span> Choose the semester you need (e.g., Semester 4).
+    <span className="text-green-600 font-medium">Select Semester:</span> Choose the semester you need (e.g., Semester 4).
     <br />
-    <span class="text-purple-600 font-medium">Pick a Subject:</span> Select your subject from the available list.
+    <span className="text-purple-600 font-medium">Pick a Subject:</span> Select your subject from the available list.
     <br />
-    <span class="text-orange-600 font-medium">Choose the Resource Type:</span> Options may include <span class="font-semibold">Notes, Assignments, Important Questions (Imp), Past Papers, etc.</span>
+    <span className="text-orange-600 font-medium">Choose the Resource Type:</span> Options may include <span className="font-semibold">Notes, Assignments, Important Questions (Imp), Past Papers, etc.</span>
     <br />
-    <span class="text-red-600 font-medium">Download the File:</span> Select the file, and it will download directly.
+    <span className="text-red-600 font-medium">Download the File:</span> Select the file, and it will download directly.
     <br />
                     </p>
                 </div>
@@ -126,10 +126,10 @@ const Faq = () => {
                         ></i>
                     </div>
                     <p id="content-payment-methods" className={`mt-2 ${openSection === 'isstu' ? '' : 'hidden'}`}>
-                        <div class="">
-                            <p class="text-lg font-semibold mb-4">Yes! <strong className='text-green-500'>Pixel Class</strong> allows students to upload their notes under the <strong className='text-green-500'>Assignment</strong> section. Here’s how:</p>
+                        <div className="">
+                            <p className="text-lg font-semibold mb-4">Yes! <strong className='text-green-500'>Pixel Class</strong> allows students to upload their notes under the <strong className='text-green-500'>Assignment</strong> section. Here’s how:</p>
 
-                            <ol class="list-decimal list-inside space-y-3">
+                            <ol className="list-decimal list-inside space-y-3">
                                 <li><strong>Go to the Assignment Page:</strong> Select your subject.</li>
                                 <li><strong>Click on "Add Your Note":</strong> This will open a popup.</li>
                                 <li><strong>Attach Your File:</strong> Upload the document you want to share.</li>
@@ -183,7 +183,7 @@ const Faq = () => {
                     <p id="content-refund-time" className={`mt-2 ${openSection === 'refund-time' ? '' : 'hidden'}`}>
                         <ul>
                             <li>Go to <a className='text-blue-800' href="/signup">Sign Up</a> page.</li>
-                            <img src="https://ik.imagekit.io/pxc/Enter%20a%20new%20username.png" alt="Sing-up page" srcset="" />
+                            <img src="https://ik.imagekit.io/pxc/Enter%20a%20new%20username.png" alt="Sing-up page" srcSet="" />
                             <li><br /></li>
                             <li>Follow this steps
                                 <ul>

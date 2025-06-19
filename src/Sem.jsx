@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
-import '../new.css';
-import Footer from '../componet/Footer';
-import Navbar from '../componet/Navbar';
+import './new.css';
+import Footer from './componet/Footer';
+import Navbar from './componet/Navbar';
 import { useNavigate, useLocation, Link } from "react-router-dom";
 
 const Semester = () => {

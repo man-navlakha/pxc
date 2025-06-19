@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Sem from "../componets/sem";
-import GoBack from "../componets/GoBack";
+import Sem from "../old/componets/sem";
+import GoBack from "../old/componets/GoBack";
 import "./style/sub.css";
-import Sub_card from "../componets/Sub_card";
-import Sub_loader from "../componets/Sub_loader"
+import Sub_card from "../old/componets/Sub_card";
+import Sub_loader from "../old/componets/Sub_loader"
 
 
 const Sub = () => {

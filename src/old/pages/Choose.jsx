@@ -1,8 +1,8 @@
 
-import GoBack from '../componets/GoBack'
+import GoBack from '../old/componets/GoBack'
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
-import AskJavaQuestion from '../componets/AskJavaQuestion';
+import AskJavaQuestion from '../old/componets/AskJavaQuestion';
 
 const Choose = () => {
     const [course, setCourse] = useState('');

@@ -1,7 +1,7 @@
 import React from 'react'
-import Navbar from '../componets/Navbar';
-import LastF from '../componets/LastF';
-import Footer from '../componets/Footer';
+import Navbar from '../old/componets/Navbar';
+import LastF from '../old/componets/LastF';
+import Footer from '../old/componets/Footer';
 
 const Help = () => {
   return (
