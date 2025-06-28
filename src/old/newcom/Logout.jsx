@@ -19,7 +19,7 @@ const Logout = () => {
     
 
     // Redirect to the login page
-    navigate('/login');
+    navigate('/auth/login');
   }, [navigate]);
 
   return (

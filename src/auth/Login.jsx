@@ -49,7 +49,7 @@ const login = () => {
                 Cookies.set("last","Google");
                 setTimeout(() => {
 
-                    const redirectTo = " ";
+                    const redirectTo = "/";
                     navigate(redirectTo, { replace: true });
                 }, 100)
             } else {
@@ -82,7 +82,7 @@ const login = () => {
             setSucsses("Login Sucssesful");
             Cookies.set("last","email");
             setTimeout(() => {
-                const redirectTo = " ";
+                const redirectTo = "/";
                 navigate(redirectTo, { replace: true });
             }, 100);
         } else {

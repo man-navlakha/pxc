@@ -52,7 +52,7 @@ backdrop-contrast-100 flex justify-between items-center px-6 py-2'>
 <div className={`hidden md:hidden lg:block `} >
   
           <div className="flex gap-4 items-center justify-center text-white font-medium ">
-             <a href=" /profile">
+             <a href="/profile">
             <span className="hover:text-gray-400">Profile</span>
               </a>
              <a href="/Logout">
