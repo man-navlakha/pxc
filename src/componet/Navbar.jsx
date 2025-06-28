@@ -25,7 +25,7 @@ backdrop-blur-xl
 bg-opacity-10
 backdrop-saturate-100
 backdrop-contrast-100 flex justify-between items-center px-6 py-2'>
-  <a href="/beta">
+  <a href="/">
 
         <div className='w-14'>
           <img src="https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png?updatedAt=1735069173555" alt="" />
@@ -52,7 +52,7 @@ backdrop-contrast-100 flex justify-between items-center px-6 py-2'>
 <div className={`hidden md:hidden lg:block `} >
   
           <div className="flex gap-4 items-center justify-center text-white font-medium ">
-             <a href="/beta/profile">
+             <a href=" /profile">
             <span className="hover:text-gray-400">Profile</span>
               </a>
              <a href="/Logout">
@@ -65,7 +65,7 @@ backdrop-contrast-100 flex justify-between items-center px-6 py-2'>
 
 :
           <div>
-            <a href="/beta/auth/login">
+            <a href=" /auth/login">
               <button className='border text-white px-3 py-1 rounded-3xl bg-black ease-in-out hover:shadow-[2px_2px_0px_#fff]'>
                 Login/Signup
               </button>
@@ -79,7 +79,7 @@ backdrop-contrast-100 flex justify-between items-center px-6 py-2'>
         <div className="">
           <div className={`${open ? 'block' : 'hidden'} mx-5 my-2 mt-5 rounded-xl z-40 border border-gray-400/30 bg-gray-900/60 text-white backdrop-blur-[10px] px-6 py-2`}>
             <ul className='list-none w-full text-center'>
-              <a href="/beta/profile">
+              <a href=" /profile">
                 <li className='py-2 text-left px-3 m-2 border-b w-full '>Profile 👉</li>
               </a>
               <a href="/logout">

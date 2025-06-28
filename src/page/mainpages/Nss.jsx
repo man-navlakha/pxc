@@ -73,7 +73,7 @@ const Ns = () => {
       Cookies.set("pdfurl" , pdfurl)
       Cookies.set("pdfname" , pdfname)
       Cookies.set("pdfyear" , pdfyear)
-      navigate(`/beta/select`)
+      navigate(`/select`)
 };
     return (
         <>

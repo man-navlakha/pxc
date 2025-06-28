@@ -6,7 +6,7 @@ const Hero = () => {
   
       const navigate = useNavigate();
       const handleflow = () =>{
-        navigate("/beta/auth/login");
+        navigate("/auth/login");
       }
   return (
     <div className='mesh_hero p-4 flex flex-col text-center  content-center flex-nowrap jusify-center gap-3 items-center -mt-24 '>

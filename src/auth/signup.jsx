@@ -83,7 +83,7 @@ const signup = () => {
                             <p className="mt-2 text-gray-500 dark:text-gray-600 font-normal text-xs  text-gray-500 text-center font-normal">By clicking "Create Profile“ you agree to our <a className="text-gray-500 hover:text-gray-1k hover:underline font-semibold transition-all ease-in-out" href="legal/code-of-conduct">Code of Conduct</a>, <a className="text-gray-500 hover:text-gray-1k hover:underline font-semibold transition-all ease-in-out" href="legal/terms-and-conditions">Terms of Service</a> and <a className="text-gray-500 hover:text-gray-1k hover:underline font-semibold transition-all ease-in-out" href="legal/privacy-policy">Privacy Policy</a>.</p>
                         </div>
 
-                        <p className="mt-4 text-gray-400 dark:text-gray-600 font-normal text-sm text-center">Already have a profile? <a className="text-gray-300 hover:text-gray-1k hover:underline font-semibold transition-all ease-in-out" href="/beta/auth/login">Log in</a></p>
+                        <p className="mt-4 text-gray-400 dark:text-gray-600 font-normal text-sm text-center">Already have a profile? <a className="text-gray-300 hover:text-gray-1k hover:underline font-semibold transition-all ease-in-out" href=" /auth/login">Log in</a></p>
                     </div>
 
 

@@ -8,7 +8,7 @@ const View = () => {
       const location = useLocation();
 
       const handleflow = () =>{
-        navigate("/beta/sem");
+        navigate("/sem");
       }
   return (
     <div className='p-4 flex h-max text-white flex-col text-center content-center flex-nowrap jusify-center gap-3 items-center '>

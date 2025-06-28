@@ -112,7 +112,7 @@ function App() {
                             {/* <Route path="/" element={<Home />} /> */}
 
                             {/* Beta */}
-                            <Route path="/auth/signup" element={<Signup />} />
+                            <Route path="/auth/signup/close" element={<Signup />} />
                             <Route path="/auth/login" element={<Blogin />} />
                             <Route path="/" element={<MainPage />} />
                             <Route path="/sem" element={<Sem />} />

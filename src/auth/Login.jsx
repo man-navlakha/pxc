@@ -23,7 +23,7 @@ const login = () => {
         const token = Cookies.get("access_token");
         if (token) {
             setTimeout(() => {
-                navigate(location?.state?.from || "/beta", { replace: true });
+                navigate(location?.state?.from || " ", { replace: true });
             }, 100);
         }
     }, [navigate, location]);
@@ -49,7 +49,7 @@ const login = () => {
                 Cookies.set("last","Google");
                 setTimeout(() => {
 
-                    const redirectTo = "/beta";
+                    const redirectTo = " ";
                     navigate(redirectTo, { replace: true });
                 }, 100)
             } else {
@@ -82,7 +82,7 @@ const login = () => {
             setSucsses("Login Sucssesful");
             Cookies.set("last","email");
             setTimeout(() => {
-                const redirectTo = "/beta";
+                const redirectTo = " ";
                 navigate(redirectTo, { replace: true });
             }, 100);
         } else {
@@ -106,7 +106,7 @@ const login = () => {
                 <div className='flex items-center flex-col  min-h-screen justify-center p-6'>
                     <div>
                         <div className="flex items-center justify-center mt-2 max-w-[360px]">
-                            <Link to={'/beta'}>
+                            <Link to={'/'}>
                                 <img src="https://ik.imagekit.io/pxc/pixel%20class_logo%20pc.png" alt="Pixel Class logo" className="mr-2 w-full h-full " />
                             </Link>
                         </div>
@@ -181,7 +181,7 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                 }
                     </div>
 
-<p className="mt-4 text-gray-400 dark:text-gray-900 font-normal text-sm text-center">I does'n have an profile? <a className="text-gray-300 hover:text-gray-1k hover:underline font-semibold transition-all ease-in-out" href="/beta/auth/signup">Sign Up</a></p>
+<p className="mt-4 text-gray-400 dark:text-gray-900 font-normal text-sm text-center">I don't have an profile? <a className="text-gray-300 hover:text-gray-1k hover:underline font-semibold transition-all ease-in-out" href=" /auth/signup">Sign Up</a></p>
                 </div>
 
 

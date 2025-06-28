@@ -8,7 +8,7 @@ const Footer = () => {
                     <img src="https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png?updatedAt=1735069173555" alt="Pixel Class logo" loading="lazy" />
                 </div>
                 <div className="font-bold ">Dhruv ✌️ Man</div>
-                <div>© 2025 All rights reserved.</div>
+                <div>Pixel Class © 2025 All rights reserved.</div>
             </div>
         </div>
     );
