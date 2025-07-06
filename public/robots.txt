@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- <meta name="theme-color" content="#065f46" /> -->
+    <meta name="theme-color" content="#000" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+    
+    
+    <meta name="msvalidate.01" content="9612B2B424F1C8A2D82A377F88918ACF" />
+    <meta name="google-site-verification" content="UDrIQKH6cMvXPZ2YaFoBlpqPkwacy4mh39H9iIF2nck" />
+    
+    <link rel="icon" type="image/svg+xml" href="https://ik.imagekit.io/pxc/pixel%20class%20fav%20w-02.png" />
+    <!-- Primary Meta Tags -->
+<title>Pixel Class - Premium Handwritten Notes, Assignments & Exam Resources</title>
+<meta name="description" content="Access top-quality handwritten notes, assignments, important questions, and past papers. Trusted by students. Pixel Class delivers excellence for Semester 4 and 5!">
+<meta name="keywords" content="handwritten notes, Pixel Class, exam resources, assignments, semester notes, past papers, study materials, important questions, PDF downloads">
+<meta name="keywords" content="handwritten notes, Pixel Class, exam resources, college assignments, semester notes, past year papers, university notes, study materials, BTech notes, engineering handwritten notes, PDF downloads, study resources, important questions, free notes, semester 4 notes, semester 5 notes, online study help, exam preparation materials, college exam PDFs, handwritten assignments, semester exams, toppers notes, high-quality study materials, pixel, pixelclass, pixelclasses, ">
+<meta name="author" content="Pixel Class Man , Dhruv">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pixelclass.netlify.app/">
+<meta property="og:title" content="Pixel Class - Premium Handwritten Study Notes & Exam Papers">
+<meta property="og:description" content="Download college-level handwritten notes, assignments, and exam papers for multiple semesters. Made by students, approved by students.">
+<meta property="og:image" content="https://ik.imagekit.io/pxc/pixel%20class%20fav%20w-02.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pixel Class - Handwritten PDF Notes & Study Materials">
+<meta name="twitter:description" content="Browse semester-wise PDF notes, assignments, and questions. Study smart with Pixel Class.">
+<meta name="twitter:image" content="https://ik.imagekit.io/pxc/pixel%20class%20fav%20w-02.png">
+
+    <script type="module" crossorigin src="/assets/index-530oZwMk.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-q68naS_u.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
