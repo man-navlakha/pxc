@@ -7,6 +7,7 @@ import Feature from './componet/feature'
 import Footer from './componet/Footer';
 import View from './componet/View';
 import Faq from './componet/Faq';
+import Semester from './Sem';
 
 const MainPage = () => {
 
@@ -18,12 +19,12 @@ const MainPage = () => {
       <div className='bg-black ccf'>
 
 
-        <div className="bg-pattern "></div>
+        <div className="bg-pattern transition-all duration-500 ease-in-out"></div>
         <div className='ccf text-white flex flex-col text-center content-center flex-nowrap' >
           <Navbar />
           {
             token ? <>
-              <View />
+              <Semester />
             </>
               : <>
                 <Hero />

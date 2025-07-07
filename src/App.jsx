@@ -102,14 +102,13 @@ function App() {
             {isOnline ? (
                 <></>
             ) : (
-                <p className="w-screen text-center p-2 bg-red-500 text-white">You are offline!</p>
+                <p className="transition-all duration-500 ease-in-out w-screen text-center p-2 bg-red-500 text-white">You are offline!</p>
             )}
         {/* <p className={` ${loading ? 'visible ':'hidden'} w-screen text-center p-2 bg-blue-500 text-white`} ><span className="m-2">Please wait!</span> <span className="m-2">Please wait!</span> <span className="m-2">Please wait!</span></p> */}
 
-                    <div className="App dark:bg-[#1e1e1e] dark:text-white bg-white">
+                    <div className="App transition-all duration-500 ease-in-out dark:bg-[#1e1e1e] dark:text-white bg-white">
                         <Routes>
                             <Route path="*" element={<NotFound />} />
-                            {/* <Route path="/" element={<Home />} /> */}
 
                             {/* Beta */}
                             <Route path="/auth/signup/close" element={<Signup />} />

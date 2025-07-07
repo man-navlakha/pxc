@@ -74,7 +74,7 @@ const Semester = () => {
         <>
             <div className="bg-pattern"></div>
             <div className='mesh_sem ccf h-full min-h-screen'>
-                <Navbar />
+                {/* <Navbar /> */}
                 <div className='ccf'>
                     <div className='p-4 py-16 flex flex-col text-center content-center flex-nowrap justify-center gap-3 items-center'>
                         <div>
@@ -95,12 +95,18 @@ const Semester = () => {
                                 <div className="relative flex w-full items-center justify-center border border-zinc-700 rounded-2xl bg-zinc-900 text-slate-300">
                                     <div
                                         onClick={() => handleSemClick(sem)}
-                                        className={`flex-1 flex max-w-[100vw] py-6 flex-col overflow-hidden rounded-2xl bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100 lg:min-w-[384px] cursor-pointer ${selectedSem === sem ? 'border-2 border-green-500' : ''}`}
+                                        className={`flex-1 flex max-w-[100vw] transition-all duration-300 ease-in-out py-6 flex-col overflow-hidden rounded-2xl bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100 lg:min-w-[384px] cursor-pointer ${selectedSem === sem ? 'border-2 border-green-500' : ''}`}
                                     >
                                         <div className='text-xl font-bold flex items-center justify-center'>
                                             <span className="mr-1">Semester {sem}</span> {/* Added "Semester" prefix for display */}
                                             <span className={` ${Cookies.get("latest_sem") === sem ? 'visible' : 'hidden'} border-green-600 text-green-600 bg-green-900/50 border rounded mr-1 p-1 text-xs`}>Active</span>
                                         </div>
+<div
+                    class="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]"
+                  >
+                    <div class="relative h-full w-10 bg-white/20"></div>
+                  </div>
+
                                     </div>
                                 </div>
                             </button>
@@ -115,11 +121,11 @@ const Semester = () => {
                             {loading && <p className="text-xl mt-4  cursor-progress ">  <div className=" " >
                                                     <div className="book">
                                                           <div className="flex flex-col gap-4 text-md cursor-progress  ">
-                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} ></div>
-                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} ></div>
-                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} ></div>
-                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} ></div>
-                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} ></div>
+                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
+                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
+                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
+                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
+                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
                                                         </div>
                                                         <div className=" p-2 cover border border-gray-300/60">
                                                             <p>Loading...</p>
@@ -159,7 +165,7 @@ const Semester = () => {
                         </div>
                     </div>
                 </div>
-                <Footer />
+                {/* <Footer /> */}
             </div>
         </>
     );

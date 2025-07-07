@@ -16,8 +16,8 @@ const Hero = () => {
       <div className='mt-6'>
         <span className='text-center m-3 text-3xl md:text-lg lg:text-5xl font-black bg-clip-text bg-gradient-to-br from-white to-zinc-500 text-transparent ccf '>Access Top-Quality PDF Notes Instantly!!</span>
       </div>
-      <div>
-        <span className='text-center text-md my-3 font-medium'>Experience premium handwritten notes! 🚀</span>
+      <div className='mt-3 '>
+        <span className='text-center text-md lg:text-xl font-medium'>Experience premium notes! 🚀</span>
       </div>
 
       </div>
