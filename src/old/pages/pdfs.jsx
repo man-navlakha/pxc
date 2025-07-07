@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import GoBack from '../old/componets/GoBack';
-import Pdf_loader from '../old/componets/Pdf_loader';
+import GoBack from '../componets/GoBack';
+import Pdf_loader from '../componets/Pdf_loader';
 
 const Pdfs = () => {
   const [course, setCourse] = useState('');
@@ -81,8 +81,8 @@ const Pdfs = () => {
       event.preventDefault();
       navigate("/login");
     } else {
-      console.log(`/ns?sub=${sub}&id=${item}&course=${course}&choose=${choose}`);
-      navigate(`/ns?sub=${sub}&id=${item}&course=${course}&choose=${choose}`);
+      console.log(`/old/ns?sub=${sub}&id=${item}&course=${course}&choose=${choose}`);
+      navigate(`/old/ns?sub=${sub}&id=${item}&course=${course}&choose=${choose}`);
     }
   };
 

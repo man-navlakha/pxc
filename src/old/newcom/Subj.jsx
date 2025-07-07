@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Sem from "../old/componets/sem";
-import GoBack from "../old/componets/GoBack";
+import Sem from "../componets/sem";
+import GoBack from "../componets/GoBack";
 import "./style/sub.css";
-import Sub_card from "../old/componets/Sub_card";
-import Sub_loader from "../old/componets/Sub_loader"
+import Sub_card from "../componets/Sub_card";
+import Sub_loader from "../componets/Sub_loader"
 
 
 const Sub = () => {
     const location = useLocation();
     const courseName = new URLSearchParams(location.search).get('course');
-    // console.log(courseName);
     const [selectedCourse, setSelectedCourse] = useState(null);
     const [selectedSem, setSelectedSem] = useState(1);
     const [semesters, setSemesters] = useState([]);
@@ -25,13 +24,10 @@ const Sub = () => {
             try {
                 const response = await axios.get('https://pixel-classes.onrender.com/api/home/courses');
                 const data = response.data;
-                // console.log('Fetched data:', data);
 
                 if (data.CourseList && Array.isArray(data.CourseList)) {
                     const course = data.CourseList.find(course => course.name === courseName);
                     if (course) {
-                        // console.log('Course found:', course);
-                        // console.log('Semester:', course.number_sem);
                         setSelectedCourse(course);
                         setSemesters(Array.isArray(course.number_sem) ? course.number_sem : [course.number_sem]);
                     } else {
@@ -55,13 +51,10 @@ const Sub = () => {
             .split("; ")
             .find((row) => row.startsWith("access_token="))
             ?.split("=")[1];
-
-        // console.log("Access Token:", accessToken);
         return accessToken || null; // Return null if not found
     };
     const handleLinkClick = (event, item) => {
-        // console.log(`/choose?course=${selectedCourse.name}&sub=${item}`)
-        navigate(`/choose?course=${selectedCourse.name}&sub=${item}`);
+        navigate(`/old/choose?course=${selectedCourse.name}&sub=${item}`);
     };
 
     return (
@@ -105,7 +98,6 @@ const Sub = () => {
                                                             const result = response.data;
                                                             setApiResponse(result);
                                                         } catch (error) {
-                                                            console.error('Error sending data to API:', error);
                                                         }
                                                     } else {
                                                         console.log('Please select a semester');
@@ -134,7 +126,6 @@ const Sub = () => {
                                                             key={subject.name}
                                                             subject={subject}
                                                             onClick={(event) => {
-                                                                // console.log("Div clicked!", subject.name);
                                                                 handleLinkClick(event, subject.name);
                                                             }}
                                                         />

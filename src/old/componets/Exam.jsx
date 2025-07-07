@@ -1,7 +1,7 @@
 import React from 'react'
-import java from '../assets/img/java.png'
-import ios from '../assets/img/ios.png'
-import python from '../assets/img/python.png'
+import java from '../../assets/img/java.png'
+import ios from '../../assets/img/ios.png'
+import python from '../../assets/img/python.png'
 
 const Exam = () => {
   return (

@@ -3,7 +3,7 @@ import axios from "axios";
 import { GoogleLogin } from '@react-oauth/google';
 import Cookies from "js-cookie";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import "../App.css";
+import "../../App.css";
 
 const Login = () => {
   const [error, setError] = useState("");
@@ -22,7 +22,6 @@ const Login = () => {
       const res = await axios.post('https://pixel-classes.onrender.com/api/user/google-login/', {
         token: credentialResponse.credential,
       });
-      console.log(res.data); // ✅ Fixed variable name
   
       if (res.data.message === "Login successful!") {
         // ✅ Save tokens & username to cookies
@@ -33,14 +32,13 @@ const Login = () => {
   
         // ✅ Redirect user to the previous page or default home
         setTimeout(() => {
-          const redirectTo = new URLSearchParams(location.search).get("redirect") || "/";
+          const redirectTo = new URLSearchParams(location.search).get("redirect") || "/old";
           navigate(redirectTo, { replace: true });
         }, 100);
       } else {
         setError("Invalid login credentials.");
       }
     } catch (err) {
-      console.error("Login error:", err);
       setError(err.response?.data?.error || "An error occurred");
     }
   }; 
@@ -51,7 +49,7 @@ const Login = () => {
     const token = Cookies.get("access_token");
     if (token) {
       setTimeout(() => {
-        navigate(location?.state?.from || "/", { replace: true });
+        navigate(location?.state?.from || "/old", { replace: true });
       }, 100);
     }
   }, [navigate, location]); // ✅ Fix: Added location dependency
@@ -81,8 +79,6 @@ const Login = () => {
         }
       );
 
-      console.log(response.data); // Debugging log
-
       if (response.data.message === "Login successful!") {
         // ✅ Save tokens & username to cookies
         Cookies.set("access_token", response.data.access_token, { expires: 7 });
@@ -99,7 +95,6 @@ const Login = () => {
         setError("Invalid login credentials.");
       }
     } catch (err) {
-      console.error("Login error:", err);
 
       setError(err.response?.data?.error || "An error occurred"); // ✅ Fix: Prevent crash if error response is missing
     } finally {

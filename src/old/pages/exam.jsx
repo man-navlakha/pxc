@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
-import GoBack from '../old/componets/GoBack';
-import Pdf_loader from '../old/componets/Pdf_loader';
+import GoBack from '../componets/GoBack';
+import Pdf_loader from '../componets/Pdf_loader';
 
 const Pdfs = () => {
   const [course, setCourse] = useState('');
@@ -21,7 +21,6 @@ const Pdfs = () => {
     if (courseParam) setCourse(courseParam);
     if (subParam) setSub(subParam);
     if (chooseParam) setChoose(chooseParam);
-    // console.log(chooseParam);
 
     if (courseParam && subParam) {
       setLoading(true); // Set loading to true before fetching data
@@ -34,7 +33,6 @@ const Pdfs = () => {
       })
         .then(response => response.json())
         .then(data => {
-          // console.log('Success:', data);
           setPdfData(data); // Update state with fetched data
           data.forEach(pdf => {
             if (pdf.pdf) {
@@ -70,14 +68,11 @@ const Pdfs = () => {
       .split("; ")
       .find((row) => row.startsWith("access_token="))
       ?.split("=")[1];
-
-    console.log("Access Token:", accessToken);
     return accessToken || null; // Return null if not found
   };
 
   const handleLinkClick = (event, item, sub, course) => {
     if (!getAccessTokenFromCookies()) {
-      // console.log("User not authenticated, redirecting to login...");
       event.preventDefault();
       navigate("/login");
     } else {
@@ -88,8 +83,7 @@ const sanitizedUrl = fullUrl.replace("http://localhost:5173/exam/", "");
 
 // Navigate to the sanitized URL
 window.location.href = sanitizedUrl;
-      // console.log(`/ns?sub=${sub}&id=${item}&course=${course}&choose=${choose}`);
-      // navigate(`/ns?sub=${sub}&id=${item}&course=${course}&choose=${choose}`);
+      navigate(`/ns?sub=${sub}&id=${item}&course=${course}&choose=${choose}`);
     }
   };
 

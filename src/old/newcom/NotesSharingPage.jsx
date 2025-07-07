@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { X } from "lucide-react";
-import Navbar from "../old/componets/Navbar";
-import LastF from "../old/componets/LastF";
-import Footer from "../old/componets/Footer";
-import "../App.css";
+import Navbar from "../componets/Navbar";
+import LastF from "../componets/LastF";
+import Footer from "../componets/Footer";
+import "../../App.css";
 
 const NotesSharingPage = () => {
   const location = useLocation();

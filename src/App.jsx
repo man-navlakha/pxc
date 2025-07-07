@@ -10,45 +10,46 @@ import Blogin from './auth/Login';
 import Sem from './Sem';
 import Prof from './Profile';
 
+import Ns from "./page/mainpages/Ns";
+import Nss from "./page/mainpages/Nss";
+import Select from "./page/mainpages/Select";
+
+import MainPage from "./MainPage";
+
 //Normal 
 import NotFound from './NotFound';
-
-
-
-
-// import Sign from './old/newcom/Sign';
-// import Verify from './old/newcom/veri';
-// import Login from './old/newcom/Login';
-// import Home from './old/newcom/home';
-// import Subj from './old/newcom/Subj';
-// import Sub from './old/newcom/Sub';
-// import Open from './old/newcom/open';
-// import NotesSharingPage from './old/newcom/NotesSharingPage';
-// import Pdfs from "./pages/pdfs";
-import './index.css';
 import Logout from './old/newcom/Logout';
-// import Forgetpassword from './pages/Forgetpassword';
-// import Newpassword from './old/newcom/newpassword';
-// import Exam from "./old/pages/exam";
-// import Load from './old/componets/Timer'
-// import Bettary from "./utils/Bettary";
-// import Footer from './old/componets/Footer';
-// import Profile from "./pages/profile";
-// import Maintainces from "./pages/MaintenancePage";
-// import Choose from "./pages/Choose";
-// import Faq from './old/pages/Faq';
-// import Help from './old/pages/Help';
+
+import './index.css';
+
 import Team from './old/pages/Team';
 import Career from './old/pages/Career';
 import Search from "./old/pages/Search";
 import ProtectedRoute from "./ProtectedRoute";
 
 
-import Ns from "./page/mainpages/Ns";
-import Nss from "./page/mainpages/Nss";
-import Select from "./page/mainpages/Select";
+import Homeo from './old/newcom/home';
+import Subj from './old/newcom/Subj';
+import Choose from "./old/pages/Choose";
+import Login from './old/newcom/Login';
+import Pdfs from "./old/pages/pdfs";
+import NotesSharingPage from './old/newcom/NotesSharingPage';
+import Exam from "./old/pages/exam";
+import Profile from "./old/pages/profile";
 
-import MainPage from "./MainPage";
+// import Sign from './old/newcom/Sign';
+// import Verify from './old/newcom/veri';
+// import Sub from './old/newcom/Sub';
+// import Open from './old/newcom/open';
+// import Forgetpassword from './pages/Forgetpassword';
+// import Newpassword from './old/newcom/newpassword';
+// import Load from './old/componets/Timer'
+// import Bettary from "./utils/Bettary";
+// import Footer from './old/componets/Footer';
+// import Maintainces from "./pages/MaintenancePage";
+// import Faq from './old/pages/Faq';
+// import Help from './old/pages/Help';
+
 
 function App() {
     const [loading, setLoading] = useState(true); // Add loading state
@@ -76,7 +77,6 @@ function App() {
     useEffect(() => {
         // Retrieve the 'username' cookie value
         const storedUserName = Cookies.get("username");
-        console.log("Retrieved userName from cookie:", storedUserName); // Log the cookie value
 
         if (storedUserName && storedUserName !== "undefined") {
             setUserName(storedUserName); // Set the username from cookie
@@ -124,30 +124,24 @@ function App() {
 
 
                             <Route path="/logout" element={<Logout />} />
-                            {/* <Route path="/sub" element={<Subj />} />
-                            <Route path="/login" element={<Login />} />
-                            <Route path="/open" element={<Open />} />
-                            <Route path="/signup" element={<Sign />} />
-                            <Route path="/verification" element={<Verify />} />
-                            <Route path="/fgpassword" element={<Forgetpassword />} />
-                            <Route path="/newpassword/:token" element={<Newpassword />} />
-                            <Route path="/footer" element={<Footer />} /> */}
+                            <Route path="/old" element={<Homeo />} />
+                            <Route path="/old/sub" element={<Subj />} />
+                            <Route path="/old/login" element={<Login />} />
+
+                            {/* <Route path="/old/open" element={<Open />} />
+                            <Route path="/old/signup" element={<Sign />} />
+                            <Route path="/old/verification" element={<Verify />} />
+                            <Route path="/old/fgpassword" element={<Forgetpassword />} />
+                            <Route path="/old/newpassword/:token" element={<Newpassword />} />
+                            <Route path="/old/footer" element={<Footer />} />  */}
 
                             <Route path="/team" element={<Team />} />
                             {/* <Route path="/faq" element={<Faq />} /> */}
                             <Route path="/career" element={<Career />} />
                             {/* <Route path="/help" element={<Help />} /> */}
-{/*                             
+                            
                             <Route
-                                path="/profile"
-                                element={
-                                    <ProtectedRoute>
-                                        <Profile />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="/choose"
+                                path="old/choose"
                                 element={
                                     <ProtectedRoute>
                                         <Choose />
@@ -155,7 +149,7 @@ function App() {
                                 }
                             />
                             <Route
-                                path="/select"
+                                path="/old/select"
                                 element={
                                     <ProtectedRoute>
                                         <Pdfs />
@@ -163,7 +157,7 @@ function App() {
                                 }
                             />
                             <Route
-                                path="/ns"
+                                path="/old/ns"
                                 element={
                                     <ProtectedRoute>
                                         <NotesSharingPage />
@@ -171,13 +165,13 @@ function App() {
                                 }
                             />
                             <Route
-                                path="/nss"
+                                path="/old/nss"
                                 element={
                                     <ProtectedRoute>
                                         <Exam />
                                     </ProtectedRoute>
                                 }
-                            /> */}
+                            />
                             <Route
                                 path="/search"
                                 element={
@@ -186,6 +180,14 @@ function App() {
                                     </ProtectedRoute>
                                 }
                             />
+                    <Route
+                        path="old/profile"
+                        element={
+                            <ProtectedRoute>
+                                <Profile />
+                            </ProtectedRoute>
+                        }
+                    />
                         </Routes>
                     </div>
         </>

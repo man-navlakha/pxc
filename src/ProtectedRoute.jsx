@@ -6,7 +6,7 @@ const ProtectedRoute = ({ children }) => {
   const location = useLocation();
 
   if (!isAuthenticated) {
-    return <Navigate to={`/login?redirect=${encodeURIComponent(location.pathname + location.search)}`}  replace />;
+    return <Navigate to={`/old/login?redirect=${encodeURIComponent(location.pathname + location.search)}`}  replace />;
   }
 
   return children;

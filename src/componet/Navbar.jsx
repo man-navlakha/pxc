@@ -4,6 +4,16 @@ import Cookies from "js-cookie";
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const token = Cookies.get('access_token');
+   const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50); // adjust threshold as needed
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
 
   const keroopen = () => {
@@ -16,15 +26,15 @@ const Navbar = () => {
 
   return (
     <>
-    <div className="  sticky top-5 z-40">
+    <div className={`${!scrolled ? 'top-5 sticky rounded-xl ' : 'top-0 mx-0 rounded-none sticky'}  z-40 `}>
 
-      <div className='flex-row mx-5 rounded-xl top-5  z-40 sticky  border border-gray-400/30 bg-gray-900
+      <div className={` ${!scrolled ? ' mx-5 top-5 sticky rounded-xl border border-gray-400/30' : 'top-0 mx-0 rounded-none '} flex-row  z-40 border-b  bg-gray-900
 bg-clip-padding
 backdrop-filter
 backdrop-blur-xl
 bg-opacity-10
 backdrop-saturate-100
-backdrop-contrast-100 flex justify-between items-center px-6 py-2'>
+backdrop-contrast-100 flex justify-between items-center px-6 py-2`}>
   <a href="/">
 
         <div className='w-14'>
