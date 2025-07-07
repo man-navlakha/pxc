@@ -22,14 +22,14 @@
 
 .mesh_sem {
 
-  background: #09203f;
+  background: #021123;
 
 
 }
 
 .mesh_sem2 {
 
-  background: radial-gradient(at 23.976293103448278% 36.666666666666664%, #17032c 0px, transparent 50%), radial-gradient(at 76.99353448275862% 58.54166666666667%, #d7b7ff 0px, transparent 50%), radial-gradient(at 41.43318965517241% 57.49999999999999%, #9078ec 0px, transparent 50%), radial-gradient(at 100% 100%, #000000 0px, transparent 50%), radial-gradient(at 0% 61.04166666666667%, #62b339 0px, transparent 50%), radial-gradient(at 0% 100%, #000000 0px, transparent 50%), #09203f;
+  background: radial-gradient(at 23.976293103448278% 36.666666666666664%, #17032c 0px, transparent 50%), radial-gradient(at 76.99353448275862% 58.54166666666667%, #d7b7ff 0px, transparent 50%), radial-gradient(at 41.43318965517241% 57.49999999999999%, #9078ec 0px, transparent 50%), radial-gradient(at 100% 100%, #000000 0px, transparent 50%), radial-gradient(at 0% 61.04166666666667%, #62b339 0px, transparent 50%), radial-gradient(at 0% 100%, #000000 0px, transparent 50%), #000000;
 
 
 }
