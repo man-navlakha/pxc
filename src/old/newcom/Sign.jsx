@@ -16,6 +16,36 @@ const Sign = () => {
   const navigate = useNavigate(); // hook for redirecting
   const [passwordVisible, setPasswordVisible] = useState(false);
 
+
+  
+   // Handle google login
+
+   const handleLoginSuccess = async (credentialResponse) => {
+    try {
+      const res = await axios.post('https://pixel-classes.onrender.com/api/user/google-signup/', {
+        token: credentialResponse.credential,
+      });
+  
+      if (res.data.message === "Sign Up Complete") {
+        // ✅ Save tokens & username to cookies
+        Cookies.set("access_token", res.data.access_token, { expires: 7 });
+        Cookies.set("username", res.data.username || "Guest", { expires: 7 });
+  
+        setUsername(res.data.username?.toLowerCase() || "");
+  
+        // ✅ Redirect user to the previous page or default home
+        setTimeout(() => {
+          const redirectTo = new URLSearchParams(location.search).get("redirect") || "/";
+          navigate(redirectTo, { replace: true });
+        }, 100);
+      } else {
+        setError("Invalid login credentials.");
+      }
+    } catch (err) {
+      setError(err.response?.data?.error || "An error occurred");
+    }
+  }; 
+
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
