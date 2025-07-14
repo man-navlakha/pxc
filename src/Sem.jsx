@@ -59,15 +59,15 @@ const Semester = () => {
         setSelectedSem(sem); // This will trigger the useEffect to fetch data
         Cookies.set("latest_sem", sem, { expires: 7 }); // Update the cookie
     };
-    const handlechooose = (choose,sub) => {
-        Cookies.set("sub",sub)
-        Cookies.set("choose",choose)
-       choose === 'Notes' && nav(`/ns`);
-    choose === 'Assignment' && nav(`/nss`);
-    choose === 'Exam' && nav(`/ns`);
-    choose === 'practical' && nav(`/ns`);
-    choose === 'I.M.P' &&
-    nav(`/nss`);
+    const handlechooose = (choose, sub) => {
+        Cookies.set("sub", sub)
+        Cookies.set("choose", choose)
+        choose === 'Notes' && nav(`/ns`);
+        choose === 'Assignment' && nav(`/nss`);
+        choose === 'Exam' && nav(`/ns`);
+        choose === 'practical' && nav(`/ns`);
+        choose === 'I.M.P' &&
+            nav(`/nss`);
     };
 
     return (
@@ -101,11 +101,11 @@ const Semester = () => {
                                             <span className="mr-1">Semester {sem}</span> {/* Added "Semester" prefix for display */}
                                             <span className={` ${Cookies.get("latest_sem") === sem ? 'visible' : 'hidden'} border-green-600 text-green-600 bg-green-900/50 border rounded mr-1 p-1 text-xs`}>Active</span>
                                         </div>
-<div
-                    class="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]"
-                  >
-                    <div class="relative h-full w-10 bg-white/20"></div>
-                  </div>
+                                        <div
+                                            class="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]"
+                                        >
+                                            <div class="relative h-full w-10 bg-white/20"></div>
+                                        </div>
 
                                     </div>
                                 </div>
@@ -119,54 +119,56 @@ const Semester = () => {
                                 <span ref={sectionRef} className="font-bold mb-8">Choose your subject for Semester {selectedSem}</span>
                             )}
                             {loading && <p className="text-xl mt-4  cursor-progress ">  <div className=" " >
-                                                    <div className="book">
-                                                          <div className="flex flex-col gap-4 text-md cursor-progress  ">
-                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
-                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
-                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
-                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
-                                                            <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
-                                                        </div>
-                                                        <div className=" p-2 cover border border-gray-300/60">
-                                                            <p>Loading...</p>
-                                                        </div>
-                                                    </div></div></p>}
+                                <div className="book">
+                                    <div className="flex flex-col gap-4 text-md cursor-progress  ">
+                                        <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
+                                        <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
+                                        <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
+                                        <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
+                                        <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
+                                    </div>
+                                    <div className=" p-2 cover border border-gray-300/60">
+                                        <p>Loading...</p>
+                                    </div>
+                                </div></div></p>}
                             {error && <p className="text-xl mt-4 text-red-500">{error}</p>}
                             <div className={`${loading ? 'hidden' : ''}`}>
-                                
-                            {apiResponse && (
-                                <div className="mt-4 ml-10 text-xl">
 
-                                    {apiResponse && apiResponse.length > 0 ? (
-                                        <div className="grid gap-5 grid-cols-1 fc md:grid-cols-1 lg:grid-cols-3">
-                                            {apiResponse.map((subject) => (
-                                                <div className="" key={subject.id}>
-                                                    <div className="book">
-                                                        <div className="flex flex-col gap-3 text-md cursor-pointer ">
-                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Assignment", subject.name)} >📚 Assignments</button>
-                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Notes", subject.name)} >📝 Notes</button>
-                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("I.M.P", subject.name)} >❓ IMP Q&A </button>
-                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Exam", subject.name)} >📄 Exam Papers</button>
-                                                            <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("practical", subject.name)} >🧑‍💻 Genaral Book</button>
-                                                        </div>
-                                                        <div className=" p-2 cover border border-gray-300/60">
-                                                            <p>{subject.name}</p>
-                                                        </div>
-                                                    </div></div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <p className="text-xs text-red-500">No subjects found for this semester.</p>
-                                    )}
+                                {apiResponse && (
+                                    <div className="mt-4 ml-10 text-xl">
 
-                                </div>
-                            )}
+                                        {apiResponse && apiResponse.length > 0 ? (
+                                            <div className="grid gap-5 grid-cols-1 fc md:grid-cols-1 lg:grid-cols-3">
+                                                {apiResponse.map((subject) => (
+                                                    <div className="" key={subject.id}>
+                                                        <div className="book">
+                                                            <div className="flex flex-col gap-3 text-md cursor-pointer ">
+                                                                <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Assignment", subject.name)} >📚 Assignments</button>
+                                                                <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Notes", subject.name)} >📝 Notes</button>
+                                                                <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("I.M.P", subject.name)} >❓ IMP Q&A </button>
+                                                                <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Exam", subject.name)} >📄 Exam Papers</button>
+                                                                <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("practical", subject.name)} >🧑‍💻 Genaral Book</button>
+                                                            </div>
+                                                            <div className=" p-2 cover border border-gray-300/60">
+                                                                <p>{subject.name}</p>
+                                                            </div>
+                                                        </div></div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p className="text-xs text-red-500">No subjects found for this semester.</p>
+                                        )}
+
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
                 </div>
                 {/* <Footer /> */}
+
             </div>
+          
         </>
     );
 };
