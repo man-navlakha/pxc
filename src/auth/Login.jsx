@@ -59,6 +59,7 @@ const login = () => {
             setError("Invalid login credentials.");
             setError(e.response?.data?.error || "An error occurred");
         }
+        auto_select
 
     }
 
@@ -71,7 +72,7 @@ const login = () => {
 
         try {
             const ress = await axios.post('https://pixel-classes.onrender.com/api/user/login/', {
-                username: e.target.email.value.toLowerCase(), // use email input
+                username: e.target.username.value.toLowerCase(), // use email input
                 password: e.target.password.value,
             });
             console.log(ress.data);
@@ -80,7 +81,7 @@ const login = () => {
                 Cookies.set("username", ress.data.username);
 
                 setSucsses("Login Sucssesful");
-                Cookies.set("last", "email");
+                Cookies.set("last", "username");
                 setTimeout(() => {
                     const redirectTo = "/";
                     navigate(redirectTo, { replace: true });
@@ -131,6 +132,8 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                                     <GoogleLogin
                                         onSuccess={googlelogin}
                                         onError={() => console.log('Login Failed')}
+                                        auto_select
+                                        context={"signin"}
                                     />
                                 </div>
 
@@ -138,7 +141,7 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
 
                                 <div className='flex my-4 items-center gap-2 text-center text-gray-500 '>
                                     <span className='border-b-2 border-gray-200 flex-1'></span>
-                                    <div className='text-xs'>Or use email</div>
+                                    <div className='text-xs'>Or use username</div>
                                     <span className='border-b-2 border-gray-200 flex-1'></span>
                                 </div>
 
@@ -146,19 +149,19 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
 
                                 <div>
 
-                                    <form onSubmit={logmein} className={`flex flex-col ${last === "email" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
-                                        {/* {last === "email" ? "Last Used" : ""} */}
-                                        <span className={`${last === "email" ? "py-[2px] px-[5px] w-full text-green-600 max-w-max" : "hidden"} bg-green-300/30 text-[10px] border border-green-300 rounded`}>Last time used</span>
+                                    <form onSubmit={logmein} className={`flex flex-col ${last === "username" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
+                                        {/* {last === "username" ? "Last Used" : ""} */}
+                                        <span className={`${last === "username" ? "py-[2px] px-[5px] w-full text-green-600 max-w-max" : "hidden"} bg-green-300/30 text-[10px] border border-green-300 rounded`}>Last time used</span>
                                         <div className='flex flex-col gap-1'>
                                             <div>
 
-                                                <label htmlFor="email" className='text-sm font-semibold text-gray-1k'>Email</label>
+                                                <label htmlFor="username" className='text-sm font-semibold text-gray-1k'>username</label>
                                             </div>
                                             <div>
 
                                                 <input type="text"
                                                     onChange={(e) => e.target.value = e.target.value.toLowerCase()}
-                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   " id="email" placeholder="you@youremail.com" />
+                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   " id="username" placeholder="Enter Username" />
                                             </div>
 
                                         </div>
