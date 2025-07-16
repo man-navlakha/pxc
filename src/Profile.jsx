@@ -3,11 +3,23 @@ import './new.css'
 import Cookies from "js-cookie";
 import Navbar from './componet/Navbar'
 import Footer from './componet/Footer'
+import axios from "axios";
 
 const Profile = () => {
   const Username = Cookies.get("username");
   const sem = Cookies.get("latest_sem");
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
+  useEffect(() => {
+    if (!Username) return;
+    setLoading(true);
+    axios.post('https://pixel-classes.onrender.com/api/Profile/details/', { username: Username })
+      .then(res => setProfile(res.data))
+      .catch(() => setError("Failed to load profile details"))
+      .finally(() => setLoading(false));
+  }, [Username]);
 
   return (
     <>
@@ -41,14 +53,25 @@ const Profile = () => {
           </div>
         </div>
         <div className='p-6 rounded-t-[40px] border-t-2 h-max overflow-scroll mt-10 profile_2'>
-
-          <span className='text-center text-md my-3 font-bold text-white flex items-center gap-2 text-xl'> <span className="material-symbols-outlined">
-            timeline
-          </span> Your activity</span>
+          <span className='text-center text-md my-3 font-bold text-white flex items-center gap-2 text-xl'>
+            <span className="material-symbols-outlined">
+              timeline
+            </span> Your activity
+          </span>
           <div className='text-center p-2 bg-green-900 font-medium border border-green-600 text-green-200 rounded-lg'>
             Last selected sem is: <strong>{sem}</strong>
           </div>
-
+          {/* Show loading, error, or profile details */}
+          {loading && <div className="text-center text-white mt-4">Loading profile...</div>}
+          {error && <div className="text-center text-red-400 mt-4">{error}</div>}
+          {profile && (
+            <div className="mt-4 text-white text-center">
+              {/* Render profile details here */}
+              <div><b>Email:</b> {profile.email}</div>
+              <div><b>Full Name:</b> {profile.profile_pic}</div>
+              {/* Add more fields as needed */}
+            </div>
+          )}
         </div>
       </div>
       <Footer />

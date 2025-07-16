@@ -9,6 +9,7 @@ const Ns = () => {
     const Subject = Cookies.get("sub");
     const choose = Cookies.get("choose");
     const idFromUrl = Cookies.get("pdfid");
+    const sub = Cookies.get("sub");
 
     const [loading, setLoading] = useState(true);
     const [isopen, setIsopen] = useState(false);
@@ -217,7 +218,7 @@ const Ns = () => {
 
                 <div className='grid gap-2 nd:grid-cols-1  lg:grid-cols-3 w-full text-white p-6 '>
                     {loading ? <>
-                        <div className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-green-600 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
+                        <div className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60  hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
 
                             <img
                                 src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
@@ -243,21 +244,6 @@ const Ns = () => {
 
                         </div>
 
-                        <div class="bg-gradient-to-br from-slate-800 to-slate-900 text-white rounded-2xl p-4 flex justify-between items-center shadow-lg">
-                            <div class="flex items-center gap-4">
-                                <img src="/pdf-icon.svg" alt="PDF" class="w-10 h-10" />
-                                <div>
-                                    <h2 class="text-lg font-semibold">Unit-2 PPT</h2>
-                                    <p class="text-sm text-slate-400">816.37 KB • PDF • 2025</p>
-                                </div>
-                            </div>
-                            <button class="text-blue-400 hover:text-blue-200 transition">
-                                ⬇️
-                            </button>
-                        </div>
-
-
-
                     </>
                         :
 
@@ -265,20 +251,20 @@ const Ns = () => {
                             pdfData
                                 .filter(pdf => pdf.choose === choose)
                                 .map((pdf, index) => (
-                                    <div onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)} key={index} className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-green-600 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
+                                    <div onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)} key={index} className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60  hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
 
                                         <img
                                             src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
                                             alt="PDF Icon"
                                             className="w-12 h-12 object-contain"
                                         />
-                                        <div className='flex-1 flex flex-col'>
-                                            <p className='flex-1 text-2xl'>{pdf.name}</p>
-                                            <div className='flex gap-2 '>
 
-                                                <div className=''><span className='text-md text-gray-300'>{pdfSizes[pdf.pdf] || "N/A"}</span></div>
-                                                <div className=''><span className='text-md text-gray-300'>• PDF</span></div>
-                                                <div className=''><span className='text-md text-gray-300'>• {pdf.year}</span></div>
+                                         <div className='flex-1 flex flex-col'>
+                                            <p className='flex-1 text-xl'>{pdf.name}</p>
+                                            <div className='flex flex-col '>
+                                                <p className="text-md text-slate-400">
+                                                    {pdfSizes[pdf.pdf] || "Loading..."} • PDF • 2025
+                                                </p>
                                             </div>
 
                                         </div>
@@ -306,33 +292,35 @@ const Ns = () => {
                     +
                 </div>
             </div>
-            {isopen &&
-                <div className="z-50 flex justify-center items-center inset-0 fixed bg-black p-4 bg-opacity-50 " >
+              {isopen &&
+                <div className="z-50 loveff flex justify-center items-center inset-0 fixed bg-black p-4 bg-opacity-50 " >
                     <div className="flex flex-col border-2 border-white p-6 rounded-lg shadow-lg relative bg-[conic-gradient(at_bottom_right,_var(--tw-gradient-stops))] from-[#1d4ed8] via-[#1e40af] to-[#111827] ">
                         <div>
                             <button
                                 onClick={() => setIsopen(false)}
-                                className="absolute top-2 right-2 text-gray-100 dark:text-gray-100 hover:text-gray-800 dark:hover:text-white "
+                                className="absolute top-2 right-4 text-3xl text-red-500 dark:text-gray-100 hover:text-red-200 dark:hover:text-white "
                             >
                                 x
                             </button>
-                            <span className="bg-gradient-to-tr from-white via-stone-400  to-neutral-300 bg-clip-text text-transparent text-center text-2xl" >Add your Notes</span>
+                            <span className="loveff bg-gradient-to-tr from-white via-stone-400  to-neutral-300 bg-clip-text  text-transparent text-center font-black text-2xl mb-2" >Add your Notes</span>
+                            <p className='text-gray-400' >for {sub}</p>
 
                         </div>
                         <form onSubmit={handleSubmit}>
                             <div className="flex flex-col gap-4 justify-center items-center">
                                 <label htmlFor="content"></label>
                                 <textarea name="content" id="content"
-                                    className="w-full p-2 border border-gray-300 dark:text-gray-100 dark:bg-[#383838] text-gray-800 rounded-lg"
+                                    className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg"
                                     rows="4"
+                                    placeholder='Description'
                                     onChange={(e) => setContent(e.target.value)}
                                     required ></textarea>
                                 <label htmlFor="files"></label>
-                                <input type="file" name="files" id="files " multiple
-                                onChange={handleFileChange}
-                                    className="w-full p-2 border border-gray-300 dark:text-gray-100 dark:bg-[#383838]  rounded-lg" />
+                                <input type="file" name="files" id="files "  multiple
+                                    onChange={handleFileChange}
+                                    className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838]  rounded-lg" />
 
-                                <button type="submit" disabled={loading} class="smky-btn3 relative text-white hover:text-[#778464] py-2 px-6 after:absolute after:h-1 after:hover:h-[200%] transition-all duration-500 hover:transition-all hover:duration-500 after:transition-all after:duration-500 after:hover:transition-all after:hover:duration-500 overflow-hidden z-20 after:z-[-20] after:bg-[#abd373] after:rounded-t-full after:w-full after:bottom-0 after:left-0 text-gray-600"> {loading ? (
+                                <button type="submit" disabled={loading} className="smky-btn3 relative text-white hover:text-[#778464] py-2 px-6 after:absolute after:h-1 after:hover:h-[200%] transition-all duration-500 hover:transition-all hover:duration-500 after:transition-all after:duration-500 after:hover:transition-all after:hover:duration-500 overflow-hidden z-20 after:z-[-20] after:bg-[#abd373] after:rounded-t-full after:w-full after:bottom-0 after:left-0 text-gray-600"> {loading ? (
                                     <div className="s-loading"></div> // Display s-loading inside the button
                                 ) : (
                                     "Submit"

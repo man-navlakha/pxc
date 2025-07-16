@@ -7,6 +7,11 @@ body {
   font-family: "Unbounded";
 }
 
+.loveff {
+  /* cursor: url('./assets/cursor/openhand.png'), auto; */
+  font-family: "Montserrat";
+}
+
 html.dark {
   background-color: #1a202c; /* Example dark background */
   color: white;

@@ -11,11 +11,83 @@ const Select = () => {
     const pdfurl = Cookies.get("pdfurl")
     const pdfname = Cookies.get("pdfname")
     const pdfyear = Cookies.get("pdfyear")
+    const sub = Cookies.get("sub")
     const [downloadStates, setDownloadStates] = useState({});
     const [loadingStates, setLoadingStates] = useState({});
+
+    const [isopen, setIsopen] = useState(false);
+
+    const [content, setContent] = useState("");
+    const [files, setFiles] = useState([]);
     const [pdfData, setPdfData] = useState([]);
     const [pdfSizes, setPdfSizes] = useState({});
 
+
+
+    const handleFileChange = (e) => {
+        setFiles(Array.from(e.target.files));
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        if (!content.trim()) {
+            alert("Title and content are required!");
+            return;
+        }
+
+        if (files.length === 0) {
+            alert("Please select at least one file!");
+            return;
+        }
+
+        const name = Cookies.get("username");
+
+        if (!pdfid) {
+            alert("ID parameter is missing in the URL!");
+            return;
+        }
+
+
+        try {
+            setLoading(true); // Start loading
+
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("content", content);
+            formData.append("id", pdfid);
+
+            // ✅ Append the actual file (not URLs)
+            files.forEach((file) => formData.append("pdf", file));
+
+            const response = await fetch(
+                "https://pixel-classes.onrender.com/api/home/upload_pdf/",
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`Server error: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log("Success:", data);
+            alert("File uploaded successfully!");
+
+            setIsModalOpen(false);
+            setTitle("");
+            setContent("");
+            setFiles([]);
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Failed to upload file. Please try again.");
+        } finally {
+            setLoading(false); // End loading
+        }
+
+    }
 
 
     useEffect(() => {
@@ -51,9 +123,9 @@ const Select = () => {
             const response = await fetch(url, { method: 'HEAD' });
             const contentLength = response.headers.get('Content-Length');
             if (contentLength) {
-               setPdfSizes(prevSizes => ({
-          ...prevSizes,
-          [url]: (contentLength / (1024 * 1024)).toFixed(2) + ' MB' // Convert bytes to MB
+                setPdfSizes(prevSizes => ({
+                    ...prevSizes,
+                    [url]: (contentLength / (1024 * 1024)).toFixed(2) + ' MB' // Convert bytes to MB
                 }));
             }
 
@@ -144,7 +216,7 @@ const Select = () => {
                 </div>
 
                 <div className='mx-6'>
-                    <div onClick={() => handleDownload(pdfurl, pdfname, pdfid)} className="flex gap-2 max-w-[100vw] text-white items-center  px-6 p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-blue-600 hover:shadow-lg hover:bg-blue-500/20 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
+                    <div onClick={() => handleDownload(pdfurl, pdfname, pdfid)} className="flex gap-2 max-w-[100vw] text-white items-center  px-6 p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-600 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-30 hover:shadow-lg hover:bg-blue-500/20 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
 
                         <img
                             src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
@@ -152,16 +224,13 @@ const Select = () => {
                             className="w-12 h-12 object-contain"
                         />
                         <div className='flex-1 flex flex-col ml-2'>
-                            <p className='flex-1 text-md mb-2'>{pdfname}</p>
+                            <p className='flex-1 text-lg mb-2'>{pdfname}</p>
+
                             <div className='flex gap-2 '>
-
-                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col '><span className='text-xs text-gray-300'>Size:</span> <span className='text-sm '>{pdfsize}</span></div>
-                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col '><span className='text-xs text-gray-300'>type:</span> <span className='text-sm '>PDF</span></div>
-                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col '><span className='text-xs text-gray-300'>Year:</span> <span className='text-sm '> {pdfyear}</span></div>
+                                <p class="text-sm text-slate-400">{pdfsize} • PDF • {pdfyear}</p>
                             </div>
-
                         </div>
-                        <div onClick={() => handleDownload(pdfurl, pdfname, pdfid)} className="group relative mr-31">
+                        <div className="group relative mr-31">
                             <button>
                                 <span className="material-symbols-outlined">
                                     {loadingStates[pdfid] ? 'arrow_circle_down' : (downloadStates[pdfid] || 'download')}
@@ -175,7 +244,7 @@ const Select = () => {
                     <span >Answers of {pdfname}</span>
                 </div>
                 <div className='grid gap-2 nd:grid-cols-1  lg:grid-cols-3 w-full text-white px-6 mb-6'>
-                    {loading ? <div className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-green-600 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
+                    {loading ? <div className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60  hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
 
                         <img
                             src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
@@ -185,10 +254,7 @@ const Select = () => {
                         <div className='flex-1 flex flex-col'>
                             <p className='flex-1 text-xl'>loading...</p>
                             <div className='flex gap-2 '>
-
-                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>Size:</span> <span className='text-sm '>...</span></div>
-                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>type:</span> <span className='text-sm '>...</span></div>
-                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>Year:</span> <span className='text-sm '>...</span></div>
+                                <p class="text-sm text-slate-400">{pdfsize} • PDF • {pdfyear}</p>
                             </div>
 
                         </div>
@@ -204,7 +270,7 @@ const Select = () => {
                         pdfData.length > 0 ? (
                             pdfData
                                 .map((pdf, index) => (
-                                    <div key={index} onClick={() => handleDownload(pdf.pdf, `Answer of ${pdfname} by ${pdf.name}`, pdf.id)} className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:border-green-600 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
+                                    <div key={index} onClick={() => handleDownload(pdf.pdf, `Answer of ${pdfname} by ${pdf.name}`, pdf.id)} className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-30 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
 
                                         <img
                                             src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
@@ -212,12 +278,12 @@ const Select = () => {
                                             className="w-12 h-12 object-contain"
                                         />
                                         <div className='flex-1 flex flex-col'>
-                                            <p className='flex-1 text-md text-gray-400 pb-1'> Description: <span className='text-gray-100'>{pdf.name}</span></p>
-                                            <div className='flex gap-1'>
-
-                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>Size:</span> <span className='text-xs concat '> {pdfSizes[pdf.pdf] || "N/A"}</span></div>
-                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>type:</span> <span className='text-xs concat '> PDF</span></div>
-                                                <div className='py-1 px-2 bg-blue-600/30 border border-blue-900 rounded-xl flex flex-col'><span className='text-xs text-gray-300'>Year:</span> <span className='text-xs concat '> {pdfyear}</span></div>
+                                            <p className='flex-1 text-xl'>{pdf.contant}</p>
+                                            <div className='flex flex-col '>
+                                                <p className="text-md text-slate-400">
+                                                    {pdfSizes[pdf.pdf] || "Loading..."} • PDF • {pdfyear}
+                                                </p>
+                                                <p className='flex-1 text-md text-gray-400 pb-1'> @<span className='text-gray-100'>{pdf.name}</span></p>
                                             </div>
 
                                         </div>
@@ -240,6 +306,50 @@ const Select = () => {
                 </div>
 
             </div>
+            <div role="button" onClick={() => setIsopen(true)} data-tooltip="Upload" aria-label="Upload" data-tooltip-className="Upload" tabIndex="0" className="border border-gray-700 fixed bottom-16 right-5 rounded-[50%] flex justify-center items-center text-3xl w-16 h-16 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#27272a] via-[#52525b] to-[#a1a1aa] text-white font-black">
+                <div className="flex items-center justify-center bg-gradient-to-br from-white via-neutral-200 to-neutral-700 bg-clip-text text-transparent">
+                    +
+                </div>
+            </div>
+            {isopen &&
+                <div className="z-50 loveff flex justify-center items-center inset-0 fixed bg-black p-4 bg-opacity-50 " >
+                    <div className="flex flex-col border-2 border-white p-6 rounded-lg shadow-lg relative bg-[conic-gradient(at_bottom_right,_var(--tw-gradient-stops))] from-[#1d4ed8] via-[#1e40af] to-[#111827] ">
+                        <div>
+                            <button
+                                onClick={() => setIsopen(false)}
+                                className="absolute top-2 right-4 text-3xl text-red-500 dark:text-gray-100 hover:text-red-200 dark:hover:text-white "
+                            >
+                                x
+                            </button>
+                            <span className="loveff bg-gradient-to-tr from-white via-stone-400  to-neutral-300 bg-clip-text  text-transparent text-center font-black text-2xl mb-2" >Add your Answer PDF</span>
+                            <p className='text-gray-400' >for {sub},
+                                <br /> in {pdfname}</p>
+
+                        </div>
+                        <form onSubmit={handleSubmit}>
+                            <div className="flex flex-col gap-4 justify-center items-center">
+                                <label htmlFor="content"></label>
+                                <textarea name="content" id="content"
+                                    className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg"
+                                    rows="4"
+                                    placeholder='Description'
+                                    onChange={(e) => setContent(e.target.value)}
+                                    required ></textarea>
+                                <label htmlFor="files"></label>
+                                <input type="file" name="files" id="files "  multiple
+                                    onChange={handleFileChange}
+                                    className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838]  rounded-lg" />
+
+                                <button type="submit" disabled={loading} className="smky-btn3 relative text-white hover:text-[#778464] py-2 px-6 after:absolute after:h-1 after:hover:h-[200%] transition-all duration-500 hover:transition-all hover:duration-500 after:transition-all after:duration-500 after:hover:transition-all after:hover:duration-500 overflow-hidden z-20 after:z-[-20] after:bg-[#abd373] after:rounded-t-full after:w-full after:bottom-0 after:left-0 text-gray-600"> {loading ? (
+                                    <div className="s-loading"></div> // Display s-loading inside the button
+                                ) : (
+                                    "Submit"
+                                )}</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
             <Footer />
         </>
     )
