@@ -42,8 +42,8 @@ const login = () => {
                 token: credentialResponse.credential,
             });
             if (res.data.message === "Login successful!") {
-                Cookies.set("access_token", res.data.access_token);
-                Cookies.set("username", res.data.username);
+                Cookies.set("access_token", res.data.access_token,  { expires: 7 });
+                Cookies.set("username", res.data.username,  { expires: 7 });
 
                 setSucsses("Login Sucssesful");
                 Cookies.set("last", "Google");
@@ -77,8 +77,8 @@ const login = () => {
             });
             console.log(ress.data);
             if (ress.data.message === "Login successful!") { // use ress
-                Cookies.set("access_token", ress.data.access_token);
-                Cookies.set("username", ress.data.username);
+                Cookies.set("access_token", ress.data.access_token,  { expires: 7 });
+                Cookies.set("username", ress.data.username,  { expires: 7 });
 
                 setSucsses("Login Sucssesful");
                 Cookies.set("last", "username");

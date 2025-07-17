@@ -43,8 +43,8 @@ const signup = () => {
             });
             console.log(res)
             if (res.data.message === "Signup successful!") {
-                Cookies.set("access_token", res.data.access_token);
-                Cookies.set("username", res.data.username);
+                Cookies.set("access_token", res.data.access_token,  { expires: 7 });
+                Cookies.set("username", res.data.username,  { expires: 7 });
 
                 setSucsses("signup Sucssesful");
                 Cookies.set("last", "Google");
