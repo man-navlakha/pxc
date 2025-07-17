@@ -23,20 +23,26 @@ const Profile = () => {
       .finally(() => setLoading(false));
   }, [Username]);
 
-  // Fetch user Notes/posts
-  useEffect(() => {
-    if (!Username) return;
-    axios.post('https://pixel-classes.onrender.com/api/Profile/posts/', { username: Username })
-      .then(res => setPosts(res.data.posts || []))
-      .catch(() => setError("Failed to load Notes"));
-  }, [Username]);
+  
+useEffect(() => {
+  if (!Username) return;
+
+  axios.post('https://pixel-classes.onrender.com/api/Profile/posts/', { username: Username })
+    .then(res => setPosts(res.data || []))
+    .catch(() => setError("Failed to load Notes"));
+}, [Username]);
+
+console.log(posts);
+
+
+
 
   // Edit post handler (opens a prompt for simplicity)
   const handleEdit = async (post) => {
     const newTitle = prompt("Edit repository name:", post.title);
     if (newTitle && newTitle !== post.title) {
       try {
-        await axios.post('https://pixel-classes.onrender.com/api/Profile/edit/', {
+        await axios.put('https://pixel-classes.onrender.com/api/Profile/edit/', {
           username: Username,
           postId: post.id,
           title: newTitle,
@@ -52,7 +58,7 @@ const Profile = () => {
   const handleDelete = async (postId) => {
     if (window.confirm("Are you sure you want to delete this repository?")) {
       try {
-        await axios.post('https://pixel-classes.onrender.com/api/Profile/deletePost/', {
+        await axios.delete('https://pixel-classes.onrender.com/api/Profile/deletePost/', {
           username: Username,
           postId,
         });
@@ -69,7 +75,7 @@ const Profile = () => {
     <div className='mesh_profile ccf text-white h-full min-h-screen'>
       <Navbar />
       <div className='flex flex-col items-center mt-10 justify-center'>
-        <div className="w-full max-w-2xl mx-auto mt-10">
+        <div className="w-full max-w-4xl mx-auto mt-10">
           {/* Profile Header */}
           <div className="glass-card rounded-3xl m-3 border border-white/20 bg-white/10 backdrop-blur-xl p-8 flex flex-col md:flex-row items-center gap-8">
             <div className="flex flex-col items-center md:items-start">
@@ -109,44 +115,55 @@ alternate_email
             </div>
           </div>
           {/* Notes Section */}
-          <div className="mt-10">
-            <h2 className="text-2xl font-bold text-white/90 mb-4 m-6 flex items-center gap-2">
-              <span className="material-symbols-outlined">book_5</span> Notes
-            </h2>
-            {loading && <div className="text-center text-white mt-4">Loading profile...</div>}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {posts.length === 0 && !loading ? (
-                <div className="glass-info p-6 m-2 rounded-xl border border-white/10 bg-white/10 backdrop-blur-lg shadow text-center text-white/70">
-                  No Notes found.
-                  {error && <div className="text-center text-red-400 mt-4">{error}</div>}
-                </div>
-              ) : (
-                posts.map(post => (
-                  <div key={post.id} className="glass-info p-6 m-3 rounded-xl border border-white/10 bg-white/10 backdrop-blur-lg shadow flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-blue-400">book</span>
-                      <span className="font-bold text-lg text-white">{post.title}</span>
-                    </div>
-                    <div className="text-white/80 text-sm">{post.description || "No description"}</div>
-                    <div className="flex gap-2 mt-2">
-                      <button
-                        className="px-3 py-1 rounded bg-yellow-400/80 hover:bg-yellow-500 text-black font-semibold"
-                        onClick={() => handleEdit(post)}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        className="px-3 py-1 rounded bg-red-500/80 hover:bg-red-600 text-white font-semibold"
-                        onClick={() => handleDelete(post.id)}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
+<div className="mt-10">
+  <h2 className="text-2xl font-bold text-white/90 mb-4 m-6 flex items-center gap-2">
+    <span className="material-symbols-outlined">book_5</span> Notes
+  </h2>
+  {loading && <div className="text-center text-white mt-4">Loading profile...</div>}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    {posts.length === 0 && !loading ? (
+      <div className="glass-info p-6 m-2 rounded-xl border border-white/10 bg-white/10 backdrop-blur-lg shadow text-center text-white/70">
+        No Notes found.
+        {error && <div className="text-center text-red-400 mt-4">{error}</div>}
+      </div>
+    ) : (
+      posts.map(post => (
+        <div key={post.id} className="glass-info p-6 m-3 rounded-xl border border-white/10 bg-white/10 backdrop-blur-lg shadow flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-blue-400">book</span>
+            <span className="font-bold text-lg text-white">{post.contant}</span>
           </div>
+          <div className="text-white/80 text-sm flex items-center gap-2">
+            <span className="material-symbols-outlined text-green-400">person</span>
+            <span>{post.name}</span>
+          </div>
+          <div className="flex gap-2 mt-2">
+            <a
+              href={post.pdf}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1 rounded bg-blue-500/80 hover:bg-blue-600 text-white font-semibold flex items-center gap-1"
+            >
+              <span className="material-symbols-outlined">download</span> PDF
+            </a>
+            <button
+              className="px-3 py-1 rounded bg-yellow-400/80 hover:bg-yellow-500 text-black font-semibold"
+              onClick={() => handleEdit(post)}
+            >
+              Edit
+            </button>
+            <button
+              className="px-3 py-1 rounded bg-red-500/80 hover:bg-red-600 text-white font-semibold"
+              onClick={() => handleDelete(post.id)}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      ))
+    )}
+  </div>
+</div>
         </div>
       </div>
       </div>
