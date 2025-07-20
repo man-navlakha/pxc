@@ -11,7 +11,7 @@ const signup = () => {
     const [loading, setLoading] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [error, setError] = useState(null);
-    const [last, setLast] = useState(Cookies.get("last") || null);
+    const [last_s, setlast_s] = useState(Cookies.get("last_s") || null);
     const [sucsses, setSucsses] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
@@ -43,11 +43,11 @@ const signup = () => {
             });
             console.log(res)
             if (res.data.message === "Signup successful!") {
-                Cookies.set("access_token", res.data.access_token,  { expires: 7 });
-                Cookies.set("username", res.data.username,  { expires: 7 });
+                Cookies.set("access_token", res.data.access_token, { expires: 7 });
+                Cookies.set("username", res.data.username, { expires: 7 });
 
                 setSucsses("signup Sucssesful");
-                Cookies.set("last", "Google");
+                Cookies.set("last_s", "Google");
                 setTimeout(() => {
                     const redirectTo = "/";
                     navigate(redirectTo, { replace: true });
@@ -90,9 +90,9 @@ const signup = () => {
                                 {error && <p className="text-red-600 font-bold m-2 text-md">{error}</p>}
                                 {sucsses && <p className="text-green-600 text-center font-bold m-2 text-md">{sucsses}</p>}
 
-                                <div className={`flex flex-col ${last === "Google" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
+                                <div className={`flex flex-col ${last_s === "Google" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
 
-                                    <span className={`${last === "Google" ? "py-[2px] px-[5px] w-full text-green-600 max-w-max" : "hidden"} bg-green-300/30 text-[10px] border border-green-300 rounded`}>Last time used</span>
+                                    <span className={`${last_s === "Google" ? "py-[2px] px-[5px] w-full text-green-600 max-w-max" : "hidden"} bg-green-300/30 text-[10px] border border-green-300 rounded`}>Last time used</span>
 
                                     <GoogleLogin
                                         onSuccess={googlelogin}
@@ -110,9 +110,22 @@ const signup = () => {
 
                                 <div>
 
-                                    <form className={`flex flex-col ${last === "username" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
-                                        {/* {last === "username" ? "Last Used" : ""} */}
-                                        <span className={`${last === "username" ? "py-[2px] px-[5px] w-full text-green-600 max-w-max" : "hidden"} bg-green-300/30 text-[10px] border border-green-300 rounded`}>Last time used</span>
+                                    <form className={`flex flex-col ${last_s === "username" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
+                                        {/* {last_s === "username" ? "Last Used" : ""} */}
+                                        <span className={`${last_s === "username" ? "py-[2px] px-[5px] w-full text-green-600 max-w-max" : "hidden"} bg-green-300/30 text-[10px] border border-green-300 rounded`}>Last time used</span>
+                                        <div className='flex flex-col gap-1'>
+                                            <div>
+
+                                                <label htmlFor="profile_pic" className='text-sm font-semibold text-gray-1k'>Profile Picture</label>
+                                            </div>
+                                            <div>
+
+                                                <input type="file"
+                                                    onChange={(e) => e.target.value = e.target.value.toLowerCase()}
+                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg  max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   " id="username" placeholder="Enter your new username " />
+                                            </div>
+
+                                        </div>
                                         <div className='flex flex-col gap-1'>
                                             <div>
 

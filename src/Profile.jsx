@@ -23,16 +23,17 @@ const Profile = () => {
       .finally(() => setLoading(false));
   }, [Username]);
 
+
   
 useEffect(() => {
   if (!Username) return;
-
   axios.post('https://pixel-classes.onrender.com/api/Profile/posts/', { username: Username })
-    .then(res => setPosts(res.data || []))
+    .then(res => setPosts(res.data.posts || [])) // <-- use res.data.posts
     .catch(() => setError("Failed to load Notes"));
 }, [Username]);
 
 console.log(posts);
+console.log(profile);
 
 
 
@@ -94,10 +95,10 @@ console.log(posts);
             </div>
             <div className="flex-1 flex flex-col items-center md:items-start">
               <h1 className="flex items-center justify-center text-4xl font-extrabold bg-gradient-to-tr from-blue-300 to-green-500 text-transparent bg-clip-text text-center md:text-left">
-               <span class="material-symbols-outlined mr-2">person</span> {profile?.full_name || Username || "Guest"}
+               <span className="material-symbols-outlined mr-2">person</span> {profile?.full_name || Username || "Guest"}
               </h1>
               <p className="mt-2 text-lg text-white/80 font-medium text-center md:text-left flex items-center justify-center">
-                <span class="material-symbols-outlined text-sm mr-2 ">
+                <span className="material-symbols-outlined text-sm mr-2 ">
 alternate_email 
 </span> {profile?.email || "No email found"}
               </p>

@@ -18,6 +18,8 @@ const login = () => {
     const [sucsses, setSucsses] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
+
+    
     // ✅ Handle redirection if user is already logged in
     useEffect(() => {
         const token = Cookies.get("access_token");

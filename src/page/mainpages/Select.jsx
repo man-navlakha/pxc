@@ -227,7 +227,7 @@ const Select = () => {
                             <p className='flex-1 text-lg mb-2'>{pdfname}</p>
 
                             <div className='flex gap-2 '>
-                                <p class="text-sm text-slate-400">{pdfsize} • PDF • {pdfyear}</p>
+                                <p className="text-sm text-slate-400">{pdfsize} • PDF • {pdfyear}</p>
                             </div>
                         </div>
                         <div className="group relative mr-31">
@@ -254,7 +254,7 @@ const Select = () => {
                         <div className='flex-1 flex flex-col'>
                             <p className='flex-1 text-xl'>loading...</p>
                             <div className='flex gap-2 '>
-                                <p class="text-sm text-slate-400">{pdfsize} • PDF • {pdfyear}</p>
+                                <p className="text-sm text-slate-400">{pdfsize} • PDF • {pdfyear}</p>
                             </div>
 
                         </div>
