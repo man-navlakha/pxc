@@ -107,7 +107,7 @@ function App() {
             )}
         {/* <p className={` ${loading ? 'visible ':'hidden'} w-screen text-center p-2 bg-blue-500 text-white`} ><span className="m-2">Please wait!</span> <span className="m-2">Please wait!</span> <span className="m-2">Please wait!</span></p> */}
 
-                    <div className="App transition-all duration-500 ease-in-out dark:bg-[#1e1e1e] dark:text-white bg-white">
+                    <div className="App transition-all duration-500 ease-in-out dark:bg-[#1e1e1e] dark:text-white bg-black">
                         <Routes>
                             <Route path="*" element={<NotFound />} />
 
@@ -183,9 +183,8 @@ function App() {
                             <Route
                                 path="/search"
                                 element={
-                                    <ProtectedRoute>
+                                   
                                         <Search_user />
-                                    </ProtectedRoute>
                                 }
                             />
                     <Route

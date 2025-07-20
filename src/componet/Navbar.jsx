@@ -69,6 +69,9 @@ const Navbar = () => {
               <div className={`hidden md:hidden lg:block `} >
 
                 <div className="flex gap-4 items-center justify-center text-white font-medium ">
+                  <a href="/search">
+                    <span className="hover:text-gray-400">Find a friend</span>
+                  </a>
                   <a href="/profile">
                     <span className="hover:text-gray-400">Profile</span>
                   </a>
@@ -112,13 +115,15 @@ const Navbar = () => {
         <div className="">
           <div className={`${open ? 'block' : 'hidden'} mx-5 my-2 mt-5 rounded-xl z-40 border border-gray-400/30 bg-gray-900/60 text-white backdrop-blur-[10px] px-6 py-2`}>
             <ul className='list-none w-full text-center'>
+              <a href=" /search">
+                <li className='py-2 text-left px-3 m-2 border-b w-full '>Find a friend 🔍</li>
+              </a>
               <a href=" /profile">
                 <li className='py-2 text-left px-3 m-2 border-b w-full '>Profile 👉</li>
               </a>
               <a href="/logout">
-                <li className='py-2 text-left px-3 m-2 border-b w-full '>LogOut ⭕</li>
+                <li className='py-2 text-left px-3 m-2  w-full '>LogOut ⭕</li>
               </a>
-              <li className='font-bold text-white/20'>Made with 🩷</li>
             </ul>
           </div>
         </div>

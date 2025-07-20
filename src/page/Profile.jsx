@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import Navbar from '../componet/Navbar'
 import Footer from '../componet/Footer'
 import axios from "axios";
+import { useLocation } from 'react-router-dom';
 
 const Profile = () => {
   const Username = Cookies.get("username");
@@ -12,6 +13,31 @@ const Profile = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const location = useLocation();
+  const urlParams = new URLSearchParams(location.search);
+  const nameFromUrl = urlParams.get('username');
+  if(nameFromUrl){
+    
+  // Fetch profile details
+  useEffect(() => {
+    if (!Username) return;
+    setLoading(true);
+    axios.post('https://pixel-classes.onrender.com/api/Profile/details/', { username: nameFromUrl })
+      .then(res => setProfile(res.data))
+      .catch(() => setError("Failed to load profile details"))
+      .finally(() => setLoading(false));
+  }, [nameFromUrl]);
+
+   
+useEffect(() => {
+  if (!nameFromUrl) return;
+  axios.post('https://pixel-classes.onrender.com/api/Profile/posts/', { username: nameFromUrl })
+    .then(res => setPosts(res.data.posts || [])) // <-- use res.data.posts
+    .catch(() => setError("Failed to load Notes"));
+}, [nameFromUrl]);
+
+
+  }else{
 
   // Fetch profile details
   useEffect(() => {
@@ -69,6 +95,7 @@ console.log(profile);
       }
     }
   };
+}
 
   return (
     <>
@@ -95,14 +122,22 @@ console.log(profile);
             </div>
             <div className="flex-1 flex flex-col items-center md:items-start">
               <h1 className="flex items-center justify-center text-4xl font-extrabold bg-gradient-to-tr from-blue-300 to-green-500 text-transparent bg-clip-text text-center md:text-left">
-               <span className="material-symbols-outlined mr-2">person</span> {profile?.full_name || Username || "Guest"}
+               <span className="material-symbols-outlined mr-2">person</span> {profile?.username || "Guest"}
               </h1>
               <p className="mt-2 text-lg text-white/80 font-medium text-center md:text-left flex items-center justify-center">
                 <span className="material-symbols-outlined text-sm mr-2 ">
 alternate_email 
 </span> {profile?.email || "No email found"}
               </p>
-              <div className="mt-4 flex gap-4">
+              {nameFromUrl ? <>   <div className="mt-4 flex gap-4">
+                <button className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition">
+                  <span className="material-symbols-outlined">person_add</span> Follow
+                </button>
+                <button className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-gray-800/30 hover:bg-gray-500/50 text-white font-bold shadow transition">
+                  <span className="material-symbols-outlined">chat</span> Meassage
+                </button>
+              </div></> : <>
+                 <div className="mt-4 flex gap-4">
                 <button className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-red-500/80 hover:bg-red-600/90 text-white font-bold shadow transition">
                   <span className="material-symbols-outlined">logout</span> Logout
                 </button>
@@ -113,6 +148,9 @@ alternate_email
               <div className="mt-6 glass-info text-center p-3 rounded-xl border border-green-600/30 bg-green-900/40 text-green-200 font-medium shadow">
                 Last selected sem: <strong>{sem || "N/A"}</strong>
               </div>
+              </>
+              }
+           
             </div>
           </div>
           {/* Notes Section */}
