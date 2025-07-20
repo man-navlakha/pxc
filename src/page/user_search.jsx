@@ -13,12 +13,14 @@ export default function UserSearch() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("https://pixel-classes.onrender.com/api/Profile/UserSearch/", {
-          params: { username: search }
-        });
-        setUsers(response.data);
+      const response = await axios.get("https://pixel-classes.onrender.com/api/Profile/UserSearch/", {
+        params: { username: search }
+      });
+      // Remove user where username === usernamec
+      const filtered = response.data.filter(user => user.username !== usernamec);
+      setUsers(filtered);
       } catch (error) {
-        console.error("Error fetching users:", error);
+      console.error("Error fetching users:", error);
       }
     };
 
