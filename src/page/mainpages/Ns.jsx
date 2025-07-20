@@ -74,7 +74,6 @@ const Ns = () => {
       }
 
       const data = await response.json();
-      console.log("Success:", data);
       alert("File uploaded successfully!");
       setContent("");
       setFiles([]);
@@ -102,7 +101,6 @@ const Ns = () => {
             })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Success:', data);
                     setPdfData(data);
                     data.forEach(pdf => {
                         if (pdf.pdf) {

@@ -32,7 +32,6 @@ const Ns = () => {
             })
                 .then(response => response.json())
                 .then(data => {
-                    console.log('Success:', data);
                     setPdfData(data);
                     data.forEach(pdf => {
                         if (pdf.pdf) {

@@ -13,14 +13,14 @@ export default function UserSearch() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-      const response = await axios.get("https://pixel-classes.onrender.com/api/Profile/UserSearch/", {
-        params: { username: search }
-      });
-      // Remove user where username === usernamec
-      const filtered = response.data.filter(user => user.username !== usernamec);
-      setUsers(filtered);
+        const response = await axios.get("https://pixel-classes.onrender.com/api/Profile/UserSearch/", {
+          params: { username: search }
+        });
+        // Remove user where username === usernamec
+        const filtered = response.data.filter(user => user.username !== usernamec);
+        setUsers(filtered);
       } catch (error) {
-      console.error("Error fetching users:", error);
+        console.error("Error fetching users:", error);
       }
     };
 
@@ -49,7 +49,7 @@ export default function UserSearch() {
         <Navbar />
         <div className="flex flex-col items-center mt-10 justify-center">
           <div className="w-full max-w-4xl mt-10">
-            <div className="max-w-2xl mt-10 flex flex-col mb-10 items-center justify-center">
+            <div className="max-w-4xl mt-10 flex flex-col mb-10 items-center justify-center">
               <div className="mb-3">
                 <input
                   className="bg-[#222630] px-4 py-3 outline-none w-screen m-2 min-w-full max-w-[310px] md:max-w-[380px] lg:max-w-[500px] text-white rounded-lg border-2 transition-colors duration-100 border-solid focus:border-[#596A95] border-[#2B3040]"
@@ -62,32 +62,42 @@ export default function UserSearch() {
 
               <div className="space-y-4 flex flex-col w-full px-4">
                 {filteredUsers.length > 0 ? (
-  filteredUsers.map((user, index) => (
-    search === usernamec ? (
-      <span key={index}>You can't find yourself in this search page</span>
-    ) : (
-      <a key={index} href={`/profile?username=${user.username}`}>
-        <div className="flex items-center gap-4 p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl hover:bg-white/20 transition-all">
-          <img
-            src={user.profile_pic || `https://i.pravatar.cc/150?u=${user.username}`}
-            alt={`${user.first_name} ${user.last_name}`}
-            className="w-12 h-12 rounded-full object-cover border border-white/30"
-          />
-          <div>
-            <div className="text-lg font-semibold">{user.username}</div>
-            <div className="text-sm text-white/60">
-              {user.first_name} {user.last_name}
-            </div>
-          </div>
-        </div>
-      </a>
-    )
-  ))
-   ) : search.trim() === "" ? (
+                  filteredUsers.map((user, index) => (
+                    search === usernamec ? (
+                      <span key={index}>You can't find yourself in this search page</span>
+                    ) : (
+                      <a key={index} href={`/profile?username=${user.username}`}>
+                        <div className="flex items-center justify-between gap-4 p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl hover:bg-white/20 transition-all">
+                          <div className="flex items-center justify-center gap-4">
+
+                            <img
+                              src={user.profile_pic || `https://i.pravatar.cc/150?u=${user.username}`}
+                              alt={`${user.first_name} ${user.last_name}`}
+                              className="w-12 h-12 rounded-full object-cover border border-white/30"
+                            />
+                            <div className="flex flex-col items-center justify-between">
+
+                              <div>
+                                <div className="text-lg font-semibold max-w-[150px] truncate">{user.username}</div>
+                                <div className="text-sm text-white/60 max-w-[180px] truncate">
+                                  {user.first_name} {user.last_name}
+                                </div>
+                              </div>
+                            </div>
+
+                          </div>
+                          <button className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition">
+                            <span className="material-symbols-outlined">person_add</span> Follow
+                          </button>
+                        </div>
+                      </a>
+                    )
+                  ))
+                ) : search.trim() === "" ? (
                   <p className="text-white/60 text-center">Start typing to search users.</p>
                 ) : (
-  <p className="text-white/60 text-center">No users found.</p>
-)}
+                  <p className="text-white/60 text-center">No users found.</p>
+                )}
 
               </div>
             </div>

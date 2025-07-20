@@ -70,7 +70,7 @@ const Navbar = () => {
 
                 <div className="flex gap-4 items-center justify-center text-white font-medium ">
                   <a href="/search">
-                    <span className="hover:text-gray-400">Find a friend</span>
+                    <span className="hover:text-blue-400">Find a friend</span>
                   </a>
                   <a href="/profile">
                     <span className="hover:text-gray-400">Profile</span>

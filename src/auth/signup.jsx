@@ -41,7 +41,6 @@ const signup = () => {
             const res = await axios.post('https://pixel-classes.onrender.com/api/user/google-signup/', {
                 token: credentialResponse.credential,
             });
-            console.log(res)
             if (res.data.message === "Signup successful!") {
                 Cookies.set("access_token", res.data.access_token, { expires: 7 });
                 Cookies.set("username", res.data.username, { expires: 7 });
