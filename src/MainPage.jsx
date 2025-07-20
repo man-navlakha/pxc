@@ -7,7 +7,7 @@ import Feature from './componet/feature'
 import Footer from './componet/Footer';
 import View from './componet/View';
 import Faq from './componet/Faq';
-import Semester from './Sem';
+import Semester from './page/Sem';
 
 const MainPage = () => {
 

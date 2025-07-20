@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
-import './new.css';
-import Footer from './componet/Footer';
-import Navbar from './componet/Navbar';
+import '../new.css';
+import Footer from '../componet/Footer';
+import Navbar from '../componet/Navbar';
 import { useNavigate, useLocation, Link } from "react-router-dom";
 
 const Semester = () => {
@@ -74,7 +74,6 @@ const Semester = () => {
         <>
             <div className="bg-pattern"></div>
             <div className=' ccfv -mt-6 h-full min-h-screen'>
-                {/* <Navbar /> */}
                 <div className='ccf'>
                     <div className='p-4 py-16 flex flex-col text-center content-center flex-nowrap justify-center gap-3 items-center'>
                         <div>
@@ -118,7 +117,7 @@ const Semester = () => {
                             {selectedSem && ( // Only show the title if a semester is selected
                                 <span ref={sectionRef} className="font-bold mb-8">Choose your subject for Semester {selectedSem}</span>
                             )}
-                            {loading && <p className="text-xl mt-4  cursor-progress ">  <div className=" " >
+                            {loading && <span className="text-xl mt-4  cursor-progress ">  <div className=" " >
                                 <div className="book">
                                     <div className="flex flex-col gap-4 text-md cursor-progress  ">
                                         <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
@@ -130,7 +129,7 @@ const Semester = () => {
                                     <div className=" p-2 cover border border-gray-300/60">
                                         <p>Loading...</p>
                                     </div>
-                                </div></div></p>}
+                                </div></div></span>}
                             {error && <p className="text-xl mt-4 text-red-500">{error}</p>}
                             <div className={`${loading ? 'hidden' : ''}`}>
 
@@ -165,7 +164,6 @@ const Semester = () => {
                         </div>
                     </div>
                 </div>
-                {/* <Footer /> */}
 
             </div>
           

@@ -40,25 +40,29 @@ const Ns = () => {
 
     const name = Cookies.get("username");
 
-    if (!idFromUrl) {
-      alert("ID parameter is missing in the URL!");
-      return;
-    }
-
 
     try {
       setLoading(true); // Start loading
 
       const formData = new FormData();
-      formData.append("name", name);
-      formData.append("content", content);
-      formData.append("id", idFromUrl);
+      formData.append("name", content);
+      formData.append("course_id", 1);
+      formData.append("sem", sem);
+      formData.append("choose", choose);
+      formData.append("sub", sub);
+    // Check if all selected files are PDFs
+    const nonPdfFiles = files.filter(file => file.type !== "application/pdf");
+    if (nonPdfFiles.length > 0) {
+      alert("Only PDF files are allowed!");
+      setLoading(false);
+      return;
+    }
 
-      // ✅ Append the actual file (not URLs)
-      files.forEach((file) => formData.append("pdf", file));
+    // ✅ Append the actual file (not URLs)
+    files.forEach((file) => formData.append("pdf", file));
 
       const response = await fetch(
-        "https://pixel-classes.onrender.com/api/home/upload_pdf/",
+        "https://pixel-classes.onrender.com/api/home/QuePdf/Add/",
         {
           method: "POST",
           body: formData,
@@ -72,16 +76,15 @@ const Ns = () => {
       const data = await response.json();
       console.log("Success:", data);
       alert("File uploaded successfully!");
-
-      setIsModalOpen(false);
-      setTitle("");
       setContent("");
       setFiles([]);
+      setIsopen(false);
     } catch (error) {
       console.error("Error:", error);
       alert("Failed to upload file. Please try again.");
     } finally {
       setLoading(false); // End loading
+      setIsopen(false);
     }
     
     }
@@ -303,7 +306,7 @@ const Ns = () => {
                                 x
                             </button>
                             <span className="loveff bg-gradient-to-tr from-white via-stone-400  to-neutral-300 bg-clip-text  text-transparent text-center font-black text-2xl mb-2" >Add your Notes</span>
-                            <p className='text-gray-400' >for {sub}</p>
+                            <p className='text-gray-400' >for {sub} - Semester {sem}</p>
 
                         </div>
                         <form onSubmit={handleSubmit}>

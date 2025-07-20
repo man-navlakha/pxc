@@ -7,8 +7,9 @@ import './App.css';
 // Beta configs
 import Signup from './auth/signup';
 import Blogin from './auth/Login';
-import Sem from './Sem';
-import Prof from './Profile';
+import Sem from './page/Sem';
+import Prof from './page/Profile';
+import Search_user from './page/user_search';
 
 import Ns from "./page/mainpages/Ns";
 import Nss from "./page/mainpages/Nss";
@@ -172,10 +173,18 @@ function App() {
                                 }
                             />
                             <Route
-                                path="/search"
+                                path="/searchpdf"
                                 element={
                                     <ProtectedRoute>
                                         <Search />
+                                    </ProtectedRoute>
+                                }
+                            />
+                            <Route
+                                path="/search"
+                                element={
+                                    <ProtectedRoute>
+                                        <Search_user />
                                     </ProtectedRoute>
                                 }
                             />
