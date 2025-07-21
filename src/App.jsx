@@ -5,6 +5,8 @@ import axios from "axios";
 import './App.css';
 
 // Beta configs
+import Password from './auth/password';
+import Verification from './auth/verification';
 import Signup from './auth/signup';
 import Blogin from './auth/Login';
 import Sem from './page/Sem';
@@ -37,6 +39,7 @@ import Pdfs from "./old/pages/pdfs";
 import NotesSharingPage from './old/newcom/NotesSharingPage';
 import Exam from "./old/pages/exam";
 import Profile from "./old/pages/profile";
+import Forgetpassword from "./auth/Forgetpassword";
 
 // import Sign from './old/newcom/Sign';
 // import Verify from './old/newcom/veri';
@@ -112,6 +115,9 @@ function App() {
                             <Route path="*" element={<NotFound />} />
 
                             {/* Beta */}
+                            <Route path="/auth/forgetpassword" element={<Forgetpassword />} />
+                            <Route path="/auth/password" element={<Password />} />
+                            <Route path="/auth/verification" element={<Verification />} />
                             <Route path="/auth/signup" element={<Signup />} />
                             <Route path="/auth/login" element={<Blogin />} />
                             <Route path="/" element={<MainPage />} />

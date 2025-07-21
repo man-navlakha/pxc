@@ -151,7 +151,7 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
 
                                 <div>
 
-                                    <form onSubmit={logmein} className={`flex flex-col ${last === "username" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
+                                    <form onSubmit={logmein} className={`flex flex-col ${last === "username" ? 'border border-green-500 p-2 rounded' : ''} gap-1 ${loading ? 'hidden' : ''}`}>
                                         {/* {last === "username" ? "Last Used" : ""} */}
                                         <span className={`${last === "username" ? "py-[2px] px-[5px] w-full text-green-600 max-w-max" : "hidden"} bg-green-300/30 text-[10px] border border-green-300 rounded`}>Last time used</span>
                                         <div className='flex flex-col gap-1'>
@@ -182,6 +182,10 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                                                 </button></div>
 
                                         </div>
+                        <div className="flex items-center justify-end">
+                            {/* <span className="mx-1 text-blue-500 hover:text-blue-800 hover:font-bold">d</span> */}
+                            <span className="mx-1 text-blue-500 hover:text-blue-800 hover:font-bold"><a href=" /auth/forgetpassword">Forget Password</a></span>
+                        </div>
 
                                         <button type="submit" className="w-full mt-6 justify-center  flex items-center font-semibold border transition-all ease-in duration-75 whitespace-nowrap text-center select-none disabled:shadow-none disabled:opacity-50 text-white disabled:cursor-not-allowed gap-x-1 active:shadow-none text-base leading-[22px] rounded-2xl py-2 h-10 px-6 text-gray-00 bg-gray-900 border-gray-1k hover:bg-gray-1k disabled:bg-gray-900 dark:bg-gray-1k dark:border-gray-800 dark:hover:bg-gray-800 dark:disabled:bg-gray-800 shadow-10 hover:shadow-15 dark:shadow-10 dark:hover:shadow-10">Login <span className="-mr-1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12H19.5833M19.5833 12L12.5833 5M19.5833 12L12.5833 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"></path></svg></span></button>
 

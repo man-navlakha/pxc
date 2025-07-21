@@ -34,6 +34,115 @@ const signup = () => {
 
 
 
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const fileInput = document.getElementById("profile_pic");
+  const username = document.getElementById("username").value;
+  const email = document.getElementById("email").value; // ✅ Define it here
+  const password = document.getElementById("password").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+
+  // ✅ Now it's safe to use `email` here
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    alert("Passwords do not match!");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("profile_pic", fileInput.files[0]);
+  formData.append("username", username);
+  formData.append("email", email);
+  formData.append("password", password);
+
+  try {
+    const response = await fetch("https://pixel-classes.onrender.com/api/user/register/", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      navigate("/verification", { state: { user: { username, email } } });
+    } else {
+      alert(data.message || "Registration failed.");
+    }
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong. Try again later.");
+  }
+};
+
+
+
+
+    // const handleSignUpClick = async (e) => {
+    //   e.preventDefault();
+
+    //   setError(''); // Clear any previous error
+
+    //   if (password !== confirmPassword) {
+    //     alert('Passwords do not match');
+    //     return;
+    //   }
+
+    //   // Basic email validation
+    //   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    //   if (!emailRegex.test(email)) {
+    //     alert('Please enter a valid email');
+    //     return;
+    //   }
+
+    //   // Basic password validation
+    //   if (password.length < 6) {
+    //     alert('Password must be at least 6 characters long');
+    //     return;
+    //   }
+
+
+    //   setLoading(true); // Start loading
+
+    //   try {
+    //     const response = await fetch('https://pixel-classes.onrender.com/api/user/register/', {
+    //       method: 'POST',
+    //       headers: {
+    //         'Content-Type': 'application/json',
+    //       },
+    //       body: JSON.stringify({ username, email, password, course }),
+    //     });
+
+    //     if (!response.ok) {
+    //       const errorData = await response.json();
+    //       throw new Error(errorData.error || 'Network response was not ok');
+    //     }
+
+    //     const data = await response.json();
+    //     console.log('Signup successful:', data);
+    //     Cookies.set('username', username); // Save username to cookies
+    //     Cookies.set('email', email); // Save email to cookies
+
+    //     // Redirect to the /verification page and pass the username via state
+    //     navigate('/verification', { state: { user: { username } } });
+
+    //   } catch (error) {
+    //     console.error('There was a problem with the signup request:', error);
+    //     setError(error.message);
+    //     setLoading(false); // End loading
+    //   } finally {
+    //     // Any cleanup code if necessary
+    //     setLoading(false); // End loading
+    //   }
+    // };
+
+
+
 
     const googlelogin = async (credentialResponse) => {
         setLoading(true)
@@ -65,6 +174,12 @@ const signup = () => {
         }
 
     }
+
+
+
+
+
+
 
 
     return (
@@ -109,7 +224,7 @@ const signup = () => {
 
                                 <div>
 
-                                    <form className={`flex flex-col ${last_s === "username" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
+                                    <form onSubmit={handleSubmit} className={`flex flex-col ${last_s === "username" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
                                         {/* {last_s === "username" ? "Last Used" : ""} */}
                                         <span className={`${last_s === "username" ? "py-[2px] px-[5px] w-full text-green-600 max-w-max" : "hidden"} bg-green-300/30 text-[10px] border border-green-300 rounded`}>Last time used</span>
                                         <div className='flex flex-col gap-1'>
@@ -119,9 +234,12 @@ const signup = () => {
                                             </div>
                                             <div>
 
-                                                <input type="file"
-                                                    onChange={(e) => e.target.value = e.target.value.toLowerCase()}
-                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg  max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   " id="username" placeholder="Enter your new username " />
+                                                <input
+                                                    type="file"
+                                                    id="profile_pic"
+                                                    name="profile_pic"
+                                                    accept="image/*"
+                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg  max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input"  placeholder="Enter your new username " />
                                             </div>
 
                                         </div>
@@ -138,6 +256,20 @@ const signup = () => {
                                             </div>
 
                                         </div>
+                                        <div className='flex flex-col gap-1'>
+  <div>
+    <label htmlFor="email" className='text-sm font-semibold text-gray-1k'>Email</label>
+  </div>
+  <div>
+    <input
+      type="email"
+      id="email"
+      placeholder="Enter your email"
+      className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input"
+    />
+  </div>
+</div>
+
                                         <div className='flex flex-col gap-1'>
                                             <div>
 
@@ -156,9 +288,9 @@ const signup = () => {
                                         <div className='flex flex-col gap-1'>
                                             <div>
 
-                                                <label htmlFor="password" className='text-sm font-semibold text-gray-1k'>Confirm Password</label>
+                                                <label htmlFor="confirmPassword" className='text-sm font-semibold text-gray-1k'>Confirm Password</label>
                                             </div>
-                                            <div className="relative"><input type={passwordVisible ? "text" : "password"} className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   " id="password" placeholder="At least 8 characters." autoComplete="off" aria-autocomplete="list" data-rr-is-password="true" />
+                                            <div className="relative"><input type={passwordVisible ? "text" : "password"} className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   " id="confirmPassword" placeholder="At least 8 characters." autoComplete="off" aria-autocomplete="list" data-rr-is-password="true" />
                                                 <button onClick={togglePasswordVisibility} type="button" aria-label="view-password" className="absolute right-0 p-2 text-gray-500 cursor-pointer hover:text-gray-1k">
                                                     {passwordVisible ?
                                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12.85c3.6-7.8 14.4-7.8 18 0m-9 4.2a2.4 2.4 0 110-4.801 2.4 2.4 0 010 4.801z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" vectorEffect="non-scaling-stroke"></path></svg>
