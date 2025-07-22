@@ -40,6 +40,8 @@ import NotesSharingPage from './old/newcom/NotesSharingPage';
 import Exam from "./old/pages/exam";
 import Profile from "./old/pages/profile";
 import Forgetpassword from "./auth/Forgetpassword";
+import FollowingPage from "./page/FollowingPage";
+import FollowersPage from "./page/FollowersPage";
 
 // import Sign from './old/newcom/Sign';
 // import Verify from './old/newcom/veri';
@@ -115,6 +117,9 @@ function App() {
                             <Route path="*" element={<NotFound />} />
 
                             {/* Beta */}
+                           <Route path="/following" element={<FollowingPage />} />
+                           <Route path="/follwers" element={<FollowersPage />} />
+
                             <Route path="/auth/forgetpassword" element={<Forgetpassword />} />
                             <Route path="/auth/password" element={<Password />} />
                             <Route path="/auth/verification" element={<Verification />} />

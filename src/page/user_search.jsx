@@ -35,7 +35,31 @@ export default function UserSearch() {
       console.error("Error following user:", error);
     }
   };
-
+  // Move follow function outside useEffect so it can be used in JSX
+ const unfollow = async (unfollow_username) => {
+  try {
+    const response = await axios.post(
+      "https://pixel-classes.onrender.com/api/Profile/unfollow/",
+      {
+        username: usernamec,
+        unfollow_username: unfollow_username, // <-- send the follow relationship ID
+      }
+    );
+    console.log("Unfollow response:", response.data);
+    if (response.data.message) {
+      alert(`removed`);
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.follow_id === follow_id
+            ? { ...user, is_following: false }
+            : user
+        )
+      );
+    }
+  } catch (error) {
+    console.error("Error unfollow user:", error);
+  }
+};
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -106,11 +130,11 @@ export default function UserSearch() {
                       </span>
                     ) : (
                       <div className="flex items-center justify-between gap-4 p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl hover:bg-white/20 transition-all">
-                          <a
-                            key={index}
-                            href={`profile?username=${user.username}`}
-                          >
-                        <div className="flex items-center justify-center gap-4">
+                        <a
+                          key={index}
+                          href={`profile?username=${user.username}`}
+                        >
+                          <div className="flex items-center justify-center gap-4">
                             <img
                               src={
                                 user.profile_pic ||
@@ -129,18 +153,31 @@ export default function UserSearch() {
                                 </div>
                               </div>
                             </div>
-                        </div>
-                          </a>
-                        <button
-                          onClick={() => follow(user.username)}
-                          className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition"
-                        >
-                          <span className="material-symbols-outlined">
-                            person_add
-                          </span>{" "}
-                          {user.is_following ? "Following" : "Follow"}
-                        </button>
+                          </div>
+                        </a>
+                        {user.is_following ? (
+                          <button
+                            onClick={() => unfollow(user.username)}
+                            className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-red-500/80 hover:bg-red-600/90 text-white font-bold shadow transition"
+                          >
+                            <span className="material-symbols-outlined">
+                              person_remove
+                            </span>{" "}
+                            Unfollow
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => follow(user.username)}
+                            className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition"
+                          >
+                            <span className="material-symbols-outlined">
+                              person_add
+                            </span>{" "}
+                            Follow
+                          </button>
+                        )}
                       </div>
+                      
                     )
                   )
                 ) : search.trim() === "" ? (

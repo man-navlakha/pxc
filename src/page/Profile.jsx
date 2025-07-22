@@ -6,11 +6,14 @@ import Footer from '../componet/Footer'
 import axios from "axios";
 import { useLocation } from 'react-router-dom';
 import { User } from 'lucide-react';
+import FollowingPage from './FollowingPage';
+import FollowersPage from './FollowersPage';
 
 const Profile = () => {
   const Username = Cookies.get("username");
   const sem = Cookies.get("latest_sem");
   const [profile, setProfile] = useState(null);
+  const [page, setPage] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isopen, setIsopen] = useState(false);
@@ -19,6 +22,9 @@ const Profile = () => {
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
   const nameFromUrl = urlParams.get('username');
+  const [isFollowing, setIsFollowing] = useState(false);
+  const usernamec = Cookies.get("username");
+
   if (nameFromUrl) {
     // Fetch profile details
     useEffect(() => {
@@ -36,6 +42,34 @@ const Profile = () => {
         .then(res => setPosts(res.data.posts || [])) // <-- use res.data.posts
         .catch(() => setError("Failed to load Notes"));
     }, [nameFromUrl]);
+
+
+    useEffect(() => {
+      const fetchFollowStatus = async () => {
+        if (!nameFromUrl || !usernamec) return;
+
+        try {
+          // 1. Get who the logged-in user is following
+          const followingRes = await axios.post(
+            "https://pixel-classes.onrender.com/api/Profile/following/",
+            { username: usernamec }
+          );
+          const followingUsernames = followingRes.data.map(u => u.username);
+
+          // 2. Check if the current profile is among those
+          setIsFollowing(followingUsernames.includes(nameFromUrl));
+        } catch (err) {
+          console.error("Error checking follow status:", err);
+        }
+      };
+
+      fetchFollowStatus();
+    }, [nameFromUrl]);
+
+
+
+
+
   } else {
 
     // Fetch profile details
@@ -47,7 +81,7 @@ const Profile = () => {
         .catch(() => setError("Failed to load profile details"))
         .finally(() => setLoading(false));
     }, [Username]);
-    
+
     useEffect(() => {
       if (!Username) return;
       axios.post('https://pixel-classes.onrender.com/api/Profile/posts/', { username: Username })
@@ -60,41 +94,69 @@ const Profile = () => {
 
 
 
-
-    // Edit post handler (opens a prompt for simplicity)
-    const handleEdit = async (post) => {
-      const newTitle = prompt("Edit repository name:", post.title);
-      if (newTitle && newTitle !== post.title) {
-        try {
-          await axios.put('https://pixel-classes.onrender.com/api/Profile/edit/', {
-            username: Username,
-            postId: post.id,
-            title: newTitle,
-          });
-          setPosts(posts.map(p => p.id === post.id ? { ...p, title: newTitle } : p));
-        } catch {
-          alert("Failed to edit repository.");
-        }
-      }
-    };
-
-    // Delete post handler
-    const handleDelete = async (postId) => {
-      if (window.confirm("Are you sure you want to delete this repository?")) {
-        try {
-          await axios.delete('https://pixel-classes.onrender.com/api/Profile/deletePost/', {
-            username: Username,
-            postId,
-          });
-          setPosts(posts.filter(p => p.id !== postId));
-        } catch {
-          alert("Failed to delete repository.");
-        }
-      }
-    };
-
-
   }
+
+  // Edit post handler (opens a prompt for simplicity)
+  const handleEdit = async (post) => {
+    const newTitle = prompt("Edit repository name:", post.title);
+    if (newTitle && newTitle !== post.title) {
+      try {
+        await axios.put('https://pixel-classes.onrender.com/api/Profile/edit/', {
+          username: Username,
+          postId: post.id,
+          title: newTitle,
+        });
+        setPosts(posts.map(p => p.id === post.id ? { ...p, title: newTitle } : p));
+      } catch {
+        alert("Failed to edit repository.");
+      }
+    }
+  };
+
+
+
+  const follow = async () => {
+    try {
+      await axios.post("https://pixel-classes.onrender.com/api/Profile/follow/", {
+        follower: usernamec,
+        following: nameFromUrl
+      });
+      setIsFollowing(true);
+    } catch (err) {
+      console.error("Follow error:", err);
+    }
+  };
+
+  const unfollow = async () => {
+    try {
+      await axios.post("https://pixel-classes.onrender.com/api/Profile/unfollow/", {
+        follower: usernamec,
+        following: nameFromUrl
+      });
+      setIsFollowing(false);
+    } catch (err) {
+      console.error("Unfollow error:", err);
+    }
+  };
+
+
+
+  const handleDelete = async (postId) => {
+    if (window.confirm("Are you sure you want to delete this repository?")) {
+      try {
+        await axios.post('https://pixel-classes.onrender.com/api/Profile/deletePost/', {
+          username: Username,
+          postId,
+        });
+
+        setPosts(posts.filter(p => p.id !== postId));
+      } catch (err) {
+        console.error("Delete error:", err.response?.data || err.message);
+        alert("Failed to delete repository.");
+      }
+    }
+  };
+
 
   return (
     <>
@@ -147,54 +209,72 @@ const Profile = () => {
                   loading ? <>
 
                     <h1 className="flex items-center justify-center text-4xl font-extrabold bg-gradient-to-tr from-blue-300 to-green-500 text-transparent bg-clip-text text-center md:text-left">
-                      <span className="material-symbols-outlined mr-2">person</span><div
-                        className="h-4 bg-gray-200 rounded-full dark:bg-gray-400 w-32 mb-2"
-                      ></div>
+                      <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[160px]"> </div>
                     </h1>
-                    {nameFromUrl ? '' :
-                      <p className="mt-2 text-lg text-white/80 font-medium text-center md:text-left flex items-center justify-center">
-                        <span className="material-symbols-outlined text-sm mr-2 ">
-                          alternate_email
-                        </span> <div
-                          className="h-2.5 bg-gray-200 rounded-full dark:bg-gray-400 w-64 mb-2"
-                        ></div>
-                      </p>
-                    }
+
                   </>
                     :
                     <>
 
-                      <h1 className="flex items-center justify-center text-4xl font-extrabold bg-gradient-to-tr from-blue-300 to-green-500 text-transparent bg-clip-text text-center md:text-left">
-                        <span className="material-symbols-outlined mr-2">person</span> {profile?.username || "Guest"}
+                      <h1 className="flex items-center justify-center mb-2 text-4xl font-extrabold bg-gradient-to-tr from-blue-300 to-green-500 text-transparent bg-clip-text text-center md:text-left">
+                        <span className="material-symbols-outlined"></span>{profile?.username || "Guest"}
                       </h1>
-                      {nameFromUrl ? '' :
+                      <div className='flex cursor-pointer items-center justify-between gap-3 '>
+                        <div onClick={() => setPage("followers")} className='flex flex-col items-center justify-center'>
+                          <p>{profile?.follower_count || 0}</p>
+                          <p>Followers</p>
+                        </div>
+                        <div onClick={() => setPage("following")} className='flex cursor-pointer flex-col items-center justify-center'>
+                          <p>{profile?.following_count || 0}</p>
+                          <p>Following</p>
+                        </div>
+                      </div>
+
+                      {console.log("Current page:", page)}
+
+                      {/* {nameFromUrl ? '' :
                       <>
                         <p className="mt-2 text-lg text-white/80 font-medium text-center md:text-left flex items-center justify-center">
                           <span className="material-symbols-outlined text-sm mr-2 ">
                             alternate_email
                           </span> {profile?.email || "No email found"}
                         </p>
-                        <p>Followers : {profile?.follower_count || "Error in count"} • Following : {profile?.following_count || "Error in count"}</p>
                         </>
-                      }
+                      } */}
                     </>
                 }
-                {nameFromUrl ? <>   <div className="mt-4 flex gap-4">
-                  <button className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition">
-                    <span className="material-symbols-outlined">person_add</span> Follow
-                  </button>
-                  <button className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-gray-800/30 hover:bg-gray-500/50 text-white font-bold shadow transition">
-                    <span className="material-symbols-outlined">chat</span> Meassage
-                  </button>
-                </div></> : <>
+                {nameFromUrl ? <> {nameFromUrl && (
+                  <div className="mt-4 flex gap-4">
+                    {isFollowing ? (
+                      <button
+                        onClick={unfollow}
+                        className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-red-500/80 hover:bg-red-600/90 text-white font-bold shadow transition"
+                      >
+                        <span className="material-symbols-outlined">person_remove</span> Unfollow
+                      </button>
+                    ) : (
+                      <button
+                        onClick={follow}
+                        className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition"
+                      >
+                        <span className="material-symbols-outlined">person_add</span> Follow
+                      </button>
+                    )}
+                    <button className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-gray-800/30 hover:bg-gray-500/50 text-white font-bold shadow transition">
+                      <span className="material-symbols-outlined">chat</span> Message
+                    </button>
+                  </div>
+                )}
+
+                </> : <>
                   {
                     loading ? <>
                       <div className="mt-4 flex gap-4">
                         <button className="glass-btn flex items-center gap-2 px-5 py-3 rounded-xl shadow transition">
-                          <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[170px]"> </div>
+                          <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[120px]"> </div>
                         </button>
                         <button className="glass-btn flex items-center gap-2 px-5 py-3 rounded-xl shadow transition">
-                          <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[170px]"> </div>
+                          <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[120px]"> </div>
                         </button>
                       </div>
                       <button className="glass-btn flex items-center bg-green-600/30 gap-2 px-5 py-3 mt-4 rounded-xl shadow transition">
@@ -211,9 +291,9 @@ const Profile = () => {
                             <span className="material-symbols-outlined">edit_square</span> Update
                           </button>
                         </div>
-                        <div className="mt-6 glass-info text-center p-3 rounded-xl border border-green-600/30 bg-green-900/40 text-green-200 font-medium shadow">
+                        {/* <div className="mt-6 glass-info text-center p-3 rounded-xl border border-green-600/30 bg-green-900/40 text-green-200 font-medium shadow">
                           Last selected sem: <strong>{sem || "N/A"}</strong>
-                        </div>
+                        </div> */}
                       </>
                   }
 
@@ -222,64 +302,26 @@ const Profile = () => {
 
               </div>
             </div>
-            {/* Notes Section */}
-            <div className="mt-10">
-              <h2 className="text-2xl font-bold text-white/90 mb-4 m-6 flex items-center gap-2">
-                <span className="material-symbols-outlined">book_5</span> Notes
-              </h2>
-              {loading &&
-                <div className="glass-info p-6 m-3 rounded-xl border border-white/10 bg-white/10 backdrop-blur-lg shadow flex flex-col gap-2">
-                  <div className="flex items-top gap-2">
-                    <span className="material-symbols-outlined text-blue-400"> <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[50px]"> </div></span>
-                    <span className="font-bold text-lg text-white mr-2"> <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[170px]"> </div>
-                      <div className='flex items-center mt-3'>
-                        <span className="material-symbols-outlined text-blue-400 mr-2 "><div className="animate-pulse rounded-md bg-gray-500 h-4 w-[50px]"> </div></span>
-                        <span className='font-medium text-md text-gray-300' > <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[200px]"> </div></span>
-                      </div>
-                      {/* <div className='flex items-center'>
-                            <span className="material-symbols-outlined text-blue-400">chevron_forward</span>
-                            <span className='font-medium text-md text-gray-300' >Semester : {post.sem}</span>
-                          </div>
-                          <div className='flex items-center'>
-                            <span className="material-symbols-outlined text-blue-400">chevron_forward</span>
-                            <span className='font-medium text-md text-gray-300' >{post.choose}</span>
-                          </div> */}
 
-                    </span>
-                  </div>
-                  {/* <div className="text-white/80 text-sm flex items-center gap-2">
-                        <span className="material-symbols-outlined text-green-400">person</span>
-                        <span>{post.name}</span>
-                      </div> */}
-                  <div className="flex gap-2 mt-2">
-                    <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[170px]"> </div>
-                    {!nameFromUrl && <>
-                      <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[170px]"> </div>
-                      <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[170px]"> </div>
-
-                    </>}
-
-                  </div>
-                </div>
-
-
-
-              }
-              <div className=" gap-6">
-                {posts.length === 0 && !loading ? (
-                  <div className="glass-info p-6 m-2 rounded-xl border border-white/10 bg-white/10 backdrop-blur-lg shadow text-center text-white/70">
-                    No Notes found.
-                    {error && <div className="text-center text-red-400 mt-4">{error}</div>}
-                  </div>
-                ) : (
-                  posts.map(post => (
-                    <div key={post.id} className="glass-info p-6 m-3 rounded-xl border border-white/10 bg-white/10 backdrop-blur-lg shadow flex flex-col gap-2">
+            {page === "following" ? (
+              <FollowingPage username={profile?.username || Username} />
+            ) : page === "followers" ? (
+              <FollowersPage username={profile?.username || Username} />
+            ) : (
+              <>
+                {/* Notes Section */}
+                <div className="mt-10">
+                  <h2 className="text-2xl font-bold text-white/90 mb-4 m-6 flex items-center gap-2">
+                    <span className="material-symbols-outlined">book_5</span> Notes
+                  </h2>
+                  {loading &&
+                    <div className="glass-info p-6 m-3 rounded-xl border border-white/10 bg-white/10 backdrop-blur-lg shadow flex flex-col gap-2">
                       <div className="flex items-top gap-2">
-                        <span className="material-symbols-outlined text-blue-400">book</span>
-                        <span className="font-bold text-lg text-white">{post.contant}
-                          <div className='flex items-center'>
-                            <span className="material-symbols-outlined text-blue-400">chevron_forward</span>
-                            <span className='font-medium text-md text-gray-300' >{post.choose} in {post.sub} for Semester {post.sem}</span>
+                        <span className="material-symbols-outlined text-blue-400"> <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[50px]"> </div></span>
+                        <span className="font-bold text-lg text-white mr-2"> <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[170px]"> </div>
+                          <div className='flex items-center mt-3'>
+                            <span className="material-symbols-outlined text-blue-400 mr-2 "><div className="animate-pulse rounded-md bg-gray-500 h-4 w-[50px]"> </div></span>
+                            <span className='font-medium text-md text-gray-300' > <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[200px]"> </div></span>
                           </div>
                           {/* <div className='flex items-center'>
                             <span className="material-symbols-outlined text-blue-400">chevron_forward</span>
@@ -297,36 +339,85 @@ const Profile = () => {
                         <span>{post.name}</span>
                       </div> */}
                       <div className="flex gap-2 mt-2">
-                        <a
-                          href={post.pdf}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-3 py-1 rounded bg-blue-500/80 hover:bg-blue-600 text-white font-semibold flex items-center gap-1"
-                        >
-                          <span className="material-symbols-outlined">download</span> PDF
-                        </a>
+                        <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[170px]"> </div>
                         {!nameFromUrl && <>
-                          <button
-                            className="px-3 py-1 rounded bg-yellow-400/80 hover:bg-yellow-500 text-black font-semibold"
-                            onClick={() => handleEdit(post)}
-                          >
-                            Edit
-                          </button>
-                          <button
-                            className="px-3 py-1 rounded bg-red-500/80 hover:bg-red-600 text-white font-semibold"
-                            onClick={() => handleDelete(post.id)}
-                          >
-                            Delete
-                          </button>
+                          <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[170px]"> </div>
+                          <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[170px]"> </div>
 
                         </>}
 
                       </div>
                     </div>
-                  ))
-                )}
-              </div>
-            </div>
+
+
+
+                  }
+                  <div className=" gap-6">
+                    {posts.length === 0 && !loading ? (
+                      <div className="glass-info p-6 m-2 rounded-xl border border-white/10 bg-white/10 backdrop-blur-lg shadow text-center text-white/70">
+                        No Notes found.
+                        {error && <div className="text-center text-red-400 mt-4">{error}</div>}
+                      </div>
+                    ) : (
+                      posts.map(post => (
+                        <div key={post.id} className="glass-info p-6 m-3 rounded-xl border border-white/10 bg-white/10 backdrop-blur-lg shadow flex flex-col gap-2">
+                          <div className="flex items-top gap-2">
+                            <span className="material-symbols-outlined text-blue-400">book</span>
+                            <span className="font-bold text-lg text-white">{post.contant}
+                              <div className='flex items-top'>
+                                <span className="material-symbols-outlined text-blue-400">chevron_forward</span>
+                                <span className='font-medium text-md text-gray-300' >{post.choose} in {post.sub} for Semester {post.sem}</span>
+                              </div>
+                              {/* <div className='flex items-center'>
+                            <span className="material-symbols-outlined text-blue-400">chevron_forward</span>
+                            <span className='font-medium text-md text-gray-300' >Semester : {post.sem}</span>
+                          </div>
+                          <div className='flex items-center'>
+                            <span className="material-symbols-outlined text-blue-400">chevron_forward</span>
+                            <span className='font-medium text-md text-gray-300' >{post.choose}</span>
+                          </div> */}
+
+                            </span>
+                          </div>
+                          {/* <div className="text-white/80 text-sm flex items-center gap-2">
+                        <span className="material-symbols-outlined text-green-400">person</span>
+                        <span>{post.name}</span>
+                      </div> */}
+                          <div className="flex gap-2 mt-2">
+                            <a
+                              href={post.pdf}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1 rounded bg-blue-500/80 hover:bg-blue-600 text-white font-semibold flex items-center gap-1"
+                            >
+                              <span className="material-symbols-outlined">download</span> PDF
+                            </a>
+                            {!nameFromUrl && <>
+                              <button
+                                className="px-3 py-1 rounded bg-yellow-400/80 hover:bg-yellow-500 text-black font-semibold"
+                                onClick={() => handleEdit(post)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="px-3 py-1 rounded bg-red-500/80 hover:bg-red-600 text-white font-semibold"
+                                onClick={() => handleDelete(post.id)}
+                              >
+                                Delete
+                              </button>
+
+                            </>}
+
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+
+
           </div>
         </div>
       </div>
