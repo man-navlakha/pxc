@@ -20,7 +20,6 @@ const Profile = () => {
   const urlParams = new URLSearchParams(location.search);
   const nameFromUrl = urlParams.get('username');
   if (nameFromUrl) {
-
     // Fetch profile details
     useEffect(() => {
       if (!Username) return;
@@ -31,15 +30,12 @@ const Profile = () => {
         .finally(() => setLoading(false));
     }, [nameFromUrl]);
 
-
     useEffect(() => {
       if (!nameFromUrl) return;
       axios.post('https://pixel-classes.onrender.com/api/Profile/posts/', { username: nameFromUrl })
         .then(res => setPosts(res.data.posts || [])) // <-- use res.data.posts
         .catch(() => setError("Failed to load Notes"));
     }, [nameFromUrl]);
-
-
   } else {
 
     // Fetch profile details
@@ -51,9 +47,7 @@ const Profile = () => {
         .catch(() => setError("Failed to load profile details"))
         .finally(() => setLoading(false));
     }, [Username]);
-
-
-
+    
     useEffect(() => {
       if (!Username) return;
       axios.post('https://pixel-classes.onrender.com/api/Profile/posts/', { username: Username })
@@ -174,11 +168,14 @@ const Profile = () => {
                         <span className="material-symbols-outlined mr-2">person</span> {profile?.username || "Guest"}
                       </h1>
                       {nameFromUrl ? '' :
+                      <>
                         <p className="mt-2 text-lg text-white/80 font-medium text-center md:text-left flex items-center justify-center">
                           <span className="material-symbols-outlined text-sm mr-2 ">
                             alternate_email
                           </span> {profile?.email || "No email found"}
                         </p>
+                        <p>Followers : {profile?.follower_count || "Error in count"} • Following : {profile?.following_count || "Error in count"}</p>
+                        </>
                       }
                     </>
                 }
