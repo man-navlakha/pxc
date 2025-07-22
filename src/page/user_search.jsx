@@ -12,66 +12,64 @@ export default function UserSearch() {
 
   // Move follow function outside useEffect so it can be used in JSX
   const follow = async (follow_username) => {
-  try {
-    const response = await axios.post(
-      "https://pixel-classes.onrender.com/api/Profile/follow/",
-      {
-        username: usernamec,
-        follow_username: follow_username
-      }
-    );
-    console.log("Follow response:", response.data);
-    if (response.data.message) {  
-      alert(`You are now following ${follow_username}`);
-      setUsers((prevUsers) =>
-        prevUsers.map((user) =>
-          user.username === follow_username
-            ? { ...user, is_following: true }
-            : user
-        )
-      );
-    }
-
-  } catch (error) {
-    console.error("Error following user:", error);
-  }
-};
-
- useEffect(() => {
-  const fetchUsers = async () => {
     try {
-      // 1. Get following list
-      const followingRes = await axios.post(
-        "https://pixel-classes.onrender.com/api/Profile/following/",
-        { username: usernamec }
+      const response = await axios.post(
+        "https://pixel-classes.onrender.com/api/Profile/follow/",
+        {
+          username: usernamec,
+          follow_username: follow_username,
+        }
       );
-      const followingUsernames = followingRes.data.map(u => u.username);
-
-      // 2. Get user search results
-      const response = await axios.get(
-        "https://pixel-classes.onrender.com/api/Profile/UserSearch/",
-        { params: { username: search } }
-      );
-      // 3. Remove self and set is_following
-      const filtered = response.data
-        .filter(user => user.username !== usernamec)
-        .map(user => ({
-          ...user,
-          is_following: followingUsernames.includes(user.username)
-        }));
-      setUsers(filtered);
-
+      console.log("Follow response:", response.data);
+      if (response.data.message) {
+        alert(`You are now following ${follow_username}`);
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user.username === follow_username
+              ? { ...user, is_following: true }
+              : user
+          )
+        );
+      }
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.error("Error following user:", error);
     }
   };
 
-  if (search.trim()) {
-    fetchUsers();
-  } else {
-    setUsers([]);
-  }
-}, [search, usernamec]);
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        // 1. Get following list
+        const followingRes = await axios.post(
+          "https://pixel-classes.onrender.com/api/Profile/following/",
+          { username: usernamec }
+        );
+        const followingUsernames = followingRes.data.map((u) => u.username);
+
+        // 2. Get user search results
+        const response = await axios.get(
+          "https://pixel-classes.onrender.com/api/Profile/UserSearch/",
+          { params: { username: search } }
+        );
+        // 3. Remove self and set is_following
+        const filtered = response.data
+          .filter((user) => user.username !== usernamec)
+          .map((user) => ({
+            ...user,
+            is_following: followingUsernames.includes(user.username),
+          }));
+        setUsers(filtered);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    if (search.trim()) {
+      fetchUsers();
+    } else {
+      setUsers([]);
+    }
+  }, [search, usernamec]);
 
   // ✅ ADD THIS
   const filteredUsers = users.filter((user) => {
@@ -79,10 +77,7 @@ export default function UserSearch() {
     const username = user.username.toLowerCase();
     const searchTerm = search.toLowerCase();
 
-    return (
-      username.includes(searchTerm) ||
-      fullName.includes(searchTerm)
-    );
+    return username.includes(searchTerm) || fullName.includes(searchTerm);
   });
   return (
     <>
@@ -104,43 +99,57 @@ export default function UserSearch() {
 
               <div className="space-y-4 flex flex-col w-full px-4">
                 {filteredUsers.length > 0 ? (
-                  filteredUsers.map((user, index) => (
+                  filteredUsers.map((user, index) =>
                     search === usernamec ? (
-                      <span key={index}>You can't find yourself in this search page</span>
+                      <span key={index}>
+                        You can't find yourself in this search page
+                      </span>
                     ) : (
-                      <a key={index} >
-                        <div className="flex items-center justify-between gap-4 p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl hover:bg-white/20 transition-all">
-                          <div className="flex items-center justify-center gap-4">
-
+                      <div className="flex items-center justify-between gap-4 p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl hover:bg-white/20 transition-all">
+                          <a
+                            key={index}
+                            href={`profile?username=${user.username}`}
+                          >
+                        <div className="flex items-center justify-center gap-4">
                             <img
-                              src={user.profile_pic || `https://i.pravatar.cc/150?u=${user.username}`}
+                              src={
+                                user.profile_pic ||
+                                `https://i.pravatar.cc/150?u=${user.username}`
+                              }
                               alt={`${user.first_name} ${user.last_name}`}
                               className="w-12 h-12 rounded-full object-cover border border-white/30"
                             />
                             <div className="flex flex-col items-center justify-between">
-
                               <div>
-                                <div className="text-lg font-semibold max-w-[150px] truncate">{user.username}</div>
+                                <div className="text-lg font-semibold max-w-[150px] truncate">
+                                  {user.username}
+                                </div>
                                 <div className="text-sm text-white/60 max-w-[180px] truncate">
                                   {user.first_name} {user.last_name}
                                 </div>
                               </div>
                             </div>
-
-                          </div>
-                          <button onClick={() => follow(user.username)} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition">
-                            <span className="material-symbols-outlined">person_add</span> {user.is_following ? "Following" : "Follow"}
-                          </button>
                         </div>
-                      </a>
+                          </a>
+                        <button
+                          onClick={() => follow(user.username)}
+                          className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition"
+                        >
+                          <span className="material-symbols-outlined">
+                            person_add
+                          </span>{" "}
+                          {user.is_following ? "Following" : "Follow"}
+                        </button>
+                      </div>
                     )
-                  ))
+                  )
                 ) : search.trim() === "" ? (
-                  <p className="text-white/60 text-center">Start typing to search users.</p>
+                  <p className="text-white/60 text-center">
+                    Start typing to search users.
+                  </p>
                 ) : (
                   <p className="text-white/60 text-center">No users found.</p>
                 )}
-
               </div>
             </div>
           </div>

@@ -180,7 +180,7 @@ const Profile = () => {
                             alternate_email
                           </span> {profile?.email || "No email found"}
                         </p>
-                        <p>{profile?.follower_count || "Error in count"} • {profile?.following_count || "Error in count"}</p>
+                        <p>Followers : {profile?.follower_count || "Error in count"} • Following : {profile?.following_count || "Error in count"}</p>
                         </>
                       }
                     </>
