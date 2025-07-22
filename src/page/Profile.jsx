@@ -230,7 +230,6 @@ const Profile = () => {
                         </div>
                       </div>
 
-                      {console.log("Current page:", page)}
 
                       {/* {nameFromUrl ? '' :
                       <>
@@ -302,7 +301,15 @@ const Profile = () => {
 
               </div>
             </div>
-
+            {
+              nameFromUrl ? <>
+              {
+                page &&  <p className=' p-4 m-2 text-lg text-red-500 '>The {page} page cannot display because of privecy purpose</p>
+              }
+             
+             </> :
+                <>
+               
             {page === "following" ? (
               <FollowingPage username={profile?.username || Username} />
             ) : page === "followers" ? (
@@ -416,6 +423,10 @@ const Profile = () => {
                 </div>
               </>
             )}
+
+             </>
+            }
+
 
 
           </div>
