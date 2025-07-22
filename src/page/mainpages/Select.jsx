@@ -281,7 +281,7 @@ const Select = () => {
                                                 <p className="text-md text-slate-400">
                                                     {pdfSizes[pdf.pdf] || "Loading..."} • PDF • {pdfyear}
                                                 </p>
-                                                <p className='flex-1 text-md text-gray-400 pb-1'> @<span className='text-gray-100'>{pdf.name}</span></p>
+                                             <a  href={`/profile?username=${pdf.name}`} >   <p className='flex-1 text-md  pb-1'> @<span className='text-gray-100'>{pdf.name}</span></p></a>
                                             </div>
 
                                         </div>

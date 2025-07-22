@@ -81,68 +81,64 @@ const handleSubmit = async (e) => {
 };
 
 
+const handleSignupClick = async () => {
+    setLoading(true);
+    setError(null);
 
+    const fileInput = document.getElementById("profile_pic");
+    const username = document.getElementById("username").value;
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
 
-    // const handleSignUpClick = async (e) => {
-    //   e.preventDefault();
+    if (!username || !email || !password || !confirmPassword) {
+        setError("All fields are required.");
+        setLoading(false);
+        return;
+    }
 
-    //   setError(''); // Clear any previous error
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        setError("Please enter a valid email address.");
+        setLoading(false);
+        return;
+    }
 
-    //   if (password !== confirmPassword) {
-    //     alert('Passwords do not match');
-    //     return;
-    //   }
+    if (password !== confirmPassword) {
+        setError("Passwords do not match!");
+        setLoading(false);
+        return;
+    }
 
-    //   // Basic email validation
-    //   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    //   if (!emailRegex.test(email)) {
-    //     alert('Please enter a valid email');
-    //     return;
-    //   }
+    const formData = new FormData();
+    if (fileInput.files[0]) {
+        formData.append("profile_pic", fileInput.files[0]);
+    }
+    formData.append("username", username);
+    formData.append("email", email);
+    formData.append("password", password);
 
-    //   // Basic password validation
-    //   if (password.length < 6) {
-    //     alert('Password must be at least 6 characters long');
-    //     return;
-    //   }
+    try {
+        const response = await fetch("https://pixel-classes.onrender.com/api/user/register", {
+            method: "POST",
+            body: formData,
+        });
 
+        const data = await response.json();
 
-    //   setLoading(true); // Start loading
-
-    //   try {
-    //     const response = await fetch('https://pixel-classes.onrender.com/api/user/register/', {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //       },
-    //       body: JSON.stringify({ username, email, password, course }),
-    //     });
-
-    //     if (!response.ok) {
-    //       const errorData = await response.json();
-    //       throw new Error(errorData.error || 'Network response was not ok');
-    //     }
-
-    //     const data = await response.json();
-    //     console.log('Signup successful:', data);
-    //     Cookies.set('username', username); // Save username to cookies
-    //     Cookies.set('email', email); // Save email to cookies
-
-    //     // Redirect to the /verification page and pass the username via state
-    //     navigate('/verification', { state: { user: { username } } });
-
-    //   } catch (error) {
-    //     console.error('There was a problem with the signup request:', error);
-    //     setError(error.message);
-    //     setLoading(false); // End loading
-    //   } finally {
-    //     // Any cleanup code if necessary
-    //     setLoading(false); // End loading
-    //   }
-    // };
-
-
-
+        if (response.ok) {
+            setSucsses("Signup successful!");
+            Cookies.set("last_s", "username");
+            navigate("/verification", { state: { user: { username, email } } });
+        } else {
+            setError(data.message || "Registration failed.");
+        }
+    } catch (err) {
+        setError("Something went wrong. Try again later.");
+    } finally {
+        setLoading(false);
+    }
+};
 
     const googlelogin = async (credentialResponse) => {
         setLoading(true)
@@ -224,7 +220,7 @@ const handleSubmit = async (e) => {
 
                                 <div>
 
-                                    <form onSubmit={handleSubmit} className={`flex flex-col ${last_s === "username" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
+                                    <form onSubmit={handleSignupClick} className={`flex flex-col ${last_s === "username" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
                                         {/* {last_s === "username" ? "Last Used" : ""} */}
                                         <span className={`${last_s === "username" ? "py-[2px] px-[5px] w-full text-green-600 max-w-max" : "hidden"} bg-green-300/30 text-[10px] border border-green-300 rounded`}>Last time used</span>
                                         <div className='flex flex-col gap-1'>
