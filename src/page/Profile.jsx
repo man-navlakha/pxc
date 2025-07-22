@@ -174,11 +174,14 @@ const Profile = () => {
                         <span className="material-symbols-outlined mr-2">person</span> {profile?.username || "Guest"}
                       </h1>
                       {nameFromUrl ? '' :
+                      <>
                         <p className="mt-2 text-lg text-white/80 font-medium text-center md:text-left flex items-center justify-center">
                           <span className="material-symbols-outlined text-sm mr-2 ">
                             alternate_email
                           </span> {profile?.email || "No email found"}
                         </p>
+                        <p>{profile?.follower_count || "Error in count"} • {profile?.following_count || "Error in count"}</p>
+                        </>
                       }
                     </>
                 }

@@ -10,6 +10,33 @@ export default function UserSearch() {
   const [users, setUsers] = useState([]);
   const usernamec = Cookies.get("username");
 
+  // Move follow function outside useEffect so it can be used in JSX
+  const follow = async (follow_username) => {
+  try {
+    const response = await axios.post(
+      "https://pixel-classes.onrender.com/api/Profile/follow/",
+      {
+        username: usernamec,
+        follow_username: follow_username
+      }
+    );
+    console.log("Follow response:", response.data);
+    if (response.data.message) {  
+      alert(`You are now following ${follow_username}`);
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.username === follow_username
+            ? { ...user, is_following: true }
+            : user
+        )
+      );
+    }
+
+  } catch (error) {
+    console.error("Error following user:", error);
+  }
+};
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
@@ -66,7 +93,7 @@ export default function UserSearch() {
                     search === usernamec ? (
                       <span key={index}>You can't find yourself in this search page</span>
                     ) : (
-                      <a key={index} href={`/profile?username=${user.username}`}>
+                      <a key={index} >
                         <div className="flex items-center justify-between gap-4 p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl hover:bg-white/20 transition-all">
                           <div className="flex items-center justify-center gap-4">
 
@@ -86,8 +113,8 @@ export default function UserSearch() {
                             </div>
 
                           </div>
-                          <button className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition">
-                            <span className="material-symbols-outlined">person_add</span> Follow
+                          <button onClick={() => follow(user.username)} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition">
+                            <span className="material-symbols-outlined">person_add</span> {user.is_following ? "Following" : "Follow"}
                           </button>
                         </div>
                       </a>
