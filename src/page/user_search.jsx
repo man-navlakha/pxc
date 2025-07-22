@@ -37,26 +37,41 @@ export default function UserSearch() {
   }
 };
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get("https://pixel-classes.onrender.com/api/Profile/UserSearch/", {
-          params: { username: search }
-        });
-        // Remove user where username === usernamec
-        const filtered = response.data.filter(user => user.username !== usernamec);
-        setUsers(filtered);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    };
+ useEffect(() => {
+  const fetchUsers = async () => {
+    try {
+      // 1. Get following list
+      const followingRes = await axios.post(
+        "https://pixel-classes.onrender.com/api/Profile/following/",
+        { username: usernamec }
+      );
+      const followingUsernames = followingRes.data.map(u => u.username);
 
-    if (search.trim()) {
-      fetchUsers();
-    } else {
-      setUsers([]);
+      // 2. Get user search results
+      const response = await axios.get(
+        "https://pixel-classes.onrender.com/api/Profile/UserSearch/",
+        { params: { username: search } }
+      );
+      // 3. Remove self and set is_following
+      const filtered = response.data
+        .filter(user => user.username !== usernamec)
+        .map(user => ({
+          ...user,
+          is_following: followingUsernames.includes(user.username)
+        }));
+      setUsers(filtered);
+
+    } catch (error) {
+      console.error("Error fetching users:", error);
     }
-  }, [search]);
+  };
+
+  if (search.trim()) {
+    fetchUsers();
+  } else {
+    setUsers([]);
+  }
+}, [search, usernamec]);
 
   // ✅ ADD THIS
   const filteredUsers = users.filter((user) => {
