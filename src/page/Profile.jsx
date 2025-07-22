@@ -20,7 +20,6 @@ const Profile = () => {
   const urlParams = new URLSearchParams(location.search);
   const nameFromUrl = urlParams.get('username');
   if (nameFromUrl) {
-
     // Fetch profile details
     useEffect(() => {
       if (!Username) return;
@@ -31,15 +30,12 @@ const Profile = () => {
         .finally(() => setLoading(false));
     }, [nameFromUrl]);
 
-
     useEffect(() => {
       if (!nameFromUrl) return;
       axios.post('https://pixel-classes.onrender.com/api/Profile/posts/', { username: nameFromUrl })
         .then(res => setPosts(res.data.posts || [])) // <-- use res.data.posts
         .catch(() => setError("Failed to load Notes"));
     }, [nameFromUrl]);
-
-
   } else {
 
     // Fetch profile details
@@ -51,9 +47,7 @@ const Profile = () => {
         .catch(() => setError("Failed to load profile details"))
         .finally(() => setLoading(false));
     }, [Username]);
-
-
-
+    
     useEffect(() => {
       if (!Username) return;
       axios.post('https://pixel-classes.onrender.com/api/Profile/posts/', { username: Username })
