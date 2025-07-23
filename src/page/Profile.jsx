@@ -7,6 +7,7 @@ import axios from "axios";
 import { useLocation, useNavigate } from 'react-router-dom';
 import FollowingPage from './FollowingPage';
 import FollowersPage from './FollowersPage';
+import ProfileEditForm from './ProfileEditForm';
 
 const Profile = () => {
   const Username = Cookies.get("username");
@@ -95,11 +96,30 @@ const Profile = () => {
     }
   };
 
-  // Edit profile handler (replace with your logic)
-  const handleProfileEdit = (e) => {
+  // Edit profile handler
+  const handleProfileEdit = async (e) => {
     e.preventDefault();
-    // Add your edit logic here
-    alert("Profile edit submitted!");
+    setLoading(true);
+    const formData = new FormData(e.target);
+    formData.append("username", Username);
+
+    try {
+      const response = await axios.put(
+        "https://pixel-classes.onrender.com/api/Profile/edit/",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+      if (response.data.success) {
+        alert("Profile updated successfully!");
+        window.location.reload();
+      } else {
+        alert("Failed to update profile.");
+      }
+    } catch (err) {
+      alert("Error updating profile.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Edit post handler
@@ -107,9 +127,8 @@ const Profile = () => {
     const newTitle = prompt("Edit repository name:", post.title);
     if (newTitle && newTitle !== post.title) {
       try {
-        await axios.put('https://pixel-classes.onrender.com/api/Profile/edit/', {
-          username: Username,
-          postId: post.id,
+        await axios.put('https://pixel-classes.onrender.com/api/Profile/editPost/', {
+          id: post.id,
           title: newTitle,
         });
         setPosts(posts.map(p => p.id === post.id ? { ...p, title: newTitle } : p));
@@ -144,7 +163,7 @@ const Profile = () => {
   return (
     <>
       <div className="bg-pattern"></div>
-      <div className='mesh_profile ccf text-white h-full min-h-screen'>
+      <div className='mesh_profile ccf text-white pb-14 h-full min-h-screen'>
         <Navbar />
         <div className='flex flex-col items-center mt-10 justify-center'>
           <div className="w-full max-w-4xl mx-auto mt-10">
@@ -264,78 +283,17 @@ const Profile = () => {
               <FollowersPage username={profile?.username || Username} />
             ) : page === "edit" ? (
               <div className="flex flex-col p-4">
-               <button  onClick={() => window.location.reload()} className='flex w-full max-w-max px-6 py-1 rounded justify- my-2 bg-gray-100
+                <button onClick={() => window.location.reload()} className='flex w-full max-w-max px-6 py-1 rounded justify- my-2 bg-gray-100
     bg-clip-padding
     backdrop-filter
     backdrop-blur-xl
     bg-opacity-10
     backdrop-saturate-100
     backdrop-contrast-100 '>
-        Close
-      </button>
-                <div>
-                  <span className="loveff bg-gradient-to-tr from-white via-stone-400  to-neutral-300 bg-clip-text  text-transparent text-center font-black text-2xl mb-2" >Edit Your Profile</span>
-                </div>
-                  <p className='text-gray-400 m-2' >you are changing profile of  {profile?.username || "Guest"}</p>
-                <form onSubmit={handleProfileEdit}>
-                  <div className="flex flex-col gap-4 justify-center items-center">
-                    <label htmlFor="profile_pic" className="w-full">
-                      <input
-                        type="file"
-                        id="profile_pic"
-                        name="profile_pic"
-                        placeholder="Profile Picture URL"
-                        className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg"
-                        required
-                      />
-                    </label>
-                    <label htmlFor="first_name" className="w-full">
-                      <input
-                        type="text"
-                        id="first_name"
-                        name="first_name"
-                        value={profile?.first_name}       
-                        placeholder="First Name"
-                        className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg"
-                        required
-                      />
-                    </label>
-                    <label htmlFor="last_name" className="w-full">
-                      <input
-                        type="text"
-                        id="last_name"
-                        name="last_name"
-                        value={profile?.last_name}
-                        placeholder="Last Name"
-                        className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg"
-                        required
-                      />
-                    </label>
-                    <label htmlFor="username" className="w-full">
-                      <input
-                        type="text"
-                        id="username"
-                        name="username"
-                        value={profile?.username}
-                        onChange={(e) => setusernameedit(e.target.value)}
-                        placeholder="Username"
-                        className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg"
-                        required
-                      />
-                    </label>
-                    <button
-                      type="submit"
-                      disabled={loading}
-                      className="smky-btn3 relative text-white hover:text-[#778464] py-2 px-6 after:absolute after:h-1 after:hover:h-[200%] transition-all duration-500 hover:transition-all hover:duration-500 after:transition-all after:duration-500 after:hover:transition-all after:hover:duration-500 overflow-hidden z-20 after:z-[-20] after:bg-[#abd373] after:rounded-t-full after:w-full after:bottom-0 after:left-0 text-gray-600"
-                    >
-                      {loading ? (
-                        <div className="s-loading"></div>
-                      ) : (
-                        "Submit"
-                      )}
-                    </button>
-                  </div>
-                </form>
+                  Close
+                </button>
+                <ProfileEditForm profile={usernamec} />
+
               </div>
             ) : (
               // Notes Section
@@ -430,8 +388,8 @@ const Profile = () => {
             )}
           </div>
         </div>
-      </div>
       <Footer />
+      </div>
 
 
       {/* Glassmorphism CSS */}
