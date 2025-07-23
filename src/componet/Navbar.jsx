@@ -138,102 +138,15 @@ const Navbar = () => {
     backdrop-saturate-100
     backdrop-contrast-100 flex justify-around items-center py-2 md:hidden">
         <a href="/" className="flex flex-col items-center text-white hover:text-blue-400">
-          <svg
-            width="64px"
-            height="64px"
-            viewBox="-12 -12 48.00 48.00"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlnsXlink="http://www.w3.org/1999/xlink"
-            fill="#000000"
-          >
-            <g id="SVGRepo_bgCarrier" strokeWidth={0} />
-            <g
-              id="SVGRepo_tracerCarrier"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <g id="SVGRepo_iconCarrier">
-              <defs>
-                <rect id="home-a" width={2} height={6} />
-                <path
-                  id="home-c"
-                  d="M14,19 L17,19 L17,11 C17,10.4477153 17.4477153,10 18,10 L18.5857864,10 L11,2.41421356 L3.41421356,10 L4,10 C4.55228475,10 5,10.4477153 5,11 L5,19 L8,19 L8,13 C8,11.8954305 8.8954305,11 10,11 L12,11 C13.1045695,11 14,11.8954305 14,13 L14,19 Z M3.00145774,12 L1.00182217,12 C0.11107966,12 -0.335005833,10.9228581 0.294844238,10.2928932 L10.2930221,0.292893219 C10.6834752,-0.0976310729 11.3165248,-0.0976310729 11.7069779,0.292893219 L21.7051558,10.2928932 C22.3350058,10.9228581 21.8889203,12 20.9981778,12 L18.9985423,12 L18.9985423,20 C18.9985423,20.5522847 18.5509086,21 17.9987245,21 L4.00127552,21 C3.44909141,21 3.00145774,20.5522847 3.00145774,20 L3.00145774,12 Z M10,13 L10,19 L12,19 L12,13 L10,13 Z"
-                />
-              </defs>
-              <g fill="none" fillRule="evenodd">
-                <g transform="translate(11 14)">
-                  <mask id="home-b" fill="#ffffff">
-                    <use xlinkHref="#home-a" />
-                  </mask>
-                  <use fill="#D8D8D8" xlinkHref="#home-a" />
-                  <g fill="#FFA0A0" mask="url(#home-b)">
-                    <rect width={24} height={24} transform="translate(-11 -14)" />
-                  </g>
-                </g>
-                <g transform="translate(1 1)">
-                  <mask id="home-d" fill="#ffffff">
-                    <use xlinkHref="#home-c" />
-                  </mask>
-                  <use fill="#000000" fillRule="nonzero" xlinkHref="#home-c" />
-                  <g fill="#7600FF" mask="url(#home-d)">
-                    <rect width={24} height={24} transform="translate(-1 -1)" />
-                  </g>
-                </g>
-              </g>
-            </g>
-          </svg>
+        <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.1" d="M17.7218 8.08382L14.7218 5.29811C13.4309 4.09937 12.7854 3.5 12 3.5C11.2146 3.5 10.5691 4.09937 9.2782 5.29811L6.2782 8.08382C5.64836 8.66867 5.33345 8.96109 5.16672 9.34342C5 9.72575 5 10.1555 5 11.015V16.9999C5 18.8856 5 19.8284 5.58579 20.4142C6.17157 20.9999 7.11438 20.9999 9 20.9999H9.75V16.9999C9.75 15.7573 10.7574 14.7499 12 14.7499C13.2426 14.7499 14.25 15.7573 14.25 16.9999V20.9999H15C16.8856 20.9999 17.8284 20.9999 18.4142 20.4142C19 19.8284 19 18.8856 19 16.9999L19 11.015C19 10.1555 19 9.72575 18.8333 9.34342C18.6666 8.96109 18.3516 8.66866 17.7218 8.08382Z" fill="#fff"></path> <path d="M19 9L19 17C19 18.8856 19 19.8284 18.4142 20.4142C17.8284 21 16.8856 21 15 21L14 21L10 21L9 21C7.11438 21 6.17157 21 5.58579 20.4142C5 19.8284 5 18.8856 5 17L5 9" stroke="#fff" stroke-width="2" stroke-linejoin="round"></path> <path d="M3 11L7.5 7L10.6713 4.18109C11.429 3.50752 12.571 3.50752 13.3287 4.18109L16.5 7L21 11" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M10 21V17C10 15.8954 10.8954 15 12 15V15C13.1046 15 14 15.8954 14 17V21" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
           <span className="text-xs">Home</span>
         </a>
         <a href="/search" className="flex flex-col items-center text-white hover:text-blue-400">
-          <svg
-            width="64px"
-            height="64px"
-            viewBox="-12.24 -12.24 48.48 48.48"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlnsXlink="http://www.w3.org/1999/xlink"
-            fill="#000000"
-          >
-            <g id="SVGRepo_bgCarrier" strokeWidth={0} />
-            <g
-              id="SVGRepo_tracerCarrier"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <g id="SVGRepo_iconCarrier">
-              <defs>
-                <path
-                  id="search-a"
-                  d="M11.7099609,0.572509766 C9.46940104,1.29012044 7.99951172,3.05419922 7.30029297,5.86474609 C6.25146484,10.0805664 4.95166016,10.6181641 0.719970703,9.11865234 C2.23974609,11.9257813 5.32006836,13.0512695 7.30029297,13.0512695 C9.28051758,13.0512695 14.4091797,10.2941895 13.8215332,5.0534668 C13.3114421,3.52709961 12.6075846,2.03344727 11.7099609,0.572509766 Z"
-                />
-                <path
-                  id="search-c"
-                  d="M14.1791377,12.7701494 L19.7100661,18.3101411 C20.0966446,18.6967197 20.0966446,19.3234875 19.7100661,19.7100661 C19.3234875,20.0966446 18.6967197,20.0966446 18.3101411,19.7100661 L12.7803471,14.1712106 C11.4385246,15.2160226 9.75152329,15.8383427 7.91917136,15.8383427 C3.54553379,15.8383427 0,12.2928089 0,7.91917136 C0,3.54553379 3.54553379,0 7.91917136,0 C12.2928089,0 15.8383427,3.54553379 15.8383427,7.91917136 C15.8383427,9.74688445 15.2191696,11.4299819 14.1791377,12.7701494 Z M7.91917136,13.8585499 C11.1993995,13.8585499 13.8585499,11.1993995 13.8585499,7.91917136 C13.8585499,4.63894318 11.1993995,1.97979284 7.91917136,1.97979284 C4.63894318,1.97979284 1.97979284,4.63894318 1.97979284,7.91917136 C1.97979284,11.1993995 4.63894318,13.8585499 7.91917136,13.8585499 Z"
-                />
-              </defs>
-              <g fill="none" fillRule="evenodd" transform="translate(2 2)">
-                <g transform="translate(1 2)">
-                  <mask id="search-b" fill="#ffffff">
-                    <use xlinkHref="#search-a" />
-                  </mask>
-                  <use fill="#D8D8D8" xlinkHref="#search-a" />
-                  <g fill="#FFA0A0" mask="url(#search-b)">
-                    <rect width={24} height={24} transform="translate(-3 -4)" />
-                  </g>
-                </g>
-                <mask id="search-d" fill="#ffffff">
-                  <use xlinkHref="#search-c" />
-                </mask>
-                <use fill="#000000" fillRule="nonzero" xlinkHref="#search-c" />
-                <g fill="#7600FF" mask="url(#search-d)">
-                  <rect width={24} height={24} transform="translate(-2 -2)" />
-                </g>
-              </g>
-            </g>
-          </svg>
+        <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.1" d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" fill="#fff"></path> <path d="M17 17L21 21" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="#fff" stroke-width="2"></path> </g></svg>
           <span className="text-xs">Search</span>
         </a>
         <a href="/profile" className="flex flex-col items-center text-white hover:text-blue-400">
-           <img className="w-16 h-16 rounded-full border-4 border-white/30 shadow-lg object-cover"
+           <img className="w-12 h-12 rounded-full border-4 border-white/30 shadow-lg object-cover"
                          src={Cookies.get("profile_pic")}
                         alt="Profile"
                       />
