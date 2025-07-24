@@ -58,9 +58,14 @@ const login = () => {
                 setError("Invalid login credentials.");
             }
         } catch (e) {
-            setError("Invalid login credentials.");
-            setError(e.response?.data?.error || "An error occurred");
-        }
+  console.error("Login error:", e);
+  // Always set error as a string
+  setError(
+    typeof e.response?.data?.error === "string"
+      ? e.response.data.error
+      : "An error occurred"
+  );
+}
         auto_select
 
     }
@@ -92,9 +97,14 @@ const login = () => {
                 setError("Invalid login credentials.");
             }
         } catch (e) {
-            console.error("Login error:", e);
-            setError(e.response?.data?.error || "An error occurred"); // fix typo
-        } finally {
+  console.error("Login error:", e);
+  // Always set error as a string
+  setError(
+    typeof e.response?.data?.error === "string"
+      ? e.response.data.error
+      : "An error occurred"
+  );
+} finally {
             setLoading(false);
         }
         console.error(last)
@@ -117,8 +127,16 @@ const login = () => {
                     <div className=' px-4 py-6 flex flex-col bg-white border shadow-lg border-gray-200 max-w-[360px] w-full max-h-screen rounded-xl '>
 
 
-                        {error && <p className="text-red-600 font-bold m-2 text-md">{error}</p>}
-                        {sucsses && <p className="text-green-600 text-center font-bold m-2 text-md">{sucsses}</p>}
+{error && (
+  <p className="text-red-600 font-bold m-2 text-md">
+    {typeof error === "string" ? error : JSON.stringify(error)}
+  </p>
+)}
+                        {sucsses && (
+  <p className="text-green-600 text-center font-bold m-2 text-md">
+    {typeof sucsses === "string" ? sucsses : JSON.stringify(sucsses)}
+  </p>
+)}
 
                         {loading ? <div className="flex justify-center">
                             <div className=" border-t-2 rounded-full border-gray-500 bg-gray-300 animate-spin

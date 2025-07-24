@@ -198,7 +198,12 @@ const handleSignupClick = async () => {
                             <div className=' px-4 py-6 flex flex-col bg-white border shadow-lg border-gray-200 max-w-[360px] w-full max-h-screen rounded-xl '>
 
                                 {error && <p className="text-red-600 font-bold m-2 text-md">{error}</p>}
-                                {sucsses && <p className="text-green-600 text-center font-bold m-2 text-md">{sucsses}</p>}
+                            
+{sucsses && (
+  <p className="text-green-600 text-center font-bold m-2 text-md">
+    {typeof sucsses === "string" ? sucsses : JSON.stringify(sucsses)}
+  </p>
+)}
 
                                 <div className={`flex flex-col ${last_s === "Google" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
 

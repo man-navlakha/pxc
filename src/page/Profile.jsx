@@ -29,7 +29,7 @@ const Profile = () => {
 
   // Unified profile and posts fetch
   useEffect(() => {
-token && navigate("/")
+!token && navigate("/")
     const userToFetch = nameFromUrl || Username;
     if (!userToFetch) return;
     setLoading(true);
@@ -208,7 +208,6 @@ token && navigate("/")
               </div>
 
               {nameFromUrl === usernamec && navigate("/profile")}
-              {token && navigate("/")}
 
               <div className="flex-1 flex flex-col items-center md:items-start">
                 {loading ? (
@@ -391,8 +390,8 @@ token && navigate("/")
             )}
           </div>
         </div>
-      <Footer />
       </div>
+      <Footer />
 
 
       {/* Glassmorphism CSS */}
