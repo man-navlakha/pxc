@@ -24,10 +24,12 @@ const Profile = () => {
   const nameFromUrl = urlParams.get('username');
   const [isFollowing, setIsFollowing] = useState(false);
   const usernamec = Cookies.get("username");
+  const token = Cookies.get('access_token');
   const navigate = useNavigate();
 
   // Unified profile and posts fetch
   useEffect(() => {
+token && navigate("/")
     const userToFetch = nameFromUrl || Username;
     if (!userToFetch) return;
     setLoading(true);
@@ -39,7 +41,7 @@ const Profile = () => {
     axios.post('https://pixel-classes.onrender.com/api/Profile/posts/', { username: userToFetch })
       .then(res => setPosts(res.data.posts || []))
       .catch(() => setError("Failed to load Notes"));
-  }, [nameFromUrl, Username]);
+  }, [nameFromUrl, Username, token]);
 
   // Follow status
   useEffect(() => {
@@ -206,6 +208,7 @@ const Profile = () => {
               </div>
 
               {nameFromUrl === usernamec && navigate("/profile")}
+              {token && navigate("/")}
 
               <div className="flex-1 flex flex-col items-center md:items-start">
                 {loading ? (

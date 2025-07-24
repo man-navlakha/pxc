@@ -54,7 +54,7 @@ const MainPage = () => {
       {loading ? (
           <Loading />
         ) : error ? (
-          <div className="text-red-500 text-center my-4">{error}</div>
+          <div className="text-red-500 text-center my-4 bg-white">{error}</div>
         ) : (
     <div className='bg-black ccf'>
       <div className="bg-pattern transition-all duration-500 ease-in-out"></div>

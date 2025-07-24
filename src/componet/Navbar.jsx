@@ -128,8 +128,8 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-
       {/* Bottom Navbar */}
+{token &&
       <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-400/30 bg-gray-900
     bg-clip-padding
     backdrop-filter
@@ -153,7 +153,7 @@ const Navbar = () => {
           <span className="text-xs">Profile</span>
         </a>
       </div>
-
+}
     </>
   )
 }
