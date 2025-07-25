@@ -19,29 +19,38 @@ const MainPage = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
-    token ?  useEffect(() => {
-    const userToFetch = username;
-    if (!userToFetch) return;
 
-    setLoading(true);
-    axios.post('https://pixel-classes.onrender.com/api/Profile/details/', { username: userToFetch })
-      .then(res => setProfile(res.data))
-      .catch(() => setError("Failed to load profile details"))
-      .finally(() => setLoading(false));
-  }, [username])
- : 
+  token ?
 
- useEffect(() => {
-    setLoading(true);
-    axios.get('https://pixel-classes.onrender.com/api/home/courses')
-      .then(res => setProfile(res.data))
-      .catch(() => setError("Failed to load details"))
-      .finally(() => setLoading(false));
-  }, [username])
-  
+    useEffect(() => {
+      const userToFetch = username;
+      if (!userToFetch) return;
 
- 
+      setLoading(true);
+      axios.post('https://pixel-classes.onrender.com/api/Profile/details/', { username: userToFetch })
+        .then(res => setProfile(res.data))
+        .catch(() => setError("Failed to load profile details"))
+        .finally(() => handleLoading());
+    }, [username])
+
+
+    :
+
+    useEffect(() => {
+      setLoading(true);
+      axios.get('https://pixel-classes.onrender.com/api/home/courses')
+        .then(res => setProfile(res.data))
+        .catch(() => setError("Failed to load details"))
+        .finally(() => handleLoading());
+    }, [username])
+
+  const handleLoading = () => {
+    // Delay setLoading by 3 seconds (3000 milliseconds)
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+  };
+
   // ✅ Set profile_pic cookie only if profile is available
   useEffect(() => {
     if (profile) {
@@ -52,26 +61,26 @@ const MainPage = () => {
   return (
     <>
       {loading ? (
-          <Loading />
-        ) : error ? (
-          <div className="text-red-500 text-center my-4 bg-white">{error}</div>
-        ) : (
-    <div className='bg-black ccf'>
-      <div className="bg-pattern transition-all duration-500 ease-in-out"></div>
-      <div className='ccf text-white flex flex-col text-center pb-14 lg:pb-0 md:pb-14 content-center flex-nowrap'>
-        <Navbar />
+        <Loading />
+      ) : error ? (
+        <div className="text-red-500 text-center my-4 bg-white">{error}</div>
+      ) : (
+        <div className='bg-black ccf'>
+          <div className="bg-pattern transition-all duration-500 ease-in-out"></div>
+          <div className='ccf text-white flex flex-col text-center pb-14 lg:pb-0 md:pb-14 content-center flex-nowrap'>
+            <Navbar />
 
             {token ? <Semester /> : <>
               <Hero />
               <Feature />
             </>}
-       
 
-        <Faq />
-        <Footer />
-      </div>
-    </div>
-     )}
+
+            <Faq />
+            <Footer />
+          </div>
+        </div>
+      )}
     </>
 
   );

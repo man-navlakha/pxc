@@ -12,9 +12,11 @@ const getFormattedTime = (offsetSeconds = 0) => {
 
 const [terminalLines] = useState(() => {
   let timestamp = 0;
-  const delays = [800, 300, 1000, 800, 1200, 400, 1000, 300, 900, 500, 800, 300, 1000, 400, 900, 600, 1500];
+  const delays = [1200, 2000, 1000, 2000, 3000, 800, 1200, 4000, 1000, 3000, 9000, 5000, 8000, 3000, 1000, 6000, 3000, 5000, 5500];
 
   const texts = [
+    'Welcome To Pixel Class...',
+    '',
     'INCOMING HTTP REQUEST DETECTED ...',
     '',
     'SERVICE WAKING UP ...',
@@ -35,7 +37,7 @@ const [terminalLines] = useState(() => {
   ];
 
   const types = [
-    'log', 'empty', 'log', 'empty', 'log', 'empty',
+    'log', 'empty', 'log', 'empty', 'log', 'empty', 'log', 'empty',
     'log', 'empty', 'log', 'empty', 'log', 'empty',
     'log', 'empty', 'log', 'empty', 'success'
   ];
@@ -46,7 +48,7 @@ const [terminalLines] = useState(() => {
       delay: delays[i],
       type: types[i]
     };
-    timestamp += delays[i] / 1000; // move forward by delay in seconds
+    timestamp += delays[i] / 2000; // move forward by delay in seconds
     return line;
   });
 });
