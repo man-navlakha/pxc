@@ -242,28 +242,16 @@ const Select = () => {
                     <span >Answers of {pdfname}</span>
                 </div>
                 <div className='grid gap-2 nd:grid-cols-1  lg:grid-cols-3 w-full text-white px-6 mb-6'>
-                    {loading ? <div className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60  hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
-
-                        <img
-                            src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
-                            alt="PDF Icon"
-                            className="w-12 h-12 object-contain"
-                        />
-                        <div className='flex-1 flex flex-col'>
-                            <p className='flex-1 text-xl'>loading...</p>
-                            <div className='flex gap-2 '>
-                                <p className="text-sm text-slate-400">{pdfsize} • PDF • {pdfyear}</p>
-                            </div>
-
-                        </div>
-                        <div className="group relative mr-31">
-                            <button>
-                                <span className="material-symbols-outlined"> arrow_circle_down
-                                </span>
-                            </button>
+                    {loading ?
+                        <>
+      <div className="flex justify-center items-center col-span-3">
+                            <div className=" border-t-2 rounded-full border-green-500 bg-gray-900 animate-spin
+aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                         </div>
 
-                    </div> :
+
+                        </>
+                        :
 
                         pdfData.length > 0 ? (
                             pdfData
