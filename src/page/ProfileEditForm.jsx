@@ -6,7 +6,8 @@ const ProfileEditForm = ({ profile }) => {
   const usernamec = Cookies.get("username");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [usernameEdit, setUsernameEdit] = useState("");
+  const [error, setError] = useState("");
+  const [usernameEdit, setUsernameEdit] = useState(usernamec || "");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -17,14 +18,10 @@ const ProfileEditForm = ({ profile }) => {
     }
   }, [profile]);
 
-
+  // Forbidden keywords for username
   const forbiddenUsernames = [
     // Brand/Platform Reserved
     "pxc", "pixel", "pixelclass", "pixel_class", "class", "class_pixel",
-
-    // Adult/Inappropriate Content
-    "18+", "sex", "porn", "nude", "xxx", "onlyfans", "camgirl", "cams", "escort",
-    "strip", "fetish", "hotgirl", "hotboy", "s3x", "pornstar", "pronstar",
 
     // Violence/Illegal
     "kill", "murder", "terror", "terrorist", "assassin", "abuse", "rapist", "crime",
@@ -33,7 +30,7 @@ const ProfileEditForm = ({ profile }) => {
     "filmstar", "actor", "actress", "celebrity", "modelling", "movie_star", "superstar"
   ];
 
-
+  // Check if username contains any forbidden word
   const containsForbiddenName = (username) => {
     const lowerUsername = username.toLowerCase();
     return forbiddenUsernames.some(forbidden =>
@@ -42,80 +39,94 @@ const ProfileEditForm = ({ profile }) => {
   };
 
   const handleProfileEdit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    // Basic validation
-    if (usernameEdit.length < 3) {
-      alert("Username must be at least 3 characters long.");
-      setLoading(false);
-      return;
-    }
+  // Check forbidden usernames first
+  if (containsForbiddenName(usernameEdit)) {
+    alert("This username contains restricted words and is not allowed.");
+    setLoading(false);
+    return;
+  }
 
-    if (containsForbiddenName(usernameEdit)) {
-      alert("This username contains restricted words and is not allowed.");
-      setLoading(false);
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("username", usernamec);
-    formData.append("new_username", usernameEdit);
-
-    const fileInput = e.target.profile_pic;
-    if (fileInput?.files[0]) {
-      formData.append("profile_pic", fileInput.files[0]);
-    }
-
-    console.log({
-      username: usernamec,
-      new_username: usernameEdit,
-      profile_pic: fileInput?.files[0] || null,
-    });
-
+  // If username hasn't changed, skip duplicate check
+  if (usernameEdit !== usernamec) {
     try {
-      const response = await axios.put(
-        "https://pixel-classes.onrender.com/api/Profile/edit/",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+      // Check if username already exists using your API
+      const res = await axios.get(
+        "https://pixel-classes.onrender.com/api/Profile/UserSearch/",
+        { params: { username: usernameEdit } }
       );
 
-      if (response.data.message) {
-        alert("Profile updated successfully!");
-        if (usernamec !== usernameEdit) {
-          Cookies.set("username", usernameEdit);
-        }
-        window.location.reload();
-      } else {
-        alert("Failed to update profile.");
+      // Assuming API returns an array or object with users matching that username
+      // Adjust this logic based on your API response structure
+      if (res.data && res.data.exists) {
+        alert("This username is already taken. Please choose another.");
+        setLoading(false);
+        return;
       }
-    } catch (err) {
-      console.error("Error updating profile:", err);
-      alert("An error occurred while updating your profile.");
-    } finally {
+    } catch (error) {
+      console.error("Error checking username availability:", error);
+      alert("Could not verify username availability. Please try again.");
       setLoading(false);
+      return;
     }
-  
+  }
+
+  // Proceed with form submission if username is valid and available
+  const formData = new FormData();
+  formData.append("username", usernamec);
+  formData.append("new_username", usernameEdit);
+
+  const fileInput = e.target.profile_pic;
+  if (fileInput?.files[0]) {
+    formData.append("profile_pic", fileInput.files[0]);
+  }
+
+  try {
+    const response = await axios.put(
+      "https://pixel-classes.onrender.com/api/Profile/edit/",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (response.data.message) {
+      alert("Profile updated successfully!");
+      if (usernamec !== usernameEdit) {
+        Cookies.set("username", usernameEdit);
+      }
+      window.location.reload();
+    } else {
+      alert("Failed to update profile.");
+    }
+  } catch (err) {
+    console.error("Error updating profile:", err);
+    alert("An error occurred while updating your profile.");
+    console.log(err.response.data.error)
+    setError(err.response.data.error)
+  } finally {
+    setLoading(false);
+  }
 };
 
+  return (
+    <form onSubmit={handleProfileEdit}>
+      {error && <div style={{ color: "red" }}>{error}</div>}
+      <div className="flex flex-col gap-4 justify-center items-center">
+        <label htmlFor="profile_pic" className="w-full">
+          <input
+            type="file"
+            id="profile_pic"
+            name="profile_pic"
+            className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg"
+          />
+        </label>
 
-return (
-  <form onSubmit={handleProfileEdit}>
-    <div className="flex flex-col gap-4 justify-center items-center">
-      <label htmlFor="profile_pic" className="w-full">
-        <input
-          type="file"
-          id="profile_pic"
-          name="profile_pic"
-          className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg"
-        />
-      </label>
-
-      {/* 
+        {/* Optional: First and Last Name Inputs
         <label htmlFor="first_name" className="w-full">
           <input
             type="text"
@@ -140,31 +151,31 @@ return (
             className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg"
             required
           />
-        </label> */}
+        </label>
+        */}
 
-      <label htmlFor="username" className="w-full">
-        <input
-          type="text"
-          id="username"
-          name="username"
-          value={usernameEdit}
-          onChange={(e) => setUsernameEdit(e.target.value)}
-          placeholder="Username"
-          className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg"
+        <label htmlFor="username" className="w-full">
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value={usernameEdit}
+            onChange={(e) => setUsernameEdit(e.target.value.toLowerCase())}
+            placeholder="Username"
+            className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg"
+          />
+        </label>
 
-        />
-      </label>
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="smky-btn3 relative text-white hover:text-[#778464] py-2 px-6 after:absolute after:h-1 after:hover:h-[200%] transition-all duration-500 hover:transition-all hover:duration-500 after:transition-all after:duration-500 after:hover:transition-all after:hover:duration-500 overflow-hidden z-20 after:z-[-20] after:bg-[#abd373] after:rounded-t-full after:w-full after:bottom-0 after:left-0 text-gray-600"
-      >
-        {loading ? <div className="s-loading"></div> : "Submit"}
-      </button>
-    </div>
-  </form>
-);
+        <button
+          type="submit"
+          disabled={loading}
+          className="smky-btn3 relative text-white hover:text-[#778464] py-2 px-6 after:absolute after:h-1 after:hover:h-[200%] transition-all duration-500 hover:transition-all hover:duration-500 after:transition-all after:duration-500 after:hover:transition-all after:hover:duration-500 overflow-hidden z-20 after:z-[-20] after:bg-[#abd373] after:rounded-t-full after:w-full after:bottom-0 after:left-0 text-gray-600"
+        >
+          {loading ? <div className="s-loading"></div> : "Submit"}
+        </button>
+      </div>
+    </form>
+  );
 };
 
 export default ProfileEditForm;
