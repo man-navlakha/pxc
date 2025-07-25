@@ -26,6 +26,14 @@ const MainPage = () => {
       const userToFetch = username;
       if (!userToFetch) return;
 
+      Cookies.remove('sub');
+              Cookies.remove('pdfname');
+              Cookies.remove('pdfid');
+              Cookies.remove('pdfyear');
+              Cookies.remove('pdfurl');
+              Cookies.remove('pdfSizes');
+              Cookies.remove('choose');
+
       setLoading(true);
       axios.post('https://pixel-classes.onrender.com/api/Profile/details/', { username: userToFetch })
         .then(res => setProfile(res.data))

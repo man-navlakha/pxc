@@ -11,7 +11,16 @@ const Logout = () => {
     // Remove the access_token from cookies
     Cookies.remove('access_token');
     Cookies.remove('username');
-        Cookies.remove('access_token');
+        Cookies.remove('course');
+        Cookies.remove('choose');
+        Cookies.remove('profile_pic');
+        Cookies.remove('remember_token');
+        Cookies.remove('sessionid');
+        Cookies.remove('sub');
+        Cookies.remove('pdfname');
+        Cookies.remove('pdfid');
+        Cookies.remove('pdfyear');
+        Cookies.remove('pdfurl');
         
         // Set the login status to false and reset the username to 'Guest'
         setIsLoggedIn(false);
@@ -19,7 +28,7 @@ const Logout = () => {
     
 
     // Redirect to the login page
-    navigate('/auth/login');
+    navigate('/');
   }, [navigate]);
 
   return (

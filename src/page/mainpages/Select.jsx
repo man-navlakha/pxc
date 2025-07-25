@@ -7,6 +7,8 @@ import Footer from '../../componet/Footer';
 const Select = () => {
     const [loading, setLoading] = useState(false);
     const pdfid = Cookies.get("pdfid")
+    const id = Cookies.get("id")
+    const em = Cookies.get("from")
     const pdfsize = Cookies.get("pdfSizes")
     const pdfurl = Cookies.get("pdfurl")
     const pdfname = Cookies.get("pdfname")
@@ -16,6 +18,7 @@ const Select = () => {
     const [loadingStates, setLoadingStates] = useState({});
 
     const [isopen, setIsopen] = useState(false);
+    const params = new URLSearchParams(window.location.search);
 
     const [content, setContent] = useState("");
     const [files, setFiles] = useState([]);
@@ -24,69 +27,50 @@ const Select = () => {
 
 
 
-    const handleFileChange = (e) => {
-        setFiles(Array.from(e.target.files));
-    };
+    useEffect(() => {
+        const fetchPDFs = async () => {
+            const isFromEmail = Cookies.get("from") === "email";
+            const id = isFromEmail ? new URLSearchParams(window.location.search).get("id") : Cookies.get("pdfid");
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+            if (!id) return;
 
-        if (!content.trim()) {
-            alert("Title and content are required!");
-            return;
-        }
+            if (isFromEmail) {
+                // Save URL params to cookies if accessed from email
+                const params = new URLSearchParams(window.location.search);
+                const sub = params.get("sub");
+                const course = params.get("course");
+                const choose = params.get("choose");
 
-        if (files.length === 0) {
-            alert("Please select at least one file!");
-            return;
-        }
-
-        const name = Cookies.get("username");
-
-        if (!pdfid) {
-            alert("ID parameter is missing in the URL!");
-            return;
-        }
-
-
-        try {
-            setLoading(true); // Start loading
-
-            const formData = new FormData();
-            formData.append("name", name);
-            formData.append("content", content);
-            formData.append("id", pdfid);
-
-            // ✅ Append the actual file (not URLs)
-            files.forEach((file) => formData.append("pdf", file));
-
-            const response = await fetch(
-                "https://pixel-classes.onrender.com/api/home/upload_pdf/",
-                {
-                    method: "POST",
-                    body: formData,
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error(`Server error: ${response.status}`);
+                if (sub) Cookies.set("sub", sub);
+                if (course) Cookies.set("course", course);
+                if (choose) Cookies.set("choose", choose);
+                Cookies.set("id", id);
             }
 
-            const data = await response.json();
-            alert("File uploaded successfully!");
+            setLoading(true);
+            try {
+                const response = await fetch('https://pixel-classes.onrender.com/api/home/AnsPdf/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id })
+                });
 
-            setIsModalOpen(false);
-            setTitle("");
-            setContent("");
-            setFiles([]);
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Failed to upload file. Please try again.");
-        } finally {
-            setLoading(false); // End loading
-        }
+                const data = await response.json();
+                setPdfData(data);
 
-    }
+                // Get sizes for all PDFs
+                for (const pdf of data) {
+                    if (pdf.pdf) fetchPdfSize(pdf.pdf);
+                }
+            } catch (error) {
+                console.error("Error fetching PDFs:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPDFs();
+    }, []);
 
 
     useEffect(() => {
@@ -114,7 +98,56 @@ const Select = () => {
                     setLoading(false); // Set loading to false in case of error
                 });
         }
-    }, []);
+    }, [pdfid, id]);
+
+
+    const handleFileChange = (e) => {
+        setFiles(Array.from(e.target.files));
+    };
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        if (!content.trim() || files.length === 0) {
+            alert("Please provide description and select files.");
+            return;
+        }
+
+        const name = Cookies.get("username");
+        const idToUse = Cookies.get("pdfid") || Cookies.get("id");
+
+        if (!idToUse) {
+            alert("Missing ID to upload answer.");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("content", content);
+            formData.append("id", idToUse);
+            files.forEach(file => formData.append("pdf", file));
+
+            const res = await fetch("https://pixel-classes.onrender.com/api/home/upload_pdf/", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!res.ok) throw new Error("Upload failed");
+
+            alert("Upload successful");
+            setIsopen(false);
+            setContent("");
+            setFiles([]);
+        } catch (err) {
+            console.error(err);
+            alert("Upload failed");
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     const fetchPdfSize = async (url) => {
         try {
@@ -244,10 +277,10 @@ const Select = () => {
                 <div className='grid gap-2 nd:grid-cols-1  lg:grid-cols-3 w-full text-white px-6 mb-6'>
                     {loading ?
                         <>
-      <div className="flex justify-center items-center col-span-3">
-                            <div className=" border-t-2 rounded-full border-green-500 bg-gray-900 animate-spin
+                            <div className="flex justify-center items-center col-span-3">
+                                <div className=" border-t-2 rounded-full border-green-500 bg-gray-900 animate-spin
 aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
-                        </div>
+                            </div>
 
 
                         </>
@@ -269,7 +302,7 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                                                 <p className="text-md text-slate-400">
                                                     {pdfSizes[pdf.pdf] || "Loading..."} • PDF • {pdfyear}
                                                 </p>
-                                             <a  href={`/profile?username=${pdf.name}`} >   <p className='flex-1 text-md  pb-1'> @<span className='text-gray-100'>{pdf.name}</span></p></a>
+                                                <a href={`/profile?username=${pdf.name}`} >   <p className='flex-1 text-md  pb-1'> @<span className='text-gray-100'>{pdf.name}</span></p></a>
                                             </div>
 
                                         </div>
@@ -302,7 +335,7 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                     <div className="flex flex-col border-2 border-white p-6 rounded-lg shadow-lg relative bg-[conic-gradient(at_bottom_right,_var(--tw-gradient-stops))] from-[#1d4ed8] via-[#1e40af] to-[#111827] ">
                         <div>
                             <button
-                            disabled={loading}
+                                disabled={loading}
                                 onClick={() => setIsopen(false)}
                                 className="absolute top-2 right-4 text-3xl text-red-500 dark:text-gray-100 hover:text-red-200 dark:hover:text-white "
                             >
@@ -323,7 +356,7 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                                     onChange={(e) => setContent(e.target.value)}
                                     required ></textarea>
                                 <label htmlFor="files"></label>
-                                <input type="file" name="files" id="files "  multiple
+                                <input type="file" name="files" id="files " multiple
                                     onChange={handleFileChange}
                                     className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838]  rounded-lg" />
 

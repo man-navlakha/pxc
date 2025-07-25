@@ -3,6 +3,7 @@ import '../../new.css';
 import Cookies from "js-cookie";
 import Navbar from '../../componet/Navbar';
 import Footer from '../../componet/Footer';
+import { useNavigate } from 'react-router-dom';
 
 const Ns = () => {
     const sem = Cookies.get("latest_sem");
@@ -19,6 +20,7 @@ const Ns = () => {
     const [pdfSizes, setPdfSizes] = useState({});
     const [content, setContent] = useState("");
     const [files, setFiles] = useState([]);
+    const navigate = useNavigate();
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -29,9 +31,28 @@ const Ns = () => {
     const course = params.get('course');
     const choose = params.get('choose');
 
+    if (choose === "Assignment") {
+        Cookies.set("sub", sub);
+        Cookies.set("choose", choose);
+        Cookies.set("pdfid", id);
+        Cookies.set("from", "email");
+        navigate(`/select?sub=${sub}&id=${id}&course=B.C.A&choose=${choose}`)
+        
+    }
+
+    if (choose === "I.M.P") {
+        Cookies.set("sub", sub);
+        Cookies.set("choose", choose);
+        Cookies.set("pdfid", id);
+        Cookies.set("from", "email");
+        navigate(`/select?sub=${sub}&id=${id}&course=B.C.A&choose=${choose}`)
+        
+    }
+
     // Set cookies
+
     if (sub) document.cookie = `sub=${sub}; path=/`;
-    if (id) document.cookie = `id=${id}; path=/`;
+    if (id) document.cookie = `pdfid=${id}; path=/`;
     if (course) document.cookie = `course=${course}; path=/`;
     if (choose) document.cookie = `choose=${choose}; path=/`;
 
