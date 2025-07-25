@@ -160,7 +160,7 @@ const ProfileEditForm = ({ profile }) => {
             id="username"
             name="username"
             value={usernameEdit}
-            onChange={(e) => setUsernameEdit(e.target.value.toLowerCase())}
+            onChange={(e) => setUsernameEdit(e.target.value.replace(/\s/g, ""))}
             placeholder="Username"
             className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg"
           />
