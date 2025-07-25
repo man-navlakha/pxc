@@ -20,10 +20,27 @@ const Ns = () => {
     const [content, setContent] = useState("");
     const [files, setFiles] = useState([]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    
+    // Extract values
+    const sub = params.get('sub');
+    const id = params.get('id');
+    const course = params.get('course');
+    const choose = params.get('choose');
 
+    // Set cookies
+    if (sub) document.cookie = `sub=${sub}; path=/`;
+    if (id) document.cookie = `id=${id}; path=/`;
+    if (course) document.cookie = `course=${course}; path=/`;
+    if (choose) document.cookie = `choose=${choose}; path=/`;
+  }, []);
+  
     const handleFileChange = (e) => {
         setFiles(Array.from(e.target.files));
     };
+
+
 
     const handleSubmit = async (event) => {
         event.preventDefault();
