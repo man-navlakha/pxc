@@ -68,6 +68,7 @@ export default function UserSearch() {
           "https://pixel-classes.onrender.com/api/Profile/following/",
           { username: usernamec }
         );
+          console.log(usernamec)
         const followingUsernames = followingRes.data.map((u) => u.username);
 
         // 2. Get user search results
@@ -85,6 +86,7 @@ export default function UserSearch() {
         setUsers(filtered);
       } catch (error) {
         console.error("Error fetching users:", error);
+        console.log(usernamec)
       }
     };
 

@@ -28,7 +28,6 @@ const ProfileEditForm = ({ profile }) => {
     if (fileInput?.files[0]) {
       formData.append("profile_pic", fileInput.files[0]);
     }
-
 console.log({
     username: usernamec,
     new_username: usernameEdit,
@@ -45,12 +44,15 @@ console.log({
         }
       );
 
-      if (response.data.success) {
-        alert("Profile updated successfully!");
-        window.location.reload();
-      } else {
-        alert("Failed to update profile.");
-      }
+          if (response.data.success) {
+            alert("Profile updated successfully!");
+            if (usernamec !== usernameEdit) {
+              Cookies.set("username", usernameEdit);
+            }
+            window.location.reload();
+          } else {
+            alert("Failed to update profile.");
+          }
     } catch (err) {
       console.error("Error updating profile:", err);
       alert("An error occurred while updating your profile.");
@@ -70,6 +72,7 @@ console.log({
             className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg"
           />
         </label>
+        
 {/* 
         <label htmlFor="first_name" className="w-full">
           <input
