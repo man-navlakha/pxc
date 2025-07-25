@@ -11,6 +11,7 @@ const signup = () => {
     const [loading, setLoading] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [error, setError] = useState(null);
+    const [username, setUserame] = useState(null);
     const [last_s, setlast_s] = useState(Cookies.get("last_s") || null);
     const [sucsses, setSucsses] = useState(null);
     const navigate = useNavigate();
@@ -34,118 +35,128 @@ const signup = () => {
 
 
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-  const fileInput = document.getElementById("profile_pic");
-  const username = document.getElementById("username").value;
-  const email = document.getElementById("email").value; // ✅ Define it here
-  const password = document.getElementById("password").value;
-  const confirmPassword = document.getElementById("confirmPassword").value;
+        const fileInput = document.getElementById("profile_pic");
+        const username = document.getElementById("username").value;
+        const email = document.getElementById("email").value; // ✅ Define it here
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
 
-    if (!username || !email || !password || !confirmPassword) {
-    alert("All fields are required.");
-    return;
+        if (!username || !email || !password || !confirmPassword) {
+            alert("All fields are required.");
+            return;
 
-    }
-  // ✅ Now it's safe to use `email` here
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    alert("Please enter a valid email address.");
-    return;
-  }
-
-  if (password !== confirmPassword) {
-    alert("Passwords do not match!");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("profile_pic", fileInput.files[0]);
-  formData.append("username", username);
-  formData.append("email", email);
-  formData.append("password", password);
-
-  try {
-    const response = await fetch("https://pixel-classes.onrender.com/api/user/register/", {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      navigate("/verification", { state: { user: { username, email } } });
-    } else {
-      alert(data.message || "Registration failed.");
-    }
-  } catch (error) {
-    console.error(error);
-    alert("Something went wrong. Try again later.");
-  }
-};
-
-
-const handleSignupClick = async () => {
-    setLoading(true);
-    setError(null);
-
-    const fileInput = document.getElementById("profile_pic");
-    const username = document.getElementById("username").value;
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirmPassword").value;
-
-    if (!username || !email || !password || !confirmPassword) {
-        setError("All fields are required.");
-        setLoading(false);
-        return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-        setError("Please enter a valid email address.");
-        setLoading(false);
-        return;
-    }
-
-    if (password !== confirmPassword) {
-        setError("Passwords do not match!");
-        setLoading(false);
-        return;
-    }
-
-    const formData = new FormData();
-    if (fileInput.files[0]) {
-        formData.append("profile_pic", fileInput.files[0]);
-    }
-    formData.append("username", username);
-    formData.append("email", email);
-    formData.append("password", password);
-
-    try {
-        const response = await fetch("https://pixel-classes.onrender.com/api/user/register/", {
-            method: "POST",
-            body: formData,
-        });
-        console.log(formData);
-        console.log(response);
-
-        const data = await response.json();
-
-        if (response.ok) {
-            setSucsses("Signup successful!");
-            Cookies.set("last_s", "username");
-            navigate("/auth/verification", { state: { user: { username, email } } });
-        } else {
-            setError(data.message || "Registration failed.");
         }
-    } catch (err) {
-        setError("Something went wrong. Try again later.");
-    } finally {
-        setLoading(false);
-    }
-};
+        console.log("Username:", username);
+        console.log("Email:", email); // ✅ Log email to check its value
+
+        // ✅ Now it's safe to use `email` here
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert("Please enter a valid email address.");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("profile_pic", fileInput.files[0]);
+        formData.append("username", username);
+        formData.append("email", email);
+        formData.append("password", password);
+        Cookies.set("username", username, { expires: 7 });
+
+        try {
+            const response = await fetch("https://pixel-classes.onrender.com/api/user/register/", {
+                method: "POST",
+                body: formData,
+            });
+            const data = await response.json();
+            console.log(formData);
+            console.log(response);
+
+
+            if (response.ok) {
+                navigate("/auth/verification", { state: { user: { username, email } } });
+            } else {
+                alert(data.message || "Registration failed.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Something went wrong. Try again later.");
+        }
+        finally {
+            setLoading(false);
+            Cookies.set("username", username, { expires: 7 });
+        }
+    };
+
+
+    // const handleSignupClick = async () => {
+    //     setLoading(true);
+    //     setError(null);
+
+    //     const fileInput = document.getElementById("profile_pic");
+    //     const username = document.getElementById("username").value;
+    //     const email = document.getElementById("email").value;
+    //     const password = document.getElementById("password").value;
+    //     const confirmPassword = document.getElementById("confirmPassword").value;
+
+    //     if (!username || !email || !password || !confirmPassword) {
+    //         setError("All fields are required.");
+    //         setLoading(false);
+    //         return;
+    //     }
+
+    //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    //     if (!emailRegex.test(email)) {
+    //         setError("Please enter a valid email address.");
+    //         setLoading(false);
+    //         return;
+    //     }
+
+    //     if (password !== confirmPassword) {
+    //         setError("Passwords do not match!");
+    //         setLoading(false);
+    //         return;
+    //     }
+
+    //     const formData = new FormData();
+    //     if (fileInput.files[0]) {
+    //         formData.append("profile_pic", fileInput.files[0]);
+    //     }
+    //     formData.append("username", username);
+    //     formData.append("email", email);
+    //     formData.append("password", password);
+
+    //     try {
+    //         const response = await fetch("https://pixel-classes.onrender.com/api/user/register/", {
+    //             method: "POST",
+    //             body: formData,
+    //         });
+    //         console.log(formData);
+    //         console.log(response);
+
+    //         const data = await response.json();
+
+    //         if (response.ok) {
+    //             setSucsses("Signup successful!");
+    //             Cookies.set("last_s", "username");
+    //             navigate("/auth/verification", { state: { user: { username, email } } });
+    //         } else {
+    //             setError(data.message || "Registration failed.");
+    //         }
+    //     } catch (err) {
+    //         setError("Something went wrong. Try again later.");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
 
     const googlelogin = async (credentialResponse) => {
         setLoading(true)
@@ -154,6 +165,7 @@ const handleSignupClick = async () => {
                 token: credentialResponse.credential,
             });
             if (res.data.message === "Signup successful!") {
+
                 Cookies.set("access_token", res.data.access_token, { expires: 7 });
                 Cookies.set("username", res.data.username, { expires: 7 });
 
@@ -205,12 +217,12 @@ const handleSignupClick = async () => {
                             <div className=' px-4 py-6 flex flex-col bg-white border shadow-lg border-gray-200 max-w-[360px] w-full max-h-screen rounded-xl '>
 
                                 {error && <p className="text-red-600 font-bold m-2 text-md">{error}</p>}
-                            
-{sucsses && (
-  <p className="text-green-600 text-center font-bold m-2 text-md">
-    {typeof sucsses === "string" ? sucsses : JSON.stringify(sucsses)}
-  </p>
-)}
+
+                                {sucsses && (
+                                    <p className="text-green-600 text-center font-bold m-2 text-md">
+                                        {typeof sucsses === "string" ? sucsses : JSON.stringify(sucsses)}
+                                    </p>
+                                )}
 
                                 <div className={`flex flex-col ${last_s === "Google" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
 
@@ -232,7 +244,7 @@ const handleSignupClick = async () => {
 
                                 <div>
 
-                                    <form onSubmit={handleSignupClick} className={`flex flex-col ${last_s === "username" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
+                                    <form onSubmit={handleSubmit} className={`flex flex-col ${last_s === "username" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
                                         {/* {last_s === "username" ? "Last Used" : ""} */}
                                         <span className={`${last_s === "username" ? "py-[2px] px-[5px] w-full text-green-600 max-w-max" : "hidden"} bg-green-300/30 text-[10px] border border-green-300 rounded`}>Last time used</span>
                                         <div className='flex flex-col gap-1'>
@@ -247,7 +259,7 @@ const handleSignupClick = async () => {
                                                     id="profile_pic"
                                                     name="profile_pic"
                                                     accept="image/*"
-                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg  max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input"  placeholder="Enter your new username " />
+                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg  max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input" placeholder="Enter your new username " />
                                             </div>
 
                                         </div>
@@ -259,24 +271,26 @@ const handleSignupClick = async () => {
                                             <div>
 
                                                 <input type="text"
-                                                    onChange={(e) => e.target.value = e.target.value.toLowerCase()}
-                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   " id="username" placeholder="Enter your new username " />
+                                                    value={username}
+                                                    onChange={(e) => setUserame(e.target.value = e.target.value.toLowerCase())}
+                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   "
+                                                    id="username" placeholder="Enter your new username " />
                                             </div>
 
                                         </div>
                                         <div className='flex flex-col gap-1'>
-  <div>
-    <label htmlFor="email" className='text-sm font-semibold text-gray-1k'>Email</label>
-  </div>
-  <div>
-    <input
-      type="email"
-      id="email"
-      placeholder="Enter your email"
-      className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input"
-    />
-  </div>
-</div>
+                                            <div>
+                                                <label htmlFor="email" className='text-sm font-semibold text-gray-1k'>Email</label>
+                                            </div>
+                                            <div>
+                                                <input
+                                                    type="email"
+                                                    id="email"
+                                                    placeholder="Enter your email"
+                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input"
+                                                />
+                                            </div>
+                                        </div>
 
                                         <div className='flex flex-col gap-1'>
                                             <div>

@@ -41,7 +41,7 @@ const password = () => {
       // console.log("API result:", result);
 
       if (response.ok) {
-        navigate('/login');
+        navigate('/');
       } else {
         setError(
           typeof result.error === "string"

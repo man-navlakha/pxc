@@ -6,10 +6,10 @@ import '../new.css'
 
 const Verification = () => {
 
-  const username = Cookies.get("username");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [email, setEmail] = useState(Cookies.get("email"));
+  const [username, setUserame] = useState(Cookies.get("username"));
   const [sucsses, setSucsses] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -108,6 +108,9 @@ const Verification = () => {
   // Resend OTP function
   const handleResendOTP = async () => {
     setExpired(false);
+    console.log('Resending OTP to:', email);
+    setOtpCode(''); // Clear the OTP input field
+
     setTimer(120); // Reset timer to 2 minutes
 
     try {
