@@ -121,7 +121,7 @@ function App() {
                            <Route path="/follwers" element={<FollowersPage />} />
 
                             <Route path="/auth/forgetpassword" element={<Forgetpassword />} />
-                            <Route path="/auth/password" element={<Password />} />
+                            <Route path="/auth/password/:token" element={<Password />} />
                             <Route path="/auth/verification" element={<Verification />} />
                             <Route path="/auth/signup" element={<Signup />} />
                             <Route path="/auth/login" element={<Blogin />} />

@@ -124,7 +124,7 @@ const handleSignupClick = async () => {
     formData.append("password", password);
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/api/user/register/", {
+        const response = await fetch("https://pixel-classes.onrender.com/api/user/register/", {
             method: "POST",
             body: formData,
         });
