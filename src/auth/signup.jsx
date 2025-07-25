@@ -43,6 +43,11 @@ const handleSubmit = async (e) => {
   const password = document.getElementById("password").value;
   const confirmPassword = document.getElementById("confirmPassword").value;
 
+    if (!username || !email || !password || !confirmPassword) {
+    alert("All fields are required.");
+    return;
+
+    }
   // ✅ Now it's safe to use `email` here
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
@@ -119,17 +124,19 @@ const handleSignupClick = async () => {
     formData.append("password", password);
 
     try {
-        const response = await fetch("https://pixel-classes.onrender.com/api/user/register", {
+        const response = await fetch("http://127.0.0.1:8000/api/user/register/", {
             method: "POST",
             body: formData,
         });
+        console.log(formData);
+        console.log(response);
 
         const data = await response.json();
 
         if (response.ok) {
             setSucsses("Signup successful!");
             Cookies.set("last_s", "username");
-            navigate("/verification", { state: { user: { username, email } } });
+            navigate("/auth/verification", { state: { user: { username, email } } });
         } else {
             setError(data.message || "Registration failed.");
         }

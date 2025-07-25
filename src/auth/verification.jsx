@@ -4,18 +4,18 @@ import Cookies from "js-cookie";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import '../new.css'
 
-const verification = () => {
+const Verification = () => {
 
-  const username =Cookies.get("username");
-  const email =Cookies.get("email");
-
-
+  const username = Cookies.get("username");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [email, setEmail] = useState(Cookies.get("email"));
   const [sucsses, setSucsses] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
+  console.log("Username from cookies:", username);
+  console.log("Email from cookies:", email);
 
   const [otpCode, setOtpCode] = useState('');
   const [timer, setTimer] = useState(120); // 300 seconds = 5 minutes
@@ -234,4 +234,4 @@ const verification = () => {
   )
 }
 
-export default verification
+export default Verification
