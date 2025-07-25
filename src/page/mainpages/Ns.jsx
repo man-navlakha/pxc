@@ -307,7 +307,7 @@ const Ns = () => {
                     <div className="flex flex-col border-2 border-white p-6 rounded-lg shadow-lg relative bg-[conic-gradient(at_bottom_right,_var(--tw-gradient-stops))] from-[#1d4ed8] via-[#1e40af] to-[#111827] ">
                         <div>
                             <button
-                                onClick={() => setIsopen(false)}
+                                onClick={() => setIsopen(false)} disabled={loading}
                                 className="absolute top-2 right-4 text-3xl text-red-500 dark:text-gray-100 hover:text-red-200 dark:hover:text-white "
                             >
                                 x
