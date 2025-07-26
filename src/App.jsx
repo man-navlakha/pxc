@@ -8,6 +8,7 @@ import './App.css';
 
 // chats
 import Chat from './page/chat/chat';
+import Chatlist from './page/chat/Listuser';
 
 
 
@@ -126,7 +127,8 @@ function App() {
                            <Route path="/following" element={<FollowingPage />} />
                            <Route path="/follwers" element={<FollowersPage />} />
 
-                            <Route path="/chat" element={<Chat />} />
+                            <Route path="/chat" element={<Chatlist />} />
+                            <Route path="/chat/:RECEIVER" element={<Chat />} />
 
 
                             <Route path="/auth/forgetpassword" element={<Forgetpassword />} />

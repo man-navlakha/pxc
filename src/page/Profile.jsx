@@ -248,7 +248,7 @@ const Profile = () => {
                         <span className="material-symbols-outlined">person_add</span> Follow
                       </button>
                     )}
-                    <button className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-gray-800/30 hover:bg-gray-500/50 text-white font-bold shadow transition">
+                    <button  onClick={() => navigate(`/chat?username=${nameFromUrl}`)} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-gray-800/30 hover:bg-gray-500/50 text-white font-bold shadow transition">
                       <span className="material-symbols-outlined">chat</span> Message
                     </button>
                   </div>
