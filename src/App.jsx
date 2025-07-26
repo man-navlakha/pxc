@@ -5,6 +5,12 @@ import axios from "axios";
 import './App.css';
 
 // Beta configs
+
+// chats
+import Chat from './page/chat/chat';
+
+
+
 import Password from './auth/password';
 import Verification from './auth/verification';
 import Signup from './auth/signup';
@@ -119,6 +125,9 @@ function App() {
                             {/* Beta */}
                            <Route path="/following" element={<FollowingPage />} />
                            <Route path="/follwers" element={<FollowersPage />} />
+
+                            <Route path="/chat" element={<Chat />} />
+
 
                             <Route path="/auth/forgetpassword" element={<Forgetpassword />} />
                             <Route path="/auth/password/:token" element={<Password />} />

@@ -78,6 +78,9 @@ const Navbar = () => {
                   <a href="/Logout">
                     <span className="hover:text-red-600">Logout</span>
                   </a>
+                  <a href="/Chat?username=pixel_class">
+                    <span className="hover:text-red-600">Chat</span>
+                  </a>
 
                 </div>
               </div>
@@ -124,6 +127,9 @@ const Navbar = () => {
               <a href="/logout">
                 <li className='py-2 text-left px-3 m-2  w-full '>LogOut ⭕</li>
               </a>
+               <a href="/Chat?username=pixel_class">
+                    <span className="hover:text-red-600">Chat</span>
+                  </a>
             </ul>
           </div>
         </div>
