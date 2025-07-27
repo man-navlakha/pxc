@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Navbar from "../componet/Navbar";
 import Footer from "../componet/Footer";
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import Cookies from "js-cookie";
 
@@ -9,6 +10,7 @@ export default function UserSearch() {
   const [search, setSearch] = useState("");
   const [users, setUsers] = useState([]);
   const usernamec = Cookies.get("username");
+  const navigate = useNavigate();
 
   // Move follow function outside useEffect so it can be used in JSX
   const follow = async (follow_username) => {
@@ -68,7 +70,7 @@ export default function UserSearch() {
           "https://pixel-classes.onrender.com/api/Profile/following/",
           { username: usernamec }
         );
-          console.log(usernamec)
+        console.log(usernamec)
         const followingUsernames = followingRes.data.map((u) => u.username);
 
         // 2. Get user search results
@@ -131,56 +133,57 @@ export default function UserSearch() {
                         You can't find yourself in this search page
                       </span>
                     ) : (
-                      <>
-                        <div className="flex items-center justify-between gap-4 p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl hover:bg-white/20 transition-all">
-                          <a
-                            key={index}
-                            href={`profile?username=${user.username}`}
-                          >
-                            <div className="flex items-center justify-center gap-4">
-                              <img
-                                src={
-                                  user.profile_pic ||
-                                  `https://i.pravatar.cc/150?u=${user.username}`
-                                }
-                                alt={`${user.first_name} ${user.last_name}`}
-                                className="w-12 h-12 rounded-full object-cover border border-white/30"
-                              />
-                              <div className="flex flex-col items-center justify-between">
-                                <div>
-                                  <div className="text-lg font-semibold max-w-[150px] truncate">
-                                    {user.username}
-                                  </div>
-                                  <div className="text-sm text-white/60 max-w-[180px] truncate">
-                                    {user.first_name} {user.last_name}
+                        <>
+                          <div className="flex items-center justify-between gap-4 p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl hover:bg-white/20 transition-all">
+                            <a
+                              key={index}
+                              href={`profile?username=${user.username}`}
+                            >
+                              <div className="flex items-center justify-center gap-4">
+                                <img
+                                  src={
+                                    user.profile_pic ||
+                                    `https://i.pravatar.cc/150?u=${user.username}`
+                                  }
+                                  alt={`${user.first_name} ${user.last_name}`}
+                                  className="w-12 h-12 rounded-full object-cover border border-white/30"
+                                />
+                                <div className="flex flex-col items-center justify-between">
+                                  <div>
+                                    <div className="text-lg font-semibold max-w-[150px] truncate">
+                                      {user.username}
+                                    </div>
+                                    <div className="text-sm text-white/60 max-w-[180px] truncate">
+                                      {user.first_name} {user.last_name}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
+                            </a>
+                            <div className="mt-4 flex gap-4">
+                              {user.is_following ? (
+                                <>
+                                <button onClick={() => navigate(`/chat/${user.username}`)} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-gray-800/30 hover:bg-gray-500/50 text-white font-bold shadow transition">
+                                <span className="material-symbols-outlined">chat</span> Message
+                              </button>
+
+                                </>
+
+                              ) : (
+                                <button
+                                  onClick={() => follow(user.username)}
+                                  className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition"
+                                >
+                                  <span className="material-symbols-outlined">
+                                    person_add
+                                  </span>{" "}
+                                  Follow
+                                </button>
+                              )}
+                              
                             </div>
-                          </a>
-                          {user.is_following ? (
-                            <button
-                              onClick={() => unfollow(user.username)}
-                              className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-red-500/80 hover:bg-red-600/90 text-white font-bold shadow transition"
-                            >
-                              <span className="material-symbols-outlined">
-                                person_remove
-                              </span>{" "}
-                              Unfollow
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => follow(user.username)}
-                              className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition"
-                            >
-                              <span className="material-symbols-outlined">
-                                person_add
-                              </span>{" "}
-                              Follow
-                            </button>
-                          )}
-                        </div>
-                      </>
+                          </div>
+                        </>
                     )
                   )
                 ) : search.trim() === "" ? (
@@ -190,7 +193,7 @@ export default function UserSearch() {
                 ) : (
                   <p className="text-white/60 text-center">No users found.</p>
                 )}
-                  
+
               </div>
             </div>
           </div>

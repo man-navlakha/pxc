@@ -71,14 +71,15 @@ const MainPage = () => {
       {loading ? (
         <Loading />
       ) : error ? (
-        <div className="text-red-500 text-center my-4 bg-white">{error}</div>
+        <div className="text-red-500 text-center my-4 bg-white">{error} <a href="/logout"><button>Fix It</button></a></div>
       ) : (
         <div className='bg-black ccf'>
           <div className="bg-pattern transition-all duration-500 ease-in-out"></div>
           <div className='ccf text-white flex flex-col text-center pb-14 lg:pb-0 md:pb-14 content-center flex-nowrap'>
             <Navbar />
 
-            {token ? <Semester /> : <>
+            {token ? <Semester /> :
+             <>
               <Hero />
               <Feature />
             </>}

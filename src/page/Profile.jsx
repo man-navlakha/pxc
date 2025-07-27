@@ -364,7 +364,7 @@ const Profile = () => {
                           </a>
                           {!nameFromUrl && (
                             <>
-                              <button
+                              {/* <button
                                 className="px-3 py-1 rounded bg-yellow-400/80  bg-clip-padding
     backdrop-filter
     backdrop-blur-xl
@@ -374,7 +374,7 @@ const Profile = () => {
                                 onClick={() => handleEdit(post)}
                               >
                                 Edit
-                              </button>
+                              </button> */}
                               <button
                                 className="px-3 py-1 rounded bg-red-500/80 hover:bg-red-600 text-white font-semibold"
                                 onClick={() => handleDelete(post.pdf)}

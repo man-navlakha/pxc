@@ -111,7 +111,7 @@ export default function Chat() {
   }, [RECEIVER, token]);
 
   return (
-    <div className="min-h-screen ccf flex flex-col text-white">
+    <div className="min-h-screen ccf flex flex-col text-white mx-auto">
       {loading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className=" ease-linear rounded-full border-8 border-t-8 border-gray-200 h-16 w-16"></div>
@@ -132,13 +132,13 @@ export default function Chat() {
           <a href={`/profile/${profile?.username}`}>
             <div className="flex gap-2 items-center justify-start">
               <img
-                className="w-14 h-14 rounded-full border-4 border-white/30 shadow-lg object-cover"
+                className="w-9 h-9 lg:w-14 lg:h-14 rounded-full border-4 border-white/30 shadow-lg object-cover"
                 src={profile?.profile_pic
                   ? profile.profile_pic
                   : "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"}
                 alt="Profile"
               />
-              <h1 className="text-3xl font-semibold text-center w-full truncate text-white">
+              <h1 className="text-xl lg:text-3xl font-semibold text-center w-full truncate text-white">
                 {profile?.username || "Guest"}
               </h1>
         </div>
@@ -161,11 +161,11 @@ export default function Chat() {
         </div>
       ))}
       <div ref={messagesEndRef} />
+    </div>
+
       {isTyping && (
         <p className="text-xs text-gray-400 italic px-2 mt-1">You are typing...</p>
       )}
-    </div>
-
 
 
         {/* Input Box */}

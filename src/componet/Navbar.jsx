@@ -69,6 +69,9 @@ const Navbar = () => {
               <div className={`hidden md:hidden lg:block `} >
 
                 <div className="flex gap-4 items-center justify-center text-white font-medium ">
+                  <a href="/Chat">
+                    <span className="hover:text-red-600">Chat</span>
+                  </a>
                   <a href="/search">
                     <span className="hover:text-blue-400">Find a friend</span>
                   </a>
@@ -77,9 +80,6 @@ const Navbar = () => {
                   </a>
                   <a href="/Logout">
                     <span className="hover:text-red-600">Logout</span>
-                  </a>
-                  <a href="/Chat">
-                    <span className="hover:text-red-600">Chat</span>
                   </a>
 
                 </div>

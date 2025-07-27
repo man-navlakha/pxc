@@ -94,7 +94,7 @@ export default function Listuser() {
                                         <img
                                             src={user.profile_pic}
                                             alt={user.username}
-                                            className="w-16 h-16 rounded-full mr-2 border-2 border-white/20 object-cover"
+                                            className="w-9 h-9 lg:w-14 lg:h-14 rounded-full mr-2 border-2 border-white/20 object-cover"
                                         />
                                         <div>
                                                 {user.first_name || user.username} {user.last_name}

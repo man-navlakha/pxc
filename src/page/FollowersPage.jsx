@@ -48,7 +48,7 @@ const FollowersPage = ({ username }) => {
       {loading ? (
         <p className="text-white/60">Loading...</p>
       ) : following.length === 0 ? (
-        <p className="text-white/60">You’re not Followers anyone yet.</p>
+        <p className="text-white/60">You does't have any followers</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {following.map((user) => (
@@ -56,22 +56,23 @@ const FollowersPage = ({ username }) => {
               key={user.username}
               className="bg-white/5 p-4 rounded-xl shadow backdrop-blur-md border border-white/10 flex items-center gap-4"
             >
-              <img
-                src={user.profile_pic}
-                alt={user.username}
-                className="w-16 h-16 rounded-full border-2 border-white/20 object-cover"
-              />
-              <div>
-                <Link
-                  to={`/profile/${user.username}`}
-                  className="text-lg font-semibold hover:underline"
-                >
-                  {user.first_name || user.username} {user.last_name}
-                </Link>
-                <p className="text-sm text-white/60">
-                  {/* Joined on {new Date(user.joined_date).toLocaleDateString()} */}
-                </p>
-              </div>
+                <a className="flex gap-2 items-center" href={`/profile/${user?.username}`}>
+                <img
+                  src={user.profile_pic}
+                  alt={user.username}
+                  className="w-9 h-9 lg:w-14 lg:h-14 rounded-full border-2 border-white/20 object-cover"
+                />
+                <div>
+                  <span
+                    className="text-lg font-semibold hover:underline"
+                  >
+                    {user.first_name || user.username} {user.last_name}
+                  </span>
+                  {/* <p className="text-sm text-white/60">
+                  Joined on {user.joined_date ? new Date(user.joined_date).toLocaleDateString() : ""}
+                </p> */}
+                </div>
+              </a>
             </div>
           ))}
         </div>

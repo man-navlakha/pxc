@@ -27,7 +27,7 @@ const FollowingPage = ({ username }) => {
 
   return (
     <div className="max-w-5xl mx-auto py-4 px-6">
-      <button  onClick={() => window.location.reload()} className='flex w-full max-w-max px-6 py-1 rounded justify- my-2 bg-gray-100
+      <button onClick={() => window.location.reload()} className='flex w-full max-w-max px-6 py-1 rounded justify- my-2 bg-gray-100
     bg-clip-padding
     backdrop-filter
     backdrop-blur-xl
@@ -46,24 +46,24 @@ const FollowingPage = ({ username }) => {
           {following.map((user) => (
             <div
               key={user.username}
-              className="bg-white/5 p-4 rounded-xl shadow backdrop-blur-md border border-white/10 flex items-center gap-4"
-            >
-              <img
-                src={user.profile_pic}
-                alt={user.username}
-                className="w-16 h-16 rounded-full border-2 border-white/20 object-cover"
-              />
-              <div>
-                <Link
-                  to={`/profile/${user.username}`}
-                  className="text-lg font-semibold hover:underline"
-                >
-                  {user.first_name || user.username} {user.last_name}
-                </Link>
-                <p className="text-sm text-white/60">
+              className="bg-white/5 p-4 rounded-xl shadow backdrop-blur-md border border-white/10 flex items-center gap-4">
+              <a className="flex gap-2 items-center" href={`/profile/${user?.username}`}>
+                <img
+                  src={user.profile_pic}
+                  alt={user.username}
+                  className="w-9 h-9 lg:w-14 lg:h-14 rounded-full border-2 border-white/20 object-cover"
+                />
+                <div>
+                  <span
+                    className="text-lg font-semibold hover:underline"
+                  >
+                    {user.first_name || user.username} {user.last_name}
+                  </span>
+                  {/* <p className="text-sm text-white/60">
                   Joined on {user.joined_date ? new Date(user.joined_date).toLocaleDateString() : ""}
-                </p>
-              </div>
+                </p> */}
+                </div>
+              </a>
             </div>
           ))}
         </div>
