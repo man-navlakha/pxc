@@ -86,7 +86,10 @@ const Verification = () => {
           Cookies.set('username', username, { expires: 7 }); // Save username to cookies
 
           // Redirect to the home page after successful login
-          navigate('/');
+          setTimeout(() => {
+  navigate(redirectTo, { replace: true });
+}, 100);
+
         } else {
           console.error("Login error:", data.message);
         }

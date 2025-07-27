@@ -55,7 +55,7 @@ const FollowingPage = ({ username }) => {
               />
               <div>
                 <Link
-                  to={`/profile?username=${user.username}`}
+                  to={`/profile/${user.username}`}
                   className="text-lg font-semibold hover:underline"
                 >
                   {user.first_name || user.username} {user.last_name}

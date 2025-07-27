@@ -302,7 +302,7 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                                                 <p className="text-md text-slate-400">
                                                     {pdfSizes[pdf.pdf] || "Loading..."} • PDF • {pdfyear}
                                                 </p>
-                                                <a href={`/profile?username=${pdf.name}`} >   <p className='flex-1 text-md  pb-1'> @<span className='text-gray-100'>{pdf.name}</span></p></a>
+                                                <a href={`/profile/${pdf.name}`} >   <p className='flex-1 text-md  pb-1'> @<span className='text-gray-100'>{pdf.name}</span></p></a>
                                             </div>
 
                                         </div>

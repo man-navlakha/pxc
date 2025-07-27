@@ -68,7 +68,7 @@ export default function Listuser() {
       </button>
 
                             <h1 className="text-xl font-semibold text-center w-full truncate text-white">
-                                Chat with friends
+                                Messages
                             </h1>
 
                         </div>
@@ -76,7 +76,7 @@ export default function Listuser() {
                     </div>
                 </div>
                 {/* Chat Area */}
-                <div className="flex-1 flex flex-col px-4 py-4">
+                <div className="flex-1 flex flex-col px-4 py-6 mb-19">
                     <div className="flex-1 overflow-y-auto mb-3 px-1 space-y-4">
                         {loading ? (
                             <p className="text-white/60">Loading...</p>
@@ -98,9 +98,9 @@ export default function Listuser() {
                                         />
                                         <div>
                                                 {user.first_name || user.username} {user.last_name}
-                                            <p className="text-sm text-white/60">
+                                            {/* <p className="text-sm text-white/60">
                                                 Joined on {user.joined_date ? new Date(user.joined_date).toLocaleDateString() : ""}
-                                            </p>
+                                            </p> */}
                                         </div>
                                                 </a>
                                     </div>

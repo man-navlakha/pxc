@@ -7,14 +7,14 @@ const ProfileEditForm = ({ profile }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
-  const [usernameEdit, setUsernameEdit] = useState(usernamec || "");
+  const [usernameEdit, setUsernameEdit] = useState(Cookies.get("username") || "");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (profile) {
       setFirstName(profile.first_name || "");
       setLastName(profile.last_name || "");
-      setUsernameEdit(profile.username || "");
+      setUsernameEdit(profile.username || Cookies.get("username") || "");
     }
   }, [profile]);
 
@@ -42,12 +42,6 @@ const ProfileEditForm = ({ profile }) => {
   e.preventDefault();
   setLoading(true);
 
-  // Check forbidden usernames first
-  if (containsForbiddenName(usernameEdit)) {
-    alert("This username contains restricted words and is not allowed.");
-    setLoading(false);
-    return;
-  }
 
   // If username hasn't changed, skip duplicate check
   if (usernameEdit !== usernamec) {

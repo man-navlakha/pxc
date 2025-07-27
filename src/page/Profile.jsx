@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 import Navbar from '../componet/Navbar'
 import Footer from '../componet/Footer'
 import axios from "axios";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import FollowingPage from './FollowingPage';
 import FollowersPage from './FollowersPage';
 import ProfileEditForm from './ProfileEditForm';
@@ -21,12 +21,14 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
-  const nameFromUrl = urlParams.get('username');
+  const urlusername = urlParams.get('username');
+  const {nameFromUrl} =  useParams();
   const [isFollowing, setIsFollowing] = useState(false);
   const usernamec = Cookies.get("username");
   const token = Cookies.get('access_token');
   const navigate = useNavigate();
 
+  {urlusername && navigate(`/profile/${urlusername}`) }
   // Unified profile and posts fetch
   useEffect(() => {
 !token && navigate("/")
@@ -248,7 +250,7 @@ const Profile = () => {
                         <span className="material-symbols-outlined">person_add</span> Follow
                       </button>
                     )}
-                    <button  onClick={() => navigate(`/chat?username=${nameFromUrl}`)} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-gray-800/30 hover:bg-gray-500/50 text-white font-bold shadow transition">
+                    <button  onClick={() => navigate(`/chat/${nameFromUrl}`)} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-gray-800/30 hover:bg-gray-500/50 text-white font-bold shadow transition">
                       <span className="material-symbols-outlined">chat</span> Message
                     </button>
                   </div>

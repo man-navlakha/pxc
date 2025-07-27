@@ -36,6 +36,7 @@ import Team from './old/pages/Team';
 import Career from './old/pages/Career';
 import Search from "./old/pages/Search";
 import ProtectedRoute from "./ProtectedRoute";
+import Protected from "./ProtectedRoute_new";
 
 
 import Homeo from './old/newcom/home';
@@ -117,98 +118,101 @@ function App() {
             ) : (
                 <p className="transition-all duration-500 ease-in-out w-screen text-center p-2 bg-red-500 text-white">You are offline!</p>
             )}
-        {/* <p className={` ${loading ? 'visible ':'hidden'} w-screen text-center p-2 bg-blue-500 text-white`} ><span className="m-2">Please wait!</span> <span className="m-2">Please wait!</span> <span className="m-2">Please wait!</span></p> */}
+            {/* <p className={` ${loading ? 'visible ':'hidden'} w-screen text-center p-2 bg-blue-500 text-white`} ><span className="m-2">Please wait!</span> <span className="m-2">Please wait!</span> <span className="m-2">Please wait!</span></p> */}
 
-                    <div className="App transition-all duration-500 ease-in-out dark:bg-[#1e1e1e] dark:text-white bg-black">
-                        <Routes>
-                            <Route path="*" element={<NotFound />} />
+            <div className="App transition-all duration-500 ease-in-out dark:bg-[#1e1e1e] dark:text-white bg-black">
+                <Routes>
+                    <Route path="*" element={<NotFound />} />
 
-                            {/* Beta */}
-                           <Route path="/following" element={<FollowingPage />} />
-                           <Route path="/follwers" element={<FollowersPage />} />
+                    {/* Beta */}
+                    <Route
+                        path="/search"
+                        element={
+                            <Protected>
+                                <Search_user />
+                            </Protected>
+                        }
+                    />
+                    <Route path="/following" element={<Protected> <FollowingPage /></Protected>} />
+                    <Route path="/follwers" element={<Protected> <FollowersPage /></Protected>} />
 
-                            <Route path="/chat" element={<Chatlist />} />
-                            <Route path="/chat/:RECEIVER" element={<Chat />} />
-
-
-                            <Route path="/auth/forgetpassword" element={<Forgetpassword />} />
-                            <Route path="/auth/password/:token" element={<Password />} />
-                            <Route path="/auth/verification" element={<Verification />} />
-                            <Route path="/auth/signup" element={<Signup />} />
-                            <Route path="/auth/login" element={<Blogin />} />
-                            <Route path="/" element={<MainPage />} />
-                            <Route path="/sem" element={<Sem />} />
-                            <Route path="/profile" element={<Prof />} />
-                            <Route path="/ns" element={<Ns />} />
-                            <Route path="/nss" element={<Nss />} />
-                            <Route path="/select" element={<Select />} />
+                    <Route path="/chat" element={<Protected> <Chatlist /></Protected>} />
+                    <Route path="/chat/:RECEIVER" element={<Protected> <Chat /></Protected>} />
 
 
+                    <Route path="/auth/forgetpassword" element={<Forgetpassword />} />
+                    <Route path="/auth/password/:token" element={<Password />} />
+                    <Route path="/auth/verification" element={<Verification />} />
+                    <Route path="/auth/signup" element={<Signup />} />
+                    <Route path="/auth/login" element={<Blogin />} />
+                    <Route path="/" element={<MainPage />} />
+                    <Route path="/sem" element={<Protected> <Sem /></Protected>} />
+                    <Route path="/profile" element={<Protected> <Prof /></Protected>} />
+                    <Route path="/profile/:nameFromUrl" element={<Protected> <Prof /></Protected>} />
+                    <Route path="/ns" element={<Protected> <Ns /></Protected>} />
+                    <Route path="/nss" element={<Protected> <Nss /></Protected>} />
+                    <Route path="/select" element={<Protected> <Select /></Protected>} />
 
-                            <Route path="/logout" element={<Logout />} />
-                            <Route path="/old" element={<Homeo />} />
-                            <Route path="/old/sub" element={<Subj />} />
-                            <Route path="/old/login" element={<Login />} />
 
-                            {/* <Route path="/old/open" element={<Open />} />
+
+                    <Route path="/logout" element={<Logout />} />
+                    <Route path="/old" element={<Homeo />} />
+                    <Route path="/old/sub" element={<Subj />} />
+                    <Route path="/old/login" element={<Login />} />
+
+                    {/* <Route path="/old/open" element={<Open />} />
                             <Route path="/old/signup" element={<Sign />} />
                             <Route path="/old/verification" element={<Verify />} />
                             <Route path="/old/fgpassword" element={<Forgetpassword />} />
                             <Route path="/old/newpassword/:token" element={<Newpassword />} />
                             <Route path="/old/footer" element={<Footer />} />  */}
 
-                            <Route path="/team" element={<Team />} />
-                            {/* <Route path="/faq" element={<Faq />} /> */}
-                            <Route path="/career" element={<Career />} />
-                            {/* <Route path="/help" element={<Help />} /> */}
-                            
-                            <Route
-                                path="old/choose"
-                                element={
-                                    <ProtectedRoute>
-                                        <Choose />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="/old/select"
-                                element={
-                                    <ProtectedRoute>
-                                        <Pdfs />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="/old/ns"
-                                element={
-                                    <ProtectedRoute>
-                                        <NotesSharingPage />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="/old/nss"
-                                element={
-                                    <ProtectedRoute>
-                                        <Exam />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="/searchpdf"
-                                element={
-                                    <ProtectedRoute>
-                                        <Search />
-                                    </ProtectedRoute>
-                                }
-                            />
-                            <Route
-                                path="/search"
-                                element={
-                                   
-                                        <Search_user />
-                                }
-                            />
+                    <Route path="/team" element={<Team />} />
+                    {/* <Route path="/faq" element={<Faq />} /> */}
+                    <Route path="/career" element={<Career />} />
+                    {/* <Route path="/help" element={<Help />} /> */}
+
+                    <Route
+                        path="old/choose"
+                        element={
+                            <ProtectedRoute>
+                                <Choose />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/old/select"
+                        element={
+                            <ProtectedRoute>
+                                <Pdfs />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/old/ns"
+                        element={
+                            <ProtectedRoute>
+                                <NotesSharingPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/old/nss"
+                        element={
+                            <ProtectedRoute>
+                                <Exam />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/searchpdf"
+                        element={
+                            <ProtectedRoute>
+                                <Search />
+                            </ProtectedRoute>
+                        }
+                    />
+
                     <Route
                         path="old/profile"
                         element={
@@ -217,8 +221,8 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                        </Routes>
-                    </div>
+                </Routes>
+            </div>
         </>
     );
 }

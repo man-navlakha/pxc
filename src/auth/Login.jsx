@@ -18,6 +18,9 @@ const login = () => {
     const [sucsses, setSucsses] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+const redirectTo = queryParams.get("redirect") || "/";
+
 
     
     // ✅ Handle redirection if user is already logged in
@@ -49,11 +52,10 @@ const login = () => {
 
                 setSucsses("Login Sucssesful");
                 Cookies.set("last", "Google");
-                setTimeout(() => {
+               setTimeout(() => {
+  navigate(redirectTo, { replace: true });
+}, 100);
 
-                    const redirectTo = "/";
-                    navigate(redirectTo, { replace: true });
-                }, 100)
             } else {
                 setError("Invalid login credentials.");
             }
@@ -89,10 +91,10 @@ const login = () => {
 
                 setSucsses("Login Sucssesful");
                 Cookies.set("last", "username");
-                setTimeout(() => {
-                    const redirectTo = "/";
-                    navigate(redirectTo, { replace: true });
-                }, 100);
+               setTimeout(() => {
+  navigate(redirectTo, { replace: true });
+}, 100);
+
             } else {
                 setError("Invalid login credentials.");
             }
