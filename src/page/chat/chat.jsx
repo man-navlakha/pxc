@@ -35,15 +35,18 @@ export default function Chat() {
     fetch(`https://pixel-classes.onrender.com/api/chatting/${roomName}/`)
       .then((res) => res.json())
       .then((data) => {
+
         if (Array.isArray(data)) {
           // Format messages with id and status
           const formatted = data.map((msg) => ({
             id: msg.id,
             sender: msg.sender,
             message: msg.content,
-            status: msg.status || "sent", // default to sent
+            status: Boolean(msg.is_seen), // Convert to boolean
           }));
           setMessages(formatted);
+
+          console.log(formatted)
         } else {
           console.error("Unexpected data format:", data);
         }
@@ -63,18 +66,52 @@ export default function Chat() {
       const data = JSON.parse(e.data);
 
       if (data.type === "seen") {
-        // Update message status to "seen"
         setMessages((prev) =>
           prev.map((msg) =>
             msg.id === data.message_id ? { ...msg, status: "seen" } : msg
           )
         );
       } else if (data.type === "chat") {
-        setMessages((prev) => [...prev, data]);
+        // Add new incoming message with status 'sent' by default
+        const newMsg = {
+          id: data.id,
+          sender: data.sender,
+          message: data.message,
+          status: "sent",
+        };
+        setMessages((prev) => [...prev, newMsg]);
+
+        // Immediately send "seen" confirmation if message is from other user
+        if (data.sender !== USERNAME) {
+          sendSeenStatus(data.id);
+        }
       }
     };
 
+
+    socket.onerror = (err) => console.error("WebSocket error:", err);
+
     socket.onclose = () => console.log("❌ WebSocket disconnected");
+    const sendSeenStatus = (messageId) => {
+      if (
+        socketRef.current &&
+        socketRef.current.readyState === WebSocket.OPEN
+      ) {
+        socketRef.current.send(
+          JSON.stringify({
+            type: "seen",
+            message_id: messageId,
+            seen_by: USERNAME,
+          })
+        );
+
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === messageId ? { ...msg, status: "seen" } : msg
+          )
+        );
+      }
+    };
 
     return () => socket.close();
   }, [USERNAME, RECEIVER]);
@@ -90,18 +127,19 @@ export default function Chat() {
     if (messages.length === 0) return;
 
     const lastMsg = messages[messages.length - 1];
-   if (
-  lastMsg.sender !== USERNAME &&
-  lastMsg.status !== "seen" &&
-  socketRef.current.readyState === WebSocket.OPEN
-) {
-  socketRef.current.send(
-    JSON.stringify({
-      type: "seen",
-      message_id: lastMsg.id,
-      seen_by: USERNAME,
-    })
-  );
+    if (
+      socketRef.current &&
+      socketRef.current.readyState === WebSocket.OPEN &&
+      lastMsg.sender !== USERNAME &&
+      lastMsg.status !== "seen"
+    ) {
+      socketRef.current.send(
+        JSON.stringify({
+          type: "seen",
+          message_id: lastMsg.id,
+          seen_by: USERNAME,
+        })
+      );
 
       // Optimistically update locally
       setMessages((prev) =>
@@ -128,11 +166,11 @@ export default function Chat() {
     };
 
     // Send message over WebSocket
-   if (socketRef.current.readyState === WebSocket.OPEN) {
-  socketRef.current.send(JSON.stringify(msg));
-} else {
-  console.warn("WebSocket not open, cannot send message yet");
-}
+    if (socketRef.current.readyState === WebSocket.OPEN) {
+      socketRef.current.send(JSON.stringify(msg));
+    } else {
+      console.warn("WebSocket not open, cannot send message yet");
+    }
 
 
     // Add message locally immediately (optimistic UI)
@@ -208,20 +246,20 @@ export default function Chat() {
           {messages.map((msg, index) => (
             <div
               key={msg.id || index}
-              className={`w-fit max-w-[75%] px-4 py-3 rounded-2xl shadow-md whitespace-pre-wrap backdrop-blur-sm break-words text-sm md:text-base ${
-                msg.sender === USERNAME
-                  ? "ml-auto bg-emerald-600/30 border border-emerald-800/60"
-                  : "mr-auto bg-white/10 border border-white/10"
-              }`}
+              className={`w-fit max-w-[75%] px-4 py-3 rounded-2xl shadow-md whitespace-pre-wrap backdrop-blur-sm break-words text-sm md:text-base ${msg.sender === USERNAME
+                ? "ml-auto bg-emerald-600/30 border border-emerald-800/60"
+                : "mr-auto bg-white/10 border border-white/10"
+                }`}
             >
               <p>{msg.message}</p>
 
               {/* Show status only for sender's messages */}
               {msg.sender === USERNAME && (
                 <p className="text-right text-xs text-gray-400 mt-1">
-                  {msg.status === "seen" ? "✔ Seen" : "✔ Sent"}
+                  {msg.status === "seen" ? "✔ Seen" : "⏱︎ Sent"}
                 </p>
               )}
+
             </div>
           ))}
           <div ref={messagesEndRef} />
