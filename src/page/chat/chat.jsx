@@ -90,15 +90,18 @@ export default function Chat() {
     if (messages.length === 0) return;
 
     const lastMsg = messages[messages.length - 1];
-    if (lastMsg.sender !== USERNAME && lastMsg.status !== "seen") {
-      // Send seen update for this message
-      socketRef.current.send(
-        JSON.stringify({
-          type: "seen",
-          message_id: lastMsg.id,
-          seen_by: USERNAME,
-        })
-      );
+   if (
+  lastMsg.sender !== USERNAME &&
+  lastMsg.status !== "seen" &&
+  socketRef.current.readyState === WebSocket.OPEN
+) {
+  socketRef.current.send(
+    JSON.stringify({
+      type: "seen",
+      message_id: lastMsg.id,
+      seen_by: USERNAME,
+    })
+  );
 
       // Optimistically update locally
       setMessages((prev) =>
@@ -125,7 +128,12 @@ export default function Chat() {
     };
 
     // Send message over WebSocket
-    socketRef.current.send(JSON.stringify(msg));
+   if (socketRef.current.readyState === WebSocket.OPEN) {
+  socketRef.current.send(JSON.stringify(msg));
+} else {
+  console.warn("WebSocket not open, cannot send message yet");
+}
+
 
     // Add message locally immediately (optimistic UI)
     setMessages((prev) => [...prev, msg]);
