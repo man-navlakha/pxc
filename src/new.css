@@ -49,7 +49,11 @@ radial-gradient(at 50% 56%, hsla(151,100%,20%,1) 50px, transparent 50%);
   background: radial-gradient(at 88% 0%, #000000 0px, transparent 50%), radial-gradient(at 41% 38%, #01211100 0px, transparent 100%), radial-gradient(at 95% 100%, #b030b069 50px, transparent 80%), radial-gradient(at 62% 66%, #b030b069 0px, transparent 50%), #000000;
 
 }
-
+.glass {
+      backdrop-filter: blur(20px);
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
 .mesh {
 
 

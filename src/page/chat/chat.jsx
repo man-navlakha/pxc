@@ -77,6 +77,7 @@ export default function Chat() {
     if (!input.trim()) return;
 
     const msg = {
+      type : "chat",
       sender: USERNAME,
       receiver: RECEIVER,
       message: input.trim(),

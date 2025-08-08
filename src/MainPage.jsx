@@ -71,7 +71,7 @@ const MainPage = () => {
       {loading ? (
         <Loading />
       ) : error ? (
-        <div className="text-red-500 text-center my-4 bg-white">{error} <a href="/logout"><button>Fix It</button></a></div>
+        <div className="text-red-500 text-center my-4 bg-white ccf text-3xl">{error} <a href="/logout"><br /><button className='border px-6 py-3 m-2 rounded bg-red-600/20 border-red-600'>Logout</button></a><a href="/"><br /><button className='border px-6 py-3 m-2 rounded bg-red-600/20 border-red-600'>Reload</button></a></div>
       ) : (
         <div className='bg-black ccf'>
           <div className="bg-pattern transition-all duration-500 ease-in-out"></div>
