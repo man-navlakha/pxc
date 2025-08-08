@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams, Link } from "react-router-dom";
-import { Send, Paperclip, Undo2 } from "lucide-react";
-import { useLocation } from 'react-router-dom';
-import '../../new.css'
+import { useNavigate, useParams } from "react-router-dom";
+import { Send, Undo2 } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import "../../new.css";
 import Cookies from "js-cookie";
 import axios from "axios";
-
-
 
 export default function Chat() {
   const [messages, setMessages] = useState([]);
@@ -16,34 +14,34 @@ export default function Chat() {
   const messagesEndRef = useRef(null);
   const typingTimeoutRef = useRef(null);
   const socketRef = useRef(null);
-   const [filePreview, setFilePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState(null);
 
   const location = useLocation();
-  const urlParams = new URLSearchParams(location.search);
   const { RECEIVER } = useParams();
   const USERNAME = Cookies.get("username");
-  const token = Cookies.get('access_token');
+  const token = Cookies.get("access_token");
   const navigate = useNavigate();
 
-  console.log(USERNAME, RECEIVER)
+  // Fetch chat history and open websocket
   useEffect(() => {
-    setLoading(true)
-    console.log(USERNAME, RECEIVER)
+    if (!USERNAME || !RECEIVER) return;
+    setLoading(true);
     const sender = USERNAME;
     const receiver = RECEIVER;
     const roomName = [sender, receiver].sort().join("__");
-
 
     // Fetch old messages
     fetch(`https://pixel-classes.onrender.com/api/chatting/${roomName}/`)
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
+          // Format messages with id and status
           const formatted = data.map((msg) => ({
+            id: msg.id,
             sender: msg.sender,
             message: msg.content,
+            status: msg.status || "sent", // default to sent
           }));
           setMessages(formatted);
         } else {
@@ -54,36 +52,84 @@ export default function Chat() {
       .finally(() => setLoading(false));
 
     // Open WebSocket connection
-    const socket = new WebSocket(`wss://pixel-classes.onrender.com/ws/chat/${roomName}/`);
+    const socket = new WebSocket(
+      `wss://pixel-classes.onrender.com/ws/chat/${roomName}/`
+    );
     socketRef.current = socket;
 
     socket.onopen = () => console.log("✅ Connected to WebSocket");
 
     socket.onmessage = (e) => {
       const data = JSON.parse(e.data);
-      setMessages((prev) => [...prev, data]);
+
+      if (data.type === "seen") {
+        // Update message status to "seen"
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === data.message_id ? { ...msg, status: "seen" } : msg
+          )
+        );
+      } else if (data.type === "chat") {
+        setMessages((prev) => [...prev, data]);
+      }
     };
 
     socket.onclose = () => console.log("❌ WebSocket disconnected");
 
     return () => socket.close();
-  }, []);
+  }, [USERNAME, RECEIVER]);
 
+  // Scroll chat to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // When a new message from RECEIVER arrives, send "seen" update
+  useEffect(() => {
+    if (!socketRef.current) return;
+    if (messages.length === 0) return;
+
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg.sender !== USERNAME && lastMsg.status !== "seen") {
+      // Send seen update for this message
+      socketRef.current.send(
+        JSON.stringify({
+          type: "seen",
+          message_id: lastMsg.id,
+          seen_by: USERNAME,
+        })
+      );
+
+      // Optimistically update locally
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === lastMsg.id ? { ...msg, status: "seen" } : msg
+        )
+      );
+    }
+  }, [messages, USERNAME]);
+
   const sendMessage = () => {
     if (!input.trim()) return;
 
+    // Create a temporary id (could be replaced by server id)
+    const tempId = Date.now();
+
     const msg = {
-      type : "chat",
+      type: "chat",
+      id: tempId,
       sender: USERNAME,
       receiver: RECEIVER,
       message: input.trim(),
+      status: "sent",
     };
 
+    // Send message over WebSocket
     socketRef.current.send(JSON.stringify(msg));
+
+    // Add message locally immediately (optimistic UI)
+    setMessages((prev) => [...prev, msg]);
+
     setInput("");
 
     // Reset textarea height
@@ -93,7 +139,6 @@ export default function Chat() {
     }
   };
 
-
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -101,15 +146,17 @@ export default function Chat() {
     }
   };
 
-  // Unified profile and posts fetch
+  // Fetch profile info for receiver
   useEffect(() => {
-    !token && navigate("/")
-    const userToFetch = RECEIVER;
-    if (!userToFetch) return;
-    axios.post('https://pixel-classes.onrender.com/api/Profile/details/', { username: userToFetch })
-      .then(res => setProfile(res.data))
-      .catch(() => setError("Failed to load profile details"))
-  }, [RECEIVER, token]);
+    if (!token) navigate("/");
+    if (!RECEIVER) return;
+    axios
+      .post("https://pixel-classes.onrender.com/api/Profile/details/", {
+        username: RECEIVER,
+      })
+      .then((res) => setProfile(res.data))
+      .catch(() => console.error("Failed to load profile details"));
+  }, [RECEIVER, token, navigate]);
 
   return (
     <div className="min-h-screen ccf flex flex-col text-white mx-auto">
@@ -121,69 +168,72 @@ export default function Chat() {
       {/* Header */}
       <div className="w-full sticky top-0 border-b border-white/10 backdrop-blur-md bg-white/10 z-10">
         <div className="container mx-auto py-4 px-4 flex items-center justify-start gap-2">
-          <button onClick={() => navigate("/chat")} className='flex w-full max-w-max px-3 py-2 rounded justify- my-2 bg-gray-100
-    bg-clip-padding
-    backdrop-filter
-    backdrop-blur-xl
-    bg-opacity-10
-    backdrop-saturate-100
-    backdrop-contrast-100 '>
+          <button
+            onClick={() => navigate("/chat")}
+            className="flex w-full max-w-max px-3 py-2 rounded justify- my-2 bg-gray-100 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100 "
+          >
             <Undo2 className="" />
           </button>
           <a href={`/profile/${profile?.username}`}>
             <div className="flex gap-2 items-center justify-start">
               <img
                 className="w-9 h-9 lg:w-14 lg:h-14 rounded-full border-4 border-white/30 shadow-lg object-cover"
-                src={profile?.profile_pic
-                  ? profile.profile_pic
-                  : "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"}
+                src={
+                  profile?.profile_pic
+                    ? profile.profile_pic
+                    : "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"
+                }
                 alt="Profile"
               />
               <h1 className="text-xl lg:text-3xl font-semibold text-center w-full truncate text-white">
                 {profile?.username || "Guest"}
               </h1>
-        </div>
+            </div>
           </a>
-        <div className="w-[100px]" />
-      </div>
-    </div>
- {/* Chat Area */ }
-  <div className="flex-1 flex flex-col px-4 py-4">
-    <div className="flex-1 overflow-y-auto mb-3 px-1 space-y-4">
-      {messages.map((msg, index) => (
-        <div
-          key={index}
-          className={`w-fit max-w-[75%] px-4 py-3 rounded-2xl shadow-md whitespace-pre-wrap backdrop-blur-sm break-words text-sm md:text-base ${msg.sender === USERNAME
-              ? "ml-auto bg-emerald-600/30 border border-emerald-800/60"
-              : "mr-auto bg-white/10 border border-white/10"
-            }`}
-        >
-          {msg.message}
+          <div className="w-[100px]" />
         </div>
-      ))}
-      <div ref={messagesEndRef} />
-    </div>
+      </div>
 
-      {isTyping && (
-        <p className="text-xs text-gray-400 italic px-2 mt-1">You are typing...</p>
-      )}
+      {/* Chat Area */}
+      <div className="flex-1 flex flex-col px-4 py-4">
+        <div className="flex-1 overflow-y-auto mb-3 px-1 space-y-4">
+          {messages.map((msg, index) => (
+            <div
+              key={msg.id || index}
+              className={`w-fit max-w-[75%] px-4 py-3 rounded-2xl shadow-md whitespace-pre-wrap backdrop-blur-sm break-words text-sm md:text-base ${
+                msg.sender === USERNAME
+                  ? "ml-auto bg-emerald-600/30 border border-emerald-800/60"
+                  : "mr-auto bg-white/10 border border-white/10"
+              }`}
+            >
+              <p>{msg.message}</p>
 
+              {/* Show status only for sender's messages */}
+              {msg.sender === USERNAME && (
+                <p className="text-right text-xs text-gray-400 mt-1">
+                  {msg.status === "seen" ? "✔ Seen" : "✔ Sent"}
+                </p>
+              )}
+            </div>
+          ))}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {isTyping && (
+          <p className="text-xs text-gray-400 italic px-2 mt-1">
+            You are typing...
+          </p>
+        )}
 
         {/* Input Box */}
         <form
           onSubmit={(e) => {
             e.preventDefault();
             sendMessage();
-
           }}
           className="sticky bottom-4 z-10 rounded-2xl border border-gray-600/50 shadow-xl bg-white/10 backdrop-blur-md p-3 flex flex-col gap-1"
         >
           <div className="flex items-end gap-2">
-            {/* <div className="p-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50"  >
-              <Paperclip className="h-full w-4" />
-               <input type="file" hidden  />
-            </div> */}
-
             <textarea
               ref={textareaRef}
               style={{ maxHeight: "200px", overflowY: "auto" }}
@@ -201,8 +251,12 @@ export default function Chat() {
                   textarea.style.height = textarea.scrollHeight + "px";
                 }
 
-                if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-                typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1000);
+                if (typingTimeoutRef.current)
+                  clearTimeout(typingTimeoutRef.current);
+                typingTimeoutRef.current = setTimeout(
+                  () => setIsTyping(false),
+                  1000
+                );
               }}
               onKeyDown={handleKeyDown}
             />
@@ -215,11 +269,8 @@ export default function Chat() {
               <Send className="h-full w-4" />
             </button>
           </div>
-          {/* <p className="text-xs text-gray-400 px-2 mt-1">
-            Press <kbd className="bg-gray-700 px-1 rounded">Enter</kbd> to send, <kbd className="bg-gray-700 px-1 rounded">Shift</kbd> + <kbd className="bg-gray-700 px-1 rounded">Enter</kbd> for newline.
-          </p> */}
         </form>
-  </div>
-    </div >
+      </div>
+    </div>
   );
 }
