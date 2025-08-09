@@ -1,60 +1,58 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Send, Undo2 } from "lucide-react";
-import { useLocation } from "react-router-dom";
-import "../../new.css";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
+import { Send, Undo2 } from "lucide-react";
+import "../../new.css";
 import axios from "axios";
 
 export default function Chat() {
   const [messages, setMessages] = useState([]);
-  const textareaRef = useRef(null);
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  const messagesEndRef = useRef(null);
-  const typingTimeoutRef = useRef(null);
-  const socketRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState(null);
 
-  const location = useLocation();
+  const messagesEndRef = useRef(null);
+  const socketRef = useRef(null);
+  const textareaRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
+  const [isTyping, setIsTyping] = useState(false);
+
   const { RECEIVER } = useParams();
   const USERNAME = Cookies.get("username");
   const token = Cookies.get("access_token");
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // Fetch chat history and open websocket
+  // Fetch chat history & open WebSocket
   useEffect(() => {
     if (!USERNAME || !RECEIVER) return;
     setLoading(true);
+
     const sender = USERNAME;
     const receiver = RECEIVER;
     const roomName = [sender, receiver].sort().join("__");
 
     // Fetch old messages
     fetch(`https://pixel-classes.onrender.com/api/chatting/${roomName}/`)
-      .then((res) => res.json())
-      .then((data) => {
-
+      .then(res => res.json())
+      .then(data => {
         if (Array.isArray(data)) {
-          // Format messages with id and status
-          const formatted = data.map((msg) => ({
-            id: msg.id,
-            sender: msg.sender,
-            message: msg.content,
-            status: Boolean(msg.is_seen), // Convert to boolean
-          }));
-          setMessages(formatted);
-
-          console.log(formatted)
+          setMessages(
+            data.map(msg => ({
+              id: msg.id,
+              sender: msg.sender,
+              message: msg.content,
+              status: msg.is_seen ? "seen" : "sent",
+            }))
+          );
         } else {
           console.error("Unexpected data format:", data);
         }
       })
-      .catch((err) => console.error("Failed to fetch chat history:", err))
+      .catch(err => console.error("Failed to fetch chat history:", err))
       .finally(() => setLoading(false));
 
-    // Open WebSocket connection
+    // Open WebSocket
     const socket = new WebSocket(
       `wss://pixel-classes.onrender.com/ws/chat/${roomName}/`
     );
@@ -62,41 +60,61 @@ export default function Chat() {
 
     socket.onopen = () => console.log("✅ Connected to WebSocket");
 
-    socket.onmessage = (e) => {
+    socket.onmessage = e => {
       const data = JSON.parse(e.data);
 
       if (data.type === "seen") {
-        setMessages((prev) =>
-          prev.map((msg) =>
+        setMessages(prev =>
+          prev.map(msg =>
             msg.id === data.message_id ? { ...msg, status: "seen" } : msg
           )
         );
-      } else if (data.type === "chat") {
-        // Add new incoming message with status 'sent' by default
-        const newMsg = {
-          id: data.id,
-          sender: data.sender,
-          message: data.message,
-          status: "sent",
-        };
-        setMessages((prev) => [...prev, newMsg]);
+      }
 
-        // Immediately send "seen" confirmation if message is from other user
+      else if (data.type === "chat") {
+        setMessages(prev => {
+          // Replace optimistic message if it matches by sender + message
+          const existingIndex = prev.findIndex(
+            m => m.sender === USERNAME && m.message === data.message && String(m.id).startsWith("temp-")
+          );
+
+          if (existingIndex !== -1) {
+            const updated = [...prev];
+            updated[existingIndex] = {
+              id: data.id,
+              sender: data.sender,
+              message: data.message,
+              status: "sent",
+            };
+            return updated;
+          }
+
+          // Avoid duplicates by id
+          if (prev.some(m => m.id === data.id)) return prev;
+
+          return [
+            ...prev,
+            {
+              id: data.id,
+              sender: data.sender,
+              message: data.message,
+              status: "sent",
+            }
+          ];
+        });
+
+        // Send seen status only if from other user
         if (data.sender !== USERNAME) {
           sendSeenStatus(data.id);
         }
       }
     };
 
-
-    socket.onerror = (err) => console.error("WebSocket error:", err);
-
+    socket.onerror = err => console.error("WebSocket error:", err);
     socket.onclose = () => console.log("❌ WebSocket disconnected");
-    const sendSeenStatus = (messageId) => {
-      if (
-        socketRef.current &&
-        socketRef.current.readyState === WebSocket.OPEN
-      ) {
+
+    const sendSeenStatus = messageId => {
+      if (socketRef.current?.readyState === WebSocket.OPEN) {
         socketRef.current.send(
           JSON.stringify({
             type: "seen",
@@ -105,8 +123,8 @@ export default function Chat() {
           })
         );
 
-        setMessages((prev) =>
-          prev.map((msg) =>
+        setMessages(prev =>
+          prev.map(msg =>
             msg.id === messageId ? { ...msg, status: "seen" } : msg
           )
         );
@@ -116,46 +134,16 @@ export default function Chat() {
     return () => socket.close();
   }, [USERNAME, RECEIVER]);
 
-  // Scroll chat to bottom on new messages
+  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // When a new message from RECEIVER arrives, send "seen" update
-  useEffect(() => {
-    if (!socketRef.current) return;
-    if (messages.length === 0) return;
-
-    const lastMsg = messages[messages.length - 1];
-    if (
-      socketRef.current &&
-      socketRef.current.readyState === WebSocket.OPEN &&
-      lastMsg.sender !== USERNAME &&
-      lastMsg.status !== "seen"
-    ) {
-      socketRef.current.send(
-        JSON.stringify({
-          type: "seen",
-          message_id: lastMsg.id,
-          seen_by: USERNAME,
-        })
-      );
-
-      // Optimistically update locally
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === lastMsg.id ? { ...msg, status: "seen" } : msg
-        )
-      );
-    }
-  }, [messages, USERNAME]);
-
+  // Send message
   const sendMessage = () => {
     if (!input.trim()) return;
 
-    // Create a temporary id (could be replaced by server id)
-    const tempId = Date.now();
-
+    const tempId = `temp-${Date.now()}`;
     const msg = {
       type: "chat",
       id: tempId,
@@ -165,34 +153,30 @@ export default function Chat() {
       status: "sent",
     };
 
-    // Send message over WebSocket
-    if (socketRef.current.readyState === WebSocket.OPEN) {
+    // Optimistic UI
+    setMessages(prev => [...prev, msg]);
+
+    // Send over WebSocket
+    if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify(msg));
     } else {
       console.warn("WebSocket not open, cannot send message yet");
     }
 
-
-    // Add message locally immediately (optimistic UI)
-    setMessages((prev) => [...prev, msg]);
-
     setInput("");
-
-    // Reset textarea height
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = "auto";
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
     }
   };
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = e => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   };
 
-  // Fetch profile info for receiver
+  // Fetch profile
   useEffect(() => {
     if (!token) navigate("/");
     if (!RECEIVER) return;
@@ -200,7 +184,7 @@ export default function Chat() {
       .post("https://pixel-classes.onrender.com/api/Profile/details/", {
         username: RECEIVER,
       })
-      .then((res) => setProfile(res.data))
+      .then(res => setProfile(res.data))
       .catch(() => console.error("Failed to load profile details"));
   }, [RECEIVER, token, navigate]);
 
