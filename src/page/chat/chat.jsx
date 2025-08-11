@@ -23,6 +23,26 @@ export default function Chat() {
   const navigate = useNavigate();
   const location = useLocation();
 
+
+
+  // Function to send "seen" status
+  const sendSeenStatus = (messageId) => {
+    if (socketRef.current?.readyState === WebSocket.OPEN) {
+      socketRef.current.send(
+        JSON.stringify({
+          type: "seen",
+          message_id: messageId,
+          seen_by: USERNAME,
+        })
+      );
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === messageId ? { ...msg, status: "seen" } : msg
+        )
+      );
+    }
+  };
+
   // Fetch chat history & open WebSocket
   useEffect(() => {
     if (!USERNAME || !RECEIVER) return;
@@ -32,50 +52,48 @@ export default function Chat() {
     const receiver = RECEIVER;
     const roomName = [sender, receiver].sort().join("__");
 
-    // Fetch old messages
-    fetch(`https://pixel-classes.onrender.com/api/chatting/${roomName}/`)
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setMessages(
-            data.map(msg => ({
-              id: msg.id,
-              sender: msg.sender,
-              message: msg.content,
-              status: msg.is_seen ? "seen" : "sent",
-            }))
-          );
-        } else {
-          console.error("Unexpected data format:", data);
-        }
-      })
-      .catch(err => console.error("Failed to fetch chat history:", err))
-      .finally(() => setLoading(false));
-
-    // Open WebSocket
     const socket = new WebSocket(
       `wss://pixel-classes.onrender.com/ws/chat/${roomName}/`
     );
     socketRef.current = socket;
 
-    socket.onopen = () => console.log("✅ Connected to WebSocket");
+    socket.onopen = () => {
+      console.log("✅ Connected to WebSocket");
 
-    socket.onmessage = e => {
+      fetch(`https://pixel-classes.onrender.com/api/chatting/${roomName}/`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setMessages(
+              data.map((msg) => ({
+                id: msg.id,
+                sender: msg.sender,
+                message: msg.content,
+                status: msg.is_seen ? "seen" : "sent",
+              }))
+            );
+          }
+        })
+        .catch((err) => console.error("Failed to fetch chat history:", err))
+        .finally(() => setLoading(false));
+    };
+
+    socket.onmessage = (e) => {
       const data = JSON.parse(e.data);
 
       if (data.type === "seen") {
-        setMessages(prev =>
-          prev.map(msg =>
+        setMessages((prev) =>
+          prev.map((msg) =>
             msg.id === data.message_id ? { ...msg, status: "seen" } : msg
           )
         );
-      }
-
-      else if (data.type === "chat") {
-        setMessages(prev => {
-          // Replace optimistic message if it matches by sender + message
+      } else if (data.type === "chat") {
+        setMessages((prev) => {
           const existingIndex = prev.findIndex(
-            m => m.sender === USERNAME && m.message === data.message && String(m.id).startsWith("temp-")
+            (m) =>
+              m.sender === USERNAME &&
+              m.message === data.message &&
+              String(m.id).startsWith("temp-")
           );
 
           if (existingIndex !== -1) {
@@ -89,8 +107,7 @@ export default function Chat() {
             return updated;
           }
 
-          // Avoid duplicates by id
-          if (prev.some(m => m.id === data.id)) return prev;
+          if (prev.some((m) => m.id === data.id)) return prev;
 
           return [
             ...prev,
@@ -99,42 +116,55 @@ export default function Chat() {
               sender: data.sender,
               message: data.message,
               status: "sent",
-            }
+            },
           ];
         });
 
-        // Send seen status only if from other user
+        // ✅ Auto-mark as seen if chat is already at bottom
         if (data.sender !== USERNAME) {
-          sendSeenStatus(data.id);
+          if (messagesEndRef.current) {
+            const atBottom =
+              Math.abs(
+                messagesEndRef.current.getBoundingClientRect().bottom -
+                window.innerHeight
+              ) < 50;
+            if (atBottom) sendSeenStatus(data.id);
+          }
         }
       }
     };
 
-    socket.onerror = err => console.error("WebSocket error:", err);
+
+    socket.onerror = (err) => console.error("WebSocket error:", err);
     socket.onclose = () => console.log("❌ WebSocket disconnected");
-
-    const sendSeenStatus = messageId => {
-      if (socketRef.current?.readyState === WebSocket.OPEN) {
-        socketRef.current.send(
-          JSON.stringify({
-            type: "seen",
-            message_id: messageId,
-            seen_by: USERNAME,
-          })
-        );
-
-        setMessages(prev =>
-          prev.map(msg =>
-            msg.id === messageId ? { ...msg, status: "seen" } : msg
-          )
-        );
-      }
-    };
 
     return () => socket.close();
   }, [USERNAME, RECEIVER]);
 
-  // Scroll to bottom when messages change
+  // Scroll listener to mark messages as seen
+  useEffect(() => {
+  const handleScroll = () => {
+    if (!messages.length || !messagesEndRef.current) return;
+
+    const atBottom =
+      Math.abs(
+        messagesEndRef.current.getBoundingClientRect().bottom -
+          window.innerHeight
+      ) < 50;
+
+    if (atBottom) {
+      messages
+        .filter((m) => m.sender === RECEIVER && m.status !== "seen")
+        .forEach((m) => sendSeenStatus(m.id));
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, [messages, RECEIVER, USERNAME]);
+
+
+  // Auto-scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -153,10 +183,8 @@ export default function Chat() {
       status: "sent",
     };
 
-    // Optimistic UI
-    setMessages(prev => [...prev, msg]);
+    setMessages((prev) => [...prev, msg]);
 
-    // Send over WebSocket
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify(msg));
     } else {
@@ -169,7 +197,7 @@ export default function Chat() {
     }
   };
 
-  const handleKeyDown = e => {
+  const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
