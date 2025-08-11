@@ -87,7 +87,7 @@ export default function Listuser() {
                                 {following.map((user) => (
                                     <div
                                         key={user.username}
-                                        className="bg-white/5 p-4  shadow backdrop-blur-md border border-white/10 flex items-center gap-4"
+                                        className=" p-4  shadow backdrop-blur-md border border-white/10 flex items-center gap-4"
                                     >
                                         <a href={`chat/${user.username}`} className="text-lg flex font-semibold hover:underline">
 

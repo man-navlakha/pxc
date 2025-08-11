@@ -125,7 +125,7 @@ export default function UserSearch() {
                 />
               </div>
 
-              <div className="space-y-4 flex flex-col w-full px-4">
+              <div className="flex flex-col w-full">
                 {filteredUsers.length > 0 ? (
                   filteredUsers.map((user, index) =>
                     search === usernamec ? (
@@ -133,57 +133,56 @@ export default function UserSearch() {
                         You can't find yourself in this search page
                       </span>
                     ) : (
-                        <>
-                          <div className="flex items-center justify-between gap-4 p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl hover:bg-white/20 transition-all">
-                            <a
-                              key={index}
-                              href={`profile?username=${user.username}`}
-                            >
-                              <div className="flex items-center justify-center gap-4">
-                                <img
-                                  src={
-                                    user.profile_pic ||
-                                    `https://i.pravatar.cc/150?u=${user.username}`
-                                  }
-                                  alt={`${user.first_name} ${user.last_name}`}
-                                  className="w-12 h-12 rounded-full object-cover border border-white/30"
-                                />
-                                <div className="flex flex-col items-center justify-between">
-                                  <div>
-                                    <div className="text-lg font-semibold max-w-[150px] truncate">
-                                      {user.username}
-                                    </div>
-                                    <div className="text-sm text-white/60 max-w-[180px] truncate">
-                                      {user.first_name} {user.last_name}
-                                    </div>
-                                  </div>
+                      <>
+                        <div className="flex items-center justify-between p-4 backdrop-blur-lg border-y border-white/20 hover:bg-white/20 transition-all">
+                          <a
+                            key={index}
+                            href={`profile?username=${user.username}`}
+                          >
+                            <div className="flex items-center justify-center gap-4">
+                              <img
+                                src={
+                                  user.profile_pic ||
+                                  `https://i.pravatar.cc/150?u=${user.username}`
+                                }
+                                alt={`${user.first_name} ${user.last_name}`}
+                                className="w-12 h-12 rounded-full object-cover border border-white/30"
+                              />
+                              <div className="flex flex-col justify-center">
+                                <div className="text-lg font-semibold truncate max-w-[180px] w-full">
+                                  {user.username}
+                                </div>
+                                <div className="text-sm text-white/60 truncate max-w-[180px] w-full">
+                                  {user.first_name} {user.last_name}
                                 </div>
                               </div>
-                            </a>
-                            <div className="mt-4 flex gap-4">
-                              {user.is_following ? (
-                                <>
-                                <button onClick={() => navigate(`/chat/${user.username}`)} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-gray-800/30 hover:bg-gray-500/50 text-white font-bold shadow transition">
-                                <span className="material-symbols-outlined">chat</span> Message
-                              </button>
 
-                                </>
-
-                              ) : (
-                                <button
-                                  onClick={() => follow(user.username)}
-                                  className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition"
-                                >
-                                  <span className="material-symbols-outlined">
-                                    person_add
-                                  </span>{" "}
-                                  Follow
-                                </button>
-                              )}
-                              
                             </div>
+                          </a>
+                          <div className="mt-4 flex gap-4">
+                            {user.is_following ? (
+                              <>
+                                <button onClick={() => navigate(`/chat/${user.username}`)} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-gray-800/30 hover:bg-gray-500/50 text-white font-bold shadow transition">
+                                  <span className="material-symbols-outlined">chat</span> Message
+                                </button>
+
+                              </>
+
+                            ) : (
+                              <button
+                                onClick={() => follow(user.username)}
+                                className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition"
+                              >
+                                <span className="material-symbols-outlined">
+                                  person_add
+                                </span>{" "}
+                                Follow
+                              </button>
+                            )}
+
                           </div>
-                        </>
+                        </div>
+                      </>
                     )
                   )
                 ) : search.trim() === "" ? (
