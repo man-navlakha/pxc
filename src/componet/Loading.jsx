@@ -11,11 +11,11 @@ const getFormattedTime = (offsetSeconds = 0) => {
 };
 
 const [terminalLines] = useState(() => {
-  let timestamp = 0;
-  const delays = [1200, 2000, 1000, 2000, 3000, 800, 1200, 4000, 1000, 3000, 9000, 5000, 8000, 3000, 1000, 6000, 3000, 5000, 5500];
+  let timestamp = 10;
+  const delays = [3000, 6000, 1000, 3000, 3000, 800, 1200, 4000, 2000, 3000, 9000, 5000, 8000, 3000, 1000, 6000, 3000, 5000, 5000, 5500];
 
   const texts = [
-    'Welcome To Pixel Class...',
+    'WELCOME TO PIXEL CLASS ...',
     '',
     'INCOMING HTTP REQUEST DETECTED ...',
     '',
@@ -33,13 +33,15 @@ const [terminalLines] = useState(() => {
     '',
     'OPTIMIZING DEPLOYMENT ...',
     '',
-    'STEADY HANDS. CLEAN LOGS. YOUR APP IS ALMOST LIVE ...'
+    'OPTIMIZING SERVER ...',
+    '',
+    'STEADY HANDS. CLEAN LOGS. PIXEL CLASS IS ALMOST READY ...'
   ];
 
   const types = [
-    'log', 'empty', 'log', 'empty', 'log', 'empty', 'log', 'empty',
+    'name', 'empty', 'log', 'empty', 'log', 'empty', 'log', 'empty',
     'log', 'empty', 'log', 'empty', 'log', 'empty',
-    'log', 'empty', 'log', 'empty', 'success'
+    'log', 'empty', 'log', 'empty', 'log', 'empty', 'success'
   ];
 
   return texts.map((text, i) => {
@@ -48,7 +50,7 @@ const [terminalLines] = useState(() => {
       delay: delays[i],
       type: types[i]
     };
-    timestamp += delays[i] / 2000; // move forward by delay in seconds
+    timestamp += delays[i] / 4000; // move forward by delay in seconds
     return line;
   });
 });
@@ -89,7 +91,7 @@ const [terminalLines] = useState(() => {
   useEffect(() => {
     const startTimer = setTimeout(() => {
       setCurrentLineIndex(0);
-    }, 1000);
+    }, 2000);
 
     return () => clearTimeout(startTimer);
   }, []);
@@ -102,6 +104,8 @@ const [terminalLines] = useState(() => {
         return 'text-green-500 font-bold';
       case 'success':
         return 'text-green-400 font-medium';
+      case 'name':
+        return 'text-green-600 font-black';
       case 'empty':
         return '';
       default:

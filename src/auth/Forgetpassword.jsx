@@ -95,7 +95,14 @@ const Forgetpassword = () => {
               </Link>
             </div>
           </div>
-          {loading ? '' :
+          {loading ?  <div className='flex items-center flex-col justify-center w-[360px] p-6'>
+              <div className=' px-4 py-6 flex flex-col bg-white border shadow-lg border-gray-200 max-w-[360px] w-full max-h-screen rounded-xl '> <div className="flex justify-center">
+                            <div className=" border-t-2 rounded-full border-gray-500 bg-gray-300 animate-spin
+aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
+                        </div> 
+                        </div> 
+                        </div> 
+                        :
             <div className='flex items-center flex-col justify-center w-[360px] p-6'>
               <div className=' px-4 py-6 flex flex-col bg-white border shadow-lg border-gray-200 max-w-[360px] w-full max-h-screen rounded-xl '>
                 {error && <p className="text-red-600 font-bold m-2 text-md">{error}</p>}
