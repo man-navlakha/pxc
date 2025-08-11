@@ -72,19 +72,20 @@ const Semester = () => {
 
     return (
         <>
+         
             <div className="bg-pattern"></div>
-            <div className=' ccfv -mt-6 h-full min-h-screen'>
+            <div className=' ccfv mt-6 h-full min-h-screen'>
                 <div className='ccf'>
                     <div className='p-4 py-16 flex flex-col text-center content-center flex-nowrap justify-center gap-3 items-center'>
                         <div>
-                            <span className='text-center m-3 text-3xl md:text-lg lg:text-5xl font-black bg-clip-text bg-gradient-to-tr from-slate-100 to-stone-500 text-transparent ccf '>Ready to Conquer Your BCA Semester?</span>
+                            <span className='text-center m-3 text-3xl md:text-xl lg:text-5xl font-black bg-clip-text bg-gradient-to-tr from-slate-100 to-stone-500 text-transparent ccf '>Ready to Conquer Your BCA Semester?</span>
                         </div>
                         <div>
-                            <span className='text-center text-xl md:text-xl lg:text-2xl my-3 text-gray-300 font-medium'>Tap your semester to unlock study materials. 🚀</span>
+                            <span className='text-center text-lg md:text-md lg:text-2xl my-3 text-gray-300 font-medium'>Tap your semester to unlock study materials. 🚀</span>
                         </div>
                     </div>
                 </div>
-                <div className={`${selectedSem ? 'visible mt-10 h-max' : 'h-screen'} mesh_sem2  p-5`}>
+                <div className={`${selectedSem ? 'visible mt-10 h-max' : 'h-screen'}   p-5`}>
                     <div className='grid gap-4 text-white items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-flow-cols'>
                         {Semesters.map((sem, index) => (
                             <button className="relative" key={index}>
@@ -112,7 +113,7 @@ const Semester = () => {
                         ))}
                     </div>
 
-                    <div className={` ${selectedSem ? 'visible mt-10' : 'hidden'}  text-2xl lg:text-3xl text-white`}>
+                    <div className={` ${selectedSem ? 'visible mt-10 ' : 'hidden'}  text-2xl lg:text-3xl text-white`}>
                         <div>
                             {selectedSem && ( // Only show the title if a semester is selected
                                 <span ref={sectionRef} className="font-bold mb-8">Choose your subject for Semester {selectedSem}</span>

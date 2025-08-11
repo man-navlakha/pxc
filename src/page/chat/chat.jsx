@@ -204,7 +204,7 @@ export default function Chat() {
       )}
 
       {/* Header */}
-      <div className="w-full sticky top-0 border-b border-white/10 backdrop-blur-md bg-white/10 z-10">
+      <div className="w-full sticky top-0 border-b border-white/10 glass z-10">
         <div className="container mx-auto py-4 px-4 flex items-center justify-start gap-2">
           <button onClick={() => navigate("/chat")} className="flex w-full max-w-max px-3 py-2 rounded">
             <Undo2 />
@@ -232,7 +232,7 @@ export default function Chat() {
             <div
               key={msg.id + "-" + i}
               className={`w-fit max-w-[75%] px-4 py-3 rounded-2xl shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${
-                msg.sender === USERNAME ? "ml-auto bg-emerald-600/30 border border-emerald-800/60" : "mr-auto bg-white/10 border border-white/10"
+                msg.sender === USERNAME ? "ml-auto bg-emerald-600/30 rounded-br-sm border border-emerald-800/60" : "mr-auto bg-white/10 rounded-tl-sm border border-white/10"
               }`}
             >
               <p>{msg.message}</p>

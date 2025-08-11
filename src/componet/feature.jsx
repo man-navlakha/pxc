@@ -177,15 +177,15 @@ backdrop-contrast-100 border-2 border-[#f7fefc] rounded-xl shadow-[5px_5px_1px_0
                 <div class="glass max-w-4xl w-full p-10 rounded-3xl shadow-lg text-center">
                     <h1 class="text-4xl md:text-6xl font-bold mb-6">Chat With Friend</h1>
                     <p class="text-lg md:text-xl mb-6">Real-time messaging with friends and classmates. Stay connected, collaborate, and have fun — wherever you are.</p>
-                    <a href="#" class="inline-block bg-white text-gray-900 font-semibold py-3 px-6 rounded-full hover:bg-gray-200 transition">Start Chatting</a>
+                    <a href="/chat" class="inline-block bg-white text-gray-900 font-semibold py-3 px-6 rounded-full hover:bg-gray-200 transition">Start Chatting</a>
 
-                    <div class="mt-10">
-                        <img src="https://via.placeholder.com/800x400?text=Chat+Screenshot" alt="Chat Screenshot" class="rounded-2xl shadow-xl border border-white/20" />
+                    <div class="mt-10 flex justify-center">
+                        <img src="bgp.png" alt="Chat Screenshot" class="" />
                     </div>
                 </div>
             </section>
 
-            <section class="px-6 py-20 bg-black/40 backdrop-blur-sm">
+            <section class="px-6 py-20 backdrop-blur-sm">
                 <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-10 text-center">
                     <div class="glass p-6 rounded-xl">
                         <h3 class="text-2xl font-semibold mb-3">Real-Time Messaging</h3>
@@ -212,7 +212,7 @@ backdrop-contrast-100 border-2 border-[#f7fefc] rounded-xl shadow-[5px_5px_1px_0
                 </div>
             </section>
 
-            <section class="px-6 py-20 text-center bg-black/50 backdrop-blur-md">
+            <section class="px-6 py-20 text-center bg-black/80 rounded-2xl backdrop-blur-md">
                 <h2 class="text-4xl font-bold mb-6">Start Chatting Today</h2>
                 {/* <p class="mb-6 text-lg">No installs. No sign-ups. Just you and your friends.</p> */}
                 <a href="chat" class="inline-block bg-white text-gray-900 font-semibold py-3 px-6 rounded-full hover:bg-gray-200 transition">Launch Chat</a>

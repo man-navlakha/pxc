@@ -84,7 +84,17 @@ const MainPage = () => {
               <Feature />
             </>}
 
+    <section class="flex items-center justify-center min-h-screen mesh_sem2 px-6 py-20">
+                <div class=" max-w-4xl w-full p-10 rounded-3xl text-center">
+                    <h1 class="text-2xl md:text-3xl lg:text-5xl font-bold mb-6">Chat With Friend</h1>
+                    <p class="text-lg md:text-xl lg:text-xl mb-6">Real-time messaging with friends and classmates. Stay connected, collaborate, and have fun — wherever you are.</p>
+                    <a href="/chat" class="inline-block text-xl bg-white text-gray-900 font-semibold py-3 px-6 rounded-full hover:bg-gray-200 transition">Start Chatting</a>
 
+                    {/* <div class="mt-10 flex justify-center">
+                        <img src="bgp.png" alt="Chat Screenshot" class="" />
+                    </div> */}
+                </div>
+            </section>
             <Faq />
             <Footer />
           </div>

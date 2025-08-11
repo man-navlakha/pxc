@@ -53,7 +53,7 @@ export default function Listuser() {
         <>
             <div className="min-h-screen ccf flex flex-col text-white">
                 {/* Header */}
-                <div className="w-full sticky top-0 border-b border-white/10 backdrop-blur-md bg-white/10 z-10">
+                <div className="w-full sticky top-0 border-b border-white/10 glass z-10">
                     <div className="container mx-auto py-4 px-4 flex items-center justify-between">
                         <div className="flex gap-2 items-center justify-start ">
 
@@ -81,7 +81,15 @@ export default function Listuser() {
                         {loading ? (
                             <p className="text-white/60">Loading...</p>
                         ) : following.length === 0 ? (
-                            <p className="text-white/60">You’re not following anyone yet.</p>
+                            <div className="text-white/60 p-4">
+                                <p>You’re not following anyone yet.</p>
+
+                                <div>
+                                    <a href="/search">
+                                    <button className="bg-white/10 hover:bg-white/20 rounded-full py-2 px-4 text-white/80 text-sm">Find Friends</button></a>
+                                </div>
+
+                            </div>
                         ) : (
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                                 {following.map((user) => (
