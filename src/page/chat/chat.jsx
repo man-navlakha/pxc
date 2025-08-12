@@ -65,6 +65,7 @@ export default function Chat() {
             id: msg.id,
             sender: msg.sender,
             message: msg.content,
+            seen: msg.seen_at,
             status: msg.is_seen ? "seen" : "sent",
           }))
         );
@@ -141,7 +142,7 @@ export default function Chat() {
         Math.abs(
           messagesEndRef.current.getBoundingClientRect().bottom -
             window.innerHeight
-        ) < 50;
+        ) < 600;
       if (atBottom) {
        messages
   .filter(m => 
@@ -240,10 +241,14 @@ export default function Chat() {
                 msg.sender === USERNAME ? "ml-auto bg-emerald-600/30 rounded-br-sm border border-emerald-800/60" : "mr-auto bg-white/10 rounded-tl-sm border border-white/10"
               }`}
             >
+             
               <p>{msg.message}</p>
               {msg.sender === USERNAME && (
                 <p className="text-right text-xs text-gray-400 mt-1">
-                  {msg.status === "seen" ? "✔ Seen" : "⏱︎ Sent"}
+                 {msg.status === "seen"
+  ? `✓ Seen ${new Date(msg.seen).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+  : "⏱︎ Sent"}
+
                 </p>
               )}
             </div>
