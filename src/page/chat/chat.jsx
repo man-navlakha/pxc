@@ -143,9 +143,14 @@ export default function Chat() {
             window.innerHeight
         ) < 50;
       if (atBottom) {
-        messages
-          .filter((m) => m.sender === RECEIVER && m.status !== "seen")
-          .forEach((m) => sendSeenStatus(m.id));
+       messages
+  .filter(m => 
+    m.sender === RECEIVER && 
+    m.status !== "seen" && 
+    !m.id.toString().startsWith("temp-")  // <-- ignore temp messages
+  )
+  .forEach(m => sendSeenStatus(m.id));
+
       }
     };
     window.addEventListener("scroll", handleScroll);
