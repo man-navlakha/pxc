@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import { Send, Undo2 } from "lucide-react";
 import axios from "axios";
 import "../../new.css";
+import Listuser from "./Listuser";
 
 export default function Chat() {
   const [messages, setMessages] = useState([]);
@@ -34,16 +35,17 @@ export default function Chat() {
           seen_by: USERNAME,
         })
       );
-      setMessages(prev =>
-  prev.map(msg =>
-    msg.id === messageId || msg.temp_id === messageId
-      ? { ...msg, status: "seen" }
-      : msg
-  )
-);
 
+      setMessages(prev =>
+        prev.map(msg =>
+          msg.id === messageId || msg.temp_id === messageId
+            ? { ...msg, status: "seen" }
+            : msg
+        )
+      );
     }
   };
+
 
   // WebSocket connection + history
   useEffect(() => {
@@ -60,68 +62,65 @@ export default function Chat() {
         `https://pixel-classes.onrender.com/api/chatting/${roomName}/`
       );
       const data = await res.json();
+      // After fetching history
       if (Array.isArray(data)) {
-        setMessages(
-          data.map((msg) => ({
-            id: msg.id,
-            sender: msg.sender,
-            message: msg.content,
-            seen: msg.seen_at, // ✅ Must be string like "2025-08-13T08:00:00Z"
-            status: msg.is_seen ? "seen" : "sent",
-          }))
-        );
-
+        setMessages(prev => {
+          const existingIds = new Set(prev.map(m => m.id));
+          const newMessages = data
+            .filter(m => !existingIds.has(m.id)) // avoid duplicates
+            .map(msg => ({
+              id: msg.id,
+              sender: msg.sender,
+              message: msg.content,
+              seen: msg.seen_at,
+              status: msg.is_seen ? "seen" : "sent",
+            }));
+          return [...prev, ...newMessages];
+        });
       }
+
     };
 
     socket.onmessage = (e) => {
-  const data = JSON.parse(e.data);
+      const data = JSON.parse(e.data);
 
-  // Normalize temp_id from server
-  const incomingTempId = data.temp_id || data.tempId || null;
+      // Normalize temp_id from server (handles snake_case or camelCase)
+      const incomingTempId = data.temp_id || data.tempId || null;
 
-  if (data.type === "seen") {
-    setMessages(prev =>
-      prev.map(msg =>
-        msg.id === data.message_id
-          ? { ...msg, status: "seen", seen: new Date().toISOString() }
-          : msg
-      )
-    );
-    return;
-  }
-
-  if (data.type === "chat") {
-    setMessages(prev => {
-      const tempIndex = prev.findIndex(
-        m => m.temp_id && m.temp_id === incomingTempId
-      );
-
-      if (tempIndex !== -1) {
-        const updated = [...prev];
-        updated[tempIndex] = {
-          ...updated[tempIndex],
-          id: data.id,
-          status: "sent",
-        };
-        return updated;
+      // 📍 Handle "seen" events
+      if (data.type === "seen") {
+        setMessages(prev =>
+          prev.map(msg =>
+            msg.id === data.message_id
+              ? { ...msg, status: "seen", seen: new Date().toISOString() }
+              : msg
+          )
+        );
+        return;
       }
 
-      if (prev.some(m => m.id && m.id === data.id)) return prev;
+      // 📍 Handle "chat" events
+      if (data.type === "chat") {
+        setMessages(prev => {
+          // Check by temp_id OR id
+          const alreadyExists = prev.some(m =>
+            (m.temp_id && m.temp_id === (data.temp_id || data.tempId)) ||
+            (m.id && data.id && String(m.id) === String(data.id))
+          );
+          if (alreadyExists) return prev;
 
-      return [
-        ...prev,
-        {
-          id: data.id,
-          sender: data.sender,
-          receiver: data.receiver,
-          message: data.message,
-          status: "sent",
-        },
-      ];
-    });
-  }
-};
+          return [...prev, {
+            id: data.id,
+            sender: data.sender,
+            receiver: data.receiver,
+            message: data.message,
+            status: "sent",
+          }];
+        });
+      }
+
+    };
+
 
 
     socket.onclose = () => console.log("❌ Disconnected");
@@ -136,7 +135,7 @@ export default function Chat() {
         Math.abs(
           messagesEndRef.current.getBoundingClientRect().bottom -
           window.innerHeight
-        ) < 600;
+        ) < 30;
       if (atBottom) {
         messages
           .filter(
@@ -164,18 +163,20 @@ export default function Chat() {
   const sendMessage = () => {
     if (!input.trim()) return;
 
-    const temp_id = `temp-${Date.now()}`;
+    const temp_id = `temp-${Date.now()}`; // unique optimistic id
     const msg = {
       type: "chat",
-      temp_id, // ✅ match server
+      temp_id,
       sender: USERNAME,
       receiver: RECEIVER,
       message: input.trim(),
       status: "sending",
     };
 
-    setMessages((prev) => [...prev, msg]);
+    // Optimistic UI
+    setMessages(prev => [...prev, msg]);
 
+    // Send via socket if open
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify(msg));
     }
@@ -183,6 +184,7 @@ export default function Chat() {
     setInput("");
     if (textareaRef.current) textareaRef.current.style.height = "auto";
   };
+
 
   // handle Enter
   const handleKeyDown = (e) => {
@@ -205,138 +207,132 @@ export default function Chat() {
   }, [RECEIVER, token, navigate]);
 
   return (
-    <div className="min-h-screen ccf flex flex-col text-white mx-auto">
-      {loading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="ease-linear rounded-full border-8 border-t-8 border-gray-200 h-16 w-16" />
-        </div>
-      )}
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <div className="flex h-screen ccf ">
+  {/* Left panel - User list */}
+  <div
+   className="resize-x overflow-auto border-r border-gray-700  hidden md:hidden lg:block"
+    style={{ minWidth: "200px", maxWidth: "50%" }}>
+    <Listuser />
+  </div>
 
-      {/* Header */}
-      <div className="sticky top-0 bg-gray-100 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100 flex items-center gap-3 px-4 py-3 border-b border-gray-300">
-        <button onClick={() => navigate("/chat")} className="p-2">
-          <Undo2 className="text-white" />
-        </button>
-        <img
-          src={profile?.profile_pic || "https://via.placeholder.com/150"}
-          className="w-8 h-8 rounded-full"
-        />
-        <div className="flex flex-col">
-          <span className="font-semibold text-white">{profile?.username}</span>
-          <span className="text-xs text-gray-500">last seen </span>
-        </div>
-      </div>
-
-      {/* Chat area */}
-      <div className="flex-1 flex flex-col px-4 py-4">
-        <div className="flex-1 overflow-y-auto mb-3 px-1 space-y-1">
-          {messages.map((msg, i) => {
-            const isOwn = msg.sender === USERNAME;
-
-            const prevMsg = messages[i - 1];
-            const nextMsg = messages[i + 1];
-
-            const isFirstOfGroup = !prevMsg || prevMsg.sender !== msg.sender;
-            const isLastOfGroup = !nextMsg || nextMsg.sender !== msg.sender;
-
-            let bubbleClasses = "rounded-2xl";
-
-            if (isOwn) {
-              if (isFirstOfGroup && !isLastOfGroup) {
-                bubbleClasses = "rounded-2xl rounded-br-sm";
-              } else if (!isFirstOfGroup && !isLastOfGroup) {
-                bubbleClasses = "rounded-2xl rounded-r-sm";
-              } else if (!isFirstOfGroup && isLastOfGroup) {
-                bubbleClasses = "rounded-2xl rounded-tr-sm";
-              }
-            } else {
-              if (isFirstOfGroup && !isLastOfGroup) {
-                bubbleClasses = "rounded-2xl rounded-bl-sm";
-              } else if (!isFirstOfGroup && !isLastOfGroup) {
-                bubbleClasses = "rounded-2xl rounded-l-sm";
-              } else if (!isFirstOfGroup && isLastOfGroup) {
-                bubbleClasses = "rounded-2xl rounded-tl-sm";
-              }
-            }
-
-            const seenStatus = msg.status === "seen";
-            const seenHasValue = Boolean(msg.seen);
-
-            return (
-              <div key={`${msg.id}-${i}`} className="flex flex-col">
-                <div
-                  className={`w-fit max-w-[75%] px-4 py-3 shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn
-                      ? "ml-auto bg-emerald-500/30 text-white"
-                      : "mr-auto bg-gray-200/10 text-white"
-                    }`}
-                >
-                  <p>{msg.message}</p>
-                </div>
-
-                {/* ✅ Only show below last bubble of own messages */}
-                {isOwn && isLastOfGroup && (
-                  <p className="text-right text-xs text-gray-400 mt-1">
-                    {seenStatus && seenHasValue
-                      ? `✓ Seen ${msg.seen}`
-                      : "⏱︎ Sent"}
-                  </p>
-                )}
-              </div>
-            );
-          })}
-
-          <div ref={messagesEndRef} />
-        </div>
-
-        {isTyping && (
-          <p className="text-xs text-gray-400 italic px-2 mt-1">
-            You are typing...
-          </p>
-        )}
-
-        {/* Input Box */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            sendMessage();
-          }}
-          className="sticky bottom-4 z-10 rounded-2xl border border-gray-600/50 shadow-xl bg-white/10 backdrop-blur-md p-3 flex flex-col gap-1"
-        >
-          <div className="flex items-end gap-2">
-            <textarea
-              ref={textareaRef}
-              style={{ maxHeight: "200px", overflowY: "auto" }}
-              className="flex-1 resize-none px-4 py-2 rounded-xl bg-transparent text-white placeholder-white/70 focus:outline-none focus:ring-0"
-              rows={1}
-              placeholder="Type your message..."
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                setIsTyping(true);
-                const textarea = textareaRef.current;
-                if (textarea) {
-                  textarea.style.height = "auto";
-                  textarea.style.height = textarea.scrollHeight + "px";
-                }
-                if (typingTimeoutRef.current)
-                  clearTimeout(typingTimeoutRef.current);
-                typingTimeoutRef.current = setTimeout(
-                  () => setIsTyping(false),
-                  1000
-                );
-              }}
-              onKeyDown={handleKeyDown}
-            />
-            <button
-              type="submit"
-              className="p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50"
-              disabled={!input.trim()}
-            >
-              <Send className="h-full w-4" />
-            </button>
-          </div>
-        </form>
+  {/* Right panel - Chat */}
+  <div className="flex-1 flex flex-col text-white">
+    {/* Header */}
+    <div className="sticky top-0 bg-gray-900 flex items-center gap-3 px-4 py-3 border-b border-gray-700">
+      <button onClick={() => navigate("/chat")} className="p-2">
+        <Undo2 className="text-white" />
+      </button>
+      <img
+        src={profile?.profile_pic || "https://via.placeholder.com/150"}
+        className="w-8 h-8 rounded-full"
+      />
+      <div className="flex flex-col">
+       <a href={`/profile/${profile?.username}`}><span className="font-semibold">{profile?.username}</span></a> 
+        <span className="text-xs text-gray-400">last seen</span>
       </div>
     </div>
+
+    {/* Messages */}
+    <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+      {messages.map((msg, i) => {
+        const isOwn = msg.sender === USERNAME;
+        const prevMsg = messages[i - 1];
+        const nextMsg = messages[i + 1];
+        const isFirstOfGroup = !prevMsg || prevMsg.sender !== msg.sender;
+        const isLastOfGroup = !nextMsg || nextMsg.sender !== msg.sender;
+
+        let bubbleClasses = "rounded-2xl";
+        if (isOwn) {
+          if (isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-br-sm";
+          else if (!isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-r-sm";
+          else if (!isFirstOfGroup && isLastOfGroup) bubbleClasses = "rounded-2xl rounded-tr-sm";
+        } else {
+          if (isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-bl-sm";
+          else if (!isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-l-sm";
+          else if (!isFirstOfGroup && isLastOfGroup) bubbleClasses = "rounded-2xl rounded-tl-sm";
+        }
+
+        return (
+          <div key={`${msg.id}-${i}`} className="flex flex-col">
+            <div
+              className={`w-fit max-w-[75%] px-4 py-3 shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn ? "ml-auto bg-emerald-500/30 text-white" : "mr-auto bg-gray-200/10 text-white"}`}
+            >
+              <p>{msg.message}</p>
+            </div>
+            {isOwn && isLastOfGroup && (
+              <p className="text-right text-xs text-gray-400 mt-1">
+                {msg.status === "seen" && msg.seen
+                  ? `✓ Seen ${msg.seen}`
+                  : "⏱︎ Sent"}
+              </p>
+            )}
+          </div>
+        );
+      })}
+      <div ref={messagesEndRef} />
+    </div>
+
+    {/* Typing Indicator */}
+    {isTyping && (
+      <p className="text-xs text-gray-400 italic px-4 mb-1">
+        You are typing...
+      </p>
+    )}
+
+    {/* Input */}
+      <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                sendMessage();
+              }}
+              className="sticky bottom-4 z-10 my-1 mx-3 rounded-2xl border border-gray-600/50 shadow-xl bg-white/10 backdrop-blur-md p-3 flex flex-col gap-1"
+            >
+              <div className="flex items-end gap-2">
+                <textarea
+                  ref={textareaRef}
+                  style={{ maxHeight: "200px", overflowY: "auto" }}
+                  className="flex-1 resize-none px-4 py-2 rounded-xl bg-transparent text-white placeholder-white/70 focus:outline-none focus:ring-0"
+                  rows={1}
+                  placeholder="Type your message..."
+                  value={input}
+                  onChange={(e) => {
+                    setInput(e.target.value);
+                    setIsTyping(true);
+                    const textarea = textareaRef.current;
+                    if (textarea) {
+                      textarea.style.height = "auto";
+                      textarea.style.height = textarea.scrollHeight + "px";
+                    }
+                    if (typingTimeoutRef.current)
+                      clearTimeout(typingTimeoutRef.current);
+                    typingTimeoutRef.current = setTimeout(
+                      () => setIsTyping(false),
+                      1000
+                    );
+                  }}
+                  onKeyDown={handleKeyDown}
+                />
+                <button
+                  type="submit"
+                  className="p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50"
+                  disabled={!input.trim()}
+                >
+                  <Send className="h-full w-4" />
+                </button>
+              </div>
+            </form>
+  </div>
+</div>
+
   );
 }

@@ -138,6 +138,7 @@ function App() {
 
                     <Route path="/chat" element={<Protected> <Chatlist /></Protected>} />
                     <Route path="/chat/:RECEIVER" element={<Protected> <Chat /></Protected>} />
+                    <Route path="/:RECEIVER" element={<Protected> <Chat /></Protected>} />
 
 
                     <Route path="/auth/forgetpassword" element={<Forgetpassword />} />

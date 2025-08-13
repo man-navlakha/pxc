@@ -8,7 +8,6 @@ import axios from "axios";
 
 
 export default function Listuser() {
-    const [loading, setLoading] = useState(false);
 
     const location = useLocation();
     const urlParams = new URLSearchParams(location.search);
@@ -18,25 +17,36 @@ export default function Listuser() {
     const navigate = useNavigate();
 
     const [following, setFollowing] = useState([]);
+    const [followers, setFollowers] = useState([]);
+    const [loading, setLoading] = useState(true);
+
 
     useEffect(() => {
-        const fetchFollowing = async () => {
+        const fetchData = async () => {
             try {
-                const res = await axios.post("https://pixel-classes.onrender.com/api/Profile/following/", {
-                    username: USERNAME,
-                });
-                setFollowing(res.data);
+                const [followingRes, followersRes] = await Promise.all([
+                    axios.post("https://pixel-classes.onrender.com/api/Profile/following/", {
+                        username: USERNAME,
+                    }),
+                    axios.post("https://pixel-classes.onrender.com/api/Profile/followers/", {
+                        username: USERNAME,
+                    }),
+                ]);
+
+                setFollowing(followingRes.data);
+                setFollowers(followersRes.data);
             } catch (err) {
-                console.error("Failed to fetch following list:", err);
+                console.error("Failed to fetch data:", err);
             } finally {
                 setLoading(false);
             }
         };
 
         if (USERNAME) {
-            fetchFollowing();
+            fetchData();
         }
     }, [USERNAME]);
+
 
 
     // Unified profile and posts fetch
@@ -52,28 +62,16 @@ export default function Listuser() {
     return (
         <>
             <div className="min-h-screen ccf flex flex-col text-white">
+
+
                 {/* Header */}
-                <div className="w-full sticky top-0 border-b border-white/10 glass z-10">
-                    <div className="container mx-auto py-4 px-4 flex items-center justify-between">
-                        <div className="flex gap-2 items-center justify-start ">
-
-                            <button onClick={() => navigate("/profile")} className='flex w-full max-w-max px-3 py-2 rounded justify- my-2 bg-gray-100
-    bg-clip-padding
-    backdrop-filter
-    backdrop-blur-xl
-    bg-opacity-10
-    backdrop-saturate-100
-    backdrop-contrast-100 '>
-                                <Undo2 className="" />
-                            </button>
-
-                            <h1 className="text-xl font-semibold text-center w-full truncate text-white">
-                                Messages
-                            </h1>
-
-                        </div>
-
-                    </div>
+                <div className="sticky top-0 bg-gray-900 flex items-center gap-3 px-4 py-3 border-b border-gray-700 z-10">
+                    <button onClick={() => navigate("/profile")} className="p-2">
+                        <Undo2 className="text-white" />
+                    </button>
+                    <h1 className="text-xl font-semibold text-center w-full truncate text-white">
+                        Messages
+                    </h1>
                 </div>
                 {/* Chat Area */}
                 <div className="flex-1 flex flex-col mb-19">
@@ -86,18 +84,18 @@ export default function Listuser() {
 
                                 <div>
                                     <a href="/search">
-                                    <button className="bg-white/10 hover:bg-white/20 rounded-full py-2 px-4 text-white/80 text-sm">Find Friends</button></a>
+                                        <button className="bg-white/10 hover:bg-white/20 rounded-full py-2 px-4 text-white/80 text-sm">Find Friends</button></a>
                                 </div>
 
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                            <div className="grid grid-cols-1">
                                 {following.map((user) => (
                                     <div
                                         key={user.username}
                                         className=" p-4  shadow backdrop-blur-md border border-white/10 flex items-center gap-4"
                                     >
-                                        <a href={`chat/${user.username}`} className="text-lg flex font-semibold hover:underline">
+                                        <a href={`${user.username}`} className="text-lg flex font-semibold hover:underline">
 
                                             <img
                                                 src={user.profile_pic}
