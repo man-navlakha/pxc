@@ -24,7 +24,7 @@ export default function Chat() {
   const navigate = useNavigate();
   const location = useLocation();
 
-    // Send "seen"
+  // Send "seen"
   const sendSeenStatus = (messageId) => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(
@@ -60,15 +60,16 @@ export default function Chat() {
       );
       const data = await res.json();
       if (Array.isArray(data)) {
-        setMessages(
-          data.map((msg) => ({
-            id: msg.id,
-            sender: msg.sender,
-            message: msg.content,
-            seen: msg.seen_at,
-            status: msg.is_seen ? "seen" : "sent",
-          }))
-        );
+       setMessages(
+  data.map((msg) => ({
+    id: msg.id,
+    sender: msg.sender,
+    message: msg.content,
+    seen: msg.seen_at, // ✅ Must be string like "2025-08-13T08:00:00Z"
+    status: msg.is_seen ? "seen" : "sent",
+  }))
+);
+
       }
     };
 
@@ -76,20 +77,13 @@ export default function Chat() {
       const data = JSON.parse(e.data);
 
       // Seen event
-      if (data.type === "seen") {
+    if (data.type === "seen") {
+  console.log("📬 Seen event received:", data); // <-- Add this
+
   setMessages(prev =>
     prev.map(msg => {
-      // Exact ID match
       if (msg.id === data.message_id) {
-        return { ...msg, status: "seen" };
-      }
-      // Fallback match for optimistic message
-      if (
-        msg.sender === USERNAME &&
-        msg.message === data.message &&
-        msg.status !== "seen"
-      ) {
-        return { ...msg, status: "seen" };
+        return { ...msg, status: "seen", seen: new Date().toISOString() };
       }
       return msg;
     })
@@ -97,37 +91,42 @@ export default function Chat() {
 }
 
 
+
+
+
       // Chat event
-    if (data.type === "chat") {
-  setMessages(prev => {
-    // Find the optimistic temp message
-    const tempIndex = prev.findIndex(m => m.id === data.temp_id);
-    if (tempIndex !== -1) {
-      const updated = [...prev];
-      updated[tempIndex] = {
-        ...updated[tempIndex],
-        id: data.id, // replace with real backend ID
-        status: "sent"
-      };
-      return updated;
-    }
+      if (data.type === "chat") {
+        setMessages((prev) => {
+          const tempIndex = prev.findIndex((m) => m.id === data.temp_id);
+          if (tempIndex !== -1) {
+            const updated = [...prev];
+            updated[tempIndex] = {
+              ...updated[tempIndex],
+              id: data.id,
+              status: "sent",
+            };
+            return updated;
+          }
 
-    // Avoid duplicates
-    if (prev.some(m => m.id === data.id)) return prev;
+          // Avoid duplicates
+          if (prev.some((m) => m.id === data.id)) return prev;
 
-    return [
-      ...prev,
-      {
-        id: data.id,
-        sender: data.sender,
-        message: data.message,
-        status: "sent",
-      },
-    ];
-  });
-}
+          return [
+            ...prev,
+            {
+              id: data.id,
+              sender: data.sender,
+              receiver: data.receiver, // <-- add this
+              message: data.message,
+              status: "sent",
+            },
+          ];
+        });
+      }
 
-
+      console.log("USERNAME:", USERNAME);
+      console.log("Message sender:", data.sender); // ✅ Correct usage
+      console.log("📩 Incoming WebSocket message:", data);
     };
 
     socket.onclose = () => console.log("❌ Disconnected");
@@ -144,13 +143,14 @@ export default function Chat() {
             window.innerHeight
         ) < 600;
       if (atBottom) {
-       messages
-  .filter(m => 
-    m.sender === RECEIVER && 
-    m.status !== "seen" && 
-    !m.id.toString().startsWith("temp-")  // <-- ignore temp messages
+      messages
+  .filter(
+    (m) =>
+      m.sender === RECEIVER &&
+      m.status !== "seen" &&
+      !m.id.toString().startsWith("temp-")
   )
-  .forEach(m => sendSeenStatus(m.id));
+  .forEach((m) => sendSeenStatus(m.id));
 
       }
     };
@@ -158,6 +158,7 @@ export default function Chat() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [messages, RECEIVER]);
 
+  
   // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -196,7 +197,9 @@ export default function Chat() {
     if (!token) navigate("/");
     if (!RECEIVER) return;
     axios
-      .post("https://pixel-classes.onrender.com/api/Profile/details/", { username: RECEIVER })
+      .post("https://pixel-classes.onrender.com/api/Profile/details/", {
+        username: RECEIVER,
+      })
       .then((res) => setProfile(res.data))
       .catch(() => console.error("Failed to load profile"));
   }, [RECEIVER, token, navigate]);
@@ -212,14 +215,20 @@ export default function Chat() {
       {/* Header */}
       <div className="w-full sticky top-0 border-b border-white/10 glass z-10">
         <div className="container mx-auto py-4 px-4 flex items-center justify-start gap-2">
-          <button onClick={() => navigate("/chat")} className="flex w-full max-w-max px-3 py-2 rounded">
+          <button
+            onClick={() => navigate("/chat")}
+            className="flex w-full max-w-max px-3 py-2 rounded"
+          >
             <Undo2 />
           </button>
           <a href={`/profile/${profile?.username}`}>
             <div className="flex gap-2 items-center justify-start">
               <img
                 className="w-9 h-9 lg:w-14 lg:h-14 rounded-full border-4 border-white/30 shadow-lg object-cover"
-                src={profile?.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"}
+                src={
+                  profile?.profile_pic ||
+                  "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"
+                }
                 alt="Profile"
               />
               <h1 className="text-xl lg:text-3xl font-semibold text-center w-full truncate text-white">
@@ -234,29 +243,47 @@ export default function Chat() {
       {/* Chat area */}
       <div className="flex-1 flex flex-col px-4 py-4">
         <div className="flex-1 overflow-y-auto mb-3 px-1 space-y-4">
-          {messages.map((msg, i) => (
-            <div
-              key={msg.id + "-" + i}
-              className={`w-fit max-w-[75%] px-4 py-3 rounded-2xl shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${
-                msg.sender === USERNAME ? "ml-auto bg-emerald-600/30 rounded-br-sm border border-emerald-800/60" : "mr-auto bg-white/10 rounded-tl-sm border border-white/10"
-              }`}
-            >
-             
-              <p>{msg.message}</p>
-              {msg.sender === USERNAME && (
-                <p className="text-right text-xs text-gray-400 mt-1">
-                 {msg.status === "seen"
-  ? `✓ Seen ${new Date(msg.seen).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
-  : "⏱︎ Sent"}
+        {messages.map((msg, i) => {
+  console.log("Rendering message:", msg);
+  console.log("USERNAME:", USERNAME);
+  console.log("Comparison - msg.sender === USERNAME:", msg.sender === USERNAME);
+  console.log("Status:", msg.status, "Seen value:", msg.seen);
 
-                </p>
-              )}
-            </div>
-          ))}
+  const isOwn = msg.sender === USERNAME;
+  const seenStatus = msg.status === "seen";
+  const seenHasValue = Boolean(msg.seen);
+
+  return (
+    <div
+      key={`${msg.id}-${i}`}
+      className={`w-fit max-w-[75%] px-4 py-3 rounded-2xl shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${
+        isOwn
+          ? "ml-auto bg-emerald-600/30 rounded-br-sm border border-emerald-800/60"
+          : "mr-auto bg-white/10 rounded-tl-sm border border-white/10"
+      }`}
+    >
+      <p>{msg.message}</p>
+      {isOwn && (
+        <>
+          <p className="text-right text-xs text-gray-400 mt-1">
+            {seenStatus && seenHasValue
+              ? `✓ Seen ${msg.seen}`
+              : "⏱︎ Sent"}
+          </p>
+        </>
+      )}
+    </div>
+  );
+})}
+
           <div ref={messagesEndRef} />
         </div>
 
-        {isTyping && <p className="text-xs text-gray-400 italic px-2 mt-1">You are typing...</p>}
+        {isTyping && (
+          <p className="text-xs text-gray-400 italic px-2 mt-1">
+            You are typing...
+          </p>
+        )}
 
         {/* Input Box */}
         <form
@@ -282,12 +309,20 @@ export default function Chat() {
                   textarea.style.height = "auto";
                   textarea.style.height = textarea.scrollHeight + "px";
                 }
-                if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-                typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1000);
+                if (typingTimeoutRef.current)
+                  clearTimeout(typingTimeoutRef.current);
+                typingTimeoutRef.current = setTimeout(
+                  () => setIsTyping(false),
+                  1000
+                );
               }}
               onKeyDown={handleKeyDown}
             />
-            <button type="submit" className="p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50" disabled={!input.trim()}>
+            <button
+              type="submit"
+              className="p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50"
+              disabled={!input.trim()}
+            >
               <Send className="h-full w-4" />
             </button>
           </div>
