@@ -34,13 +34,14 @@ export default function Chat() {
           seen_by: USERNAME,
         })
       );
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === messageId || msg.tempId === messageId
-            ? { ...msg, status: "seen" }
-            : msg
-        )
-      );
+      setMessages(prev =>
+  prev.map(msg =>
+    msg.id === messageId || msg.temp_id === messageId
+      ? { ...msg, status: "seen" }
+      : msg
+  )
+);
+
     }
   };
 
@@ -60,74 +61,68 @@ export default function Chat() {
       );
       const data = await res.json();
       if (Array.isArray(data)) {
-       setMessages(
-  data.map((msg) => ({
-    id: msg.id,
-    sender: msg.sender,
-    message: msg.content,
-    seen: msg.seen_at, // ✅ Must be string like "2025-08-13T08:00:00Z"
-    status: msg.is_seen ? "seen" : "sent",
-  }))
-);
+        setMessages(
+          data.map((msg) => ({
+            id: msg.id,
+            sender: msg.sender,
+            message: msg.content,
+            seen: msg.seen_at, // ✅ Must be string like "2025-08-13T08:00:00Z"
+            status: msg.is_seen ? "seen" : "sent",
+          }))
+        );
 
       }
     };
 
     socket.onmessage = (e) => {
-      const data = JSON.parse(e.data);
+  const data = JSON.parse(e.data);
 
-      // Seen event
-    if (data.type === "seen") {
-  console.log("📬 Seen event received:", data); // <-- Add this
+  // Normalize temp_id from server
+  const incomingTempId = data.temp_id || data.tempId || null;
 
-  setMessages(prev =>
-    prev.map(msg => {
-      if (msg.id === data.message_id) {
-        return { ...msg, status: "seen", seen: new Date().toISOString() };
-      }
-      return msg;
-    })
-  );
-}
+  if (data.type === "seen") {
+    setMessages(prev =>
+      prev.map(msg =>
+        msg.id === data.message_id
+          ? { ...msg, status: "seen", seen: new Date().toISOString() }
+          : msg
+      )
+    );
+    return;
+  }
 
+  if (data.type === "chat") {
+    setMessages(prev => {
+      const tempIndex = prev.findIndex(
+        m => m.temp_id && m.temp_id === incomingTempId
+      );
 
-
-
-
-      // Chat event
-      if (data.type === "chat") {
-        setMessages((prev) => {
-          const tempIndex = prev.findIndex((m) => m.id === data.temp_id);
-          if (tempIndex !== -1) {
-            const updated = [...prev];
-            updated[tempIndex] = {
-              ...updated[tempIndex],
-              id: data.id,
-              status: "sent",
-            };
-            return updated;
-          }
-
-          // Avoid duplicates
-          if (prev.some((m) => m.id === data.id)) return prev;
-
-          return [
-            ...prev,
-            {
-              id: data.id,
-              sender: data.sender,
-              receiver: data.receiver, // <-- add this
-              message: data.message,
-              status: "sent",
-            },
-          ];
-        });
+      if (tempIndex !== -1) {
+        const updated = [...prev];
+        updated[tempIndex] = {
+          ...updated[tempIndex],
+          id: data.id,
+          status: "sent",
+        };
+        return updated;
       }
 
-      console.log("USERNAME:", USERNAME);
-      console.log("Message sender:", data.sender); // ✅ Correct usage
-      console.log("📩 Incoming WebSocket message:", data);
-    };
+      if (prev.some(m => m.id && m.id === data.id)) return prev;
+
+      return [
+        ...prev,
+        {
+          id: data.id,
+          sender: data.sender,
+          receiver: data.receiver,
+          message: data.message,
+          status: "sent",
+        },
+      ];
+    });
+  }
+};
+
 
     socket.onclose = () => console.log("❌ Disconnected");
     return () => socket.close();
@@ -140,17 +135,17 @@ export default function Chat() {
       const atBottom =
         Math.abs(
           messagesEndRef.current.getBoundingClientRect().bottom -
-            window.innerHeight
+          window.innerHeight
         ) < 600;
       if (atBottom) {
-      messages
-  .filter(
-    (m) =>
-      m.sender === RECEIVER &&
-      m.status !== "seen" &&
-      !m.id.toString().startsWith("temp-")
-  )
-  .forEach((m) => sendSeenStatus(m.id));
+        messages
+          .filter(
+            (m) =>
+              m.sender === RECEIVER &&
+              m.status !== "seen" &&
+              !m.id.toString().startsWith("temp-")
+          )
+          .forEach((m) => sendSeenStatus(m.id));
 
       }
     };
@@ -158,28 +153,33 @@ export default function Chat() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [messages, RECEIVER]);
 
-  
+
   // Auto-scroll
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   // Send message
+  // Send message// Send message
   const sendMessage = () => {
     if (!input.trim()) return;
-    const tempId = `temp-${Date.now()}`;
+
+    const temp_id = `temp-${Date.now()}`;
     const msg = {
       type: "chat",
-      tempId,
+      temp_id, // ✅ match server
       sender: USERNAME,
       receiver: RECEIVER,
       message: input.trim(),
-      status: "sent",
+      status: "sending",
     };
+
     setMessages((prev) => [...prev, msg]);
+
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       socketRef.current.send(JSON.stringify(msg));
     }
+
     setInput("");
     if (textareaRef.current) textareaRef.current.style.height = "auto";
   };
@@ -213,68 +213,77 @@ export default function Chat() {
       )}
 
       {/* Header */}
-      <div className="w-full sticky top-0 border-b border-white/10 glass z-10">
-        <div className="container mx-auto py-4 px-4 flex items-center justify-start gap-2">
-          <button
-            onClick={() => navigate("/chat")}
-            className="flex w-full max-w-max px-3 py-2 rounded"
-          >
-            <Undo2 />
-          </button>
-          <a href={`/profile/${profile?.username}`}>
-            <div className="flex gap-2 items-center justify-start">
-              <img
-                className="w-9 h-9 lg:w-14 lg:h-14 rounded-full border-4 border-white/30 shadow-lg object-cover"
-                src={
-                  profile?.profile_pic ||
-                  "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"
-                }
-                alt="Profile"
-              />
-              <h1 className="text-xl lg:text-3xl font-semibold text-center w-full truncate text-white">
-                {profile?.username || "Guest"}
-              </h1>
-            </div>
-          </a>
-          <div className="w-[100px]" />
+      <div className="sticky top-0 bg-gray-100 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100 flex items-center gap-3 px-4 py-3 border-b border-gray-300">
+        <button onClick={() => navigate("/chat")} className="p-2">
+          <Undo2 className="text-white" />
+        </button>
+        <img
+          src={profile?.profile_pic || "https://via.placeholder.com/150"}
+          className="w-8 h-8 rounded-full"
+        />
+        <div className="flex flex-col">
+          <span className="font-semibold text-white">{profile?.username}</span>
+          <span className="text-xs text-gray-500">last seen </span>
         </div>
       </div>
 
       {/* Chat area */}
       <div className="flex-1 flex flex-col px-4 py-4">
-        <div className="flex-1 overflow-y-auto mb-3 px-1 space-y-4">
-        {messages.map((msg, i) => {
-  console.log("Rendering message:", msg);
-  console.log("USERNAME:", USERNAME);
-  console.log("Comparison - msg.sender === USERNAME:", msg.sender === USERNAME);
-  console.log("Status:", msg.status, "Seen value:", msg.seen);
+        <div className="flex-1 overflow-y-auto mb-3 px-1 space-y-1">
+          {messages.map((msg, i) => {
+            const isOwn = msg.sender === USERNAME;
 
-  const isOwn = msg.sender === USERNAME;
-  const seenStatus = msg.status === "seen";
-  const seenHasValue = Boolean(msg.seen);
+            const prevMsg = messages[i - 1];
+            const nextMsg = messages[i + 1];
 
-  return (
-    <div
-      key={`${msg.id}-${i}`}
-      className={`w-fit max-w-[75%] px-4 py-3 rounded-2xl shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${
-        isOwn
-          ? "ml-auto bg-emerald-600/30 rounded-br-sm border border-emerald-800/60"
-          : "mr-auto bg-white/10 rounded-tl-sm border border-white/10"
-      }`}
-    >
-      <p>{msg.message}</p>
-      {isOwn && (
-        <>
-          <p className="text-right text-xs text-gray-400 mt-1">
-            {seenStatus && seenHasValue
-              ? `✓ Seen ${msg.seen}`
-              : "⏱︎ Sent"}
-          </p>
-        </>
-      )}
-    </div>
-  );
-})}
+            const isFirstOfGroup = !prevMsg || prevMsg.sender !== msg.sender;
+            const isLastOfGroup = !nextMsg || nextMsg.sender !== msg.sender;
+
+            let bubbleClasses = "rounded-2xl";
+
+            if (isOwn) {
+              if (isFirstOfGroup && !isLastOfGroup) {
+                bubbleClasses = "rounded-2xl rounded-br-sm";
+              } else if (!isFirstOfGroup && !isLastOfGroup) {
+                bubbleClasses = "rounded-2xl rounded-r-sm";
+              } else if (!isFirstOfGroup && isLastOfGroup) {
+                bubbleClasses = "rounded-2xl rounded-tr-sm";
+              }
+            } else {
+              if (isFirstOfGroup && !isLastOfGroup) {
+                bubbleClasses = "rounded-2xl rounded-bl-sm";
+              } else if (!isFirstOfGroup && !isLastOfGroup) {
+                bubbleClasses = "rounded-2xl rounded-l-sm";
+              } else if (!isFirstOfGroup && isLastOfGroup) {
+                bubbleClasses = "rounded-2xl rounded-tl-sm";
+              }
+            }
+
+            const seenStatus = msg.status === "seen";
+            const seenHasValue = Boolean(msg.seen);
+
+            return (
+              <div key={`${msg.id}-${i}`} className="flex flex-col">
+                <div
+                  className={`w-fit max-w-[75%] px-4 py-3 shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn
+                      ? "ml-auto bg-emerald-500/30 text-white"
+                      : "mr-auto bg-gray-200/10 text-white"
+                    }`}
+                >
+                  <p>{msg.message}</p>
+                </div>
+
+                {/* ✅ Only show below last bubble of own messages */}
+                {isOwn && isLastOfGroup && (
+                  <p className="text-right text-xs text-gray-400 mt-1">
+                    {seenStatus && seenHasValue
+                      ? `✓ Seen ${msg.seen}`
+                      : "⏱︎ Sent"}
+                  </p>
+                )}
+              </div>
+            );
+          })}
 
           <div ref={messagesEndRef} />
         </div>
