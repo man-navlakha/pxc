@@ -110,11 +110,11 @@ export default function Listuser() {
 
 
                 {/* Header */}
-                <div className="sticky top-0 bg-gray-900 flex items-center gap-3 px-4 py-3 border-b border-gray-700 z-10">
+                <div className="sticky top-0 bg-gray-900 flex items-center justify-start gap-3 px-4 py-3 border-b border-gray-700 z-10">
                     <button onClick={() => navigate("/profile")} className="p-2">
                         <Undo2 className="text-white" />
                     </button>
-                    <h1 className="text-xl font-semibold text-center w-full truncate text-white">
+                    <h1 className="text-xl font-semibold text-white">
                         Messages
                     </h1>
                 </div>
@@ -145,7 +145,7 @@ export default function Listuser() {
                                     return (
                                         <div
                                             key={user.username}
-                                            className="p-4 shadow backdrop-blur-md border border-white/10 flex items-center gap-4"
+                                            className="p-4 shadow backdrop-blur-md border-y border-white/10 flex items-center gap-4"
                                         >
                                             <a href={`/chat/${user.username}`} className="flex items-center gap-3 w-full">
                                                 <img
@@ -155,10 +155,11 @@ export default function Listuser() {
                                                 />
                                                 <div className="flex flex-col flex-1">
                                                     <span className="font-semibold">
-                                                        {user.first_name || user.username} {user.last_name}
+                                                        {user.username}
                                                     </span>
                                                     <span className="text-sm text-white/60 truncate">
-                                                        {user.lastMessage || "No messages yet"}
+                                                     {user.lastMessage || `${user.first_name} ${user.last_name}`}
+
                                                     </span>
                                                 </div>
 
