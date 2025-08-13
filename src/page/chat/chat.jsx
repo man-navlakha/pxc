@@ -237,50 +237,66 @@ export default function Chat() {
         className="w-8 h-8 rounded-full"
       />
       <div className="flex flex-col">
-       <a href={`/profile/${profile?.username}`}><span className="font-semibold">{profile?.username}</span></a> 
+       <a href={`/profile/${profile?.username}`}></a> <span className="font-semibold">{profile?.username}</span>
         <span className="text-xs text-gray-400">last seen</span>
       </div>
     </div>
 
     {/* Messages */}
-    <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
-      {messages.map((msg, i) => {
-        const isOwn = msg.sender === USERNAME;
-        const prevMsg = messages[i - 1];
-        const nextMsg = messages[i + 1];
-        const isFirstOfGroup = !prevMsg || prevMsg.sender !== msg.sender;
-        const isLastOfGroup = !nextMsg || nextMsg.sender !== msg.sender;
+   <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+  {messages.map((msg, i) => {
+    const isOwn = msg.sender === USERNAME;
+    const prevMsg = messages[i - 1];
+    const nextMsg = messages[i + 1];
+    const isFirstOfGroup = !prevMsg || prevMsg.sender !== msg.sender;
+    const isLastOfGroup = !nextMsg || nextMsg.sender !== msg.sender;
 
-        let bubbleClasses = "rounded-2xl";
-        if (isOwn) {
-          if (isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-br-sm";
-          else if (!isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-r-sm";
-          else if (!isFirstOfGroup && isLastOfGroup) bubbleClasses = "rounded-2xl rounded-tr-sm";
-        } else {
-          if (isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-bl-sm";
-          else if (!isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-l-sm";
-          else if (!isFirstOfGroup && isLastOfGroup) bubbleClasses = "rounded-2xl rounded-tl-sm";
-        }
+    let bubbleClasses = "rounded-2xl";
+    if (isOwn) {
+      if (isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-br-sm";
+      else if (!isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-r-sm";
+      else if (!isFirstOfGroup && isLastOfGroup) bubbleClasses = "rounded-2xl rounded-tr-sm";
+    } else {
+      if (isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-bl-sm";
+      else if (!isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-l-sm";
+      else if (!isFirstOfGroup && isLastOfGroup) bubbleClasses = "rounded-2xl rounded-tl-sm";
+    }
 
-        return (
-          <div key={`${msg.id}-${i}`} className="flex flex-col">
-            <div
-              className={`w-fit max-w-[75%] px-4 py-3 shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn ? "ml-auto bg-emerald-500/30 text-white" : "mr-auto bg-gray-200/10 text-white"}`}
-            >
-              <p>{msg.message}</p>
-            </div>
-            {isOwn && isLastOfGroup && (
-              <p className="text-right text-xs text-gray-400 mt-1">
-                {msg.status === "seen" && msg.seen
-                  ? `✓ Seen ${msg.seen}`
-                  : "⏱︎ Sent"}
-              </p>
-            )}
+    return (
+      <div key={`${msg.id}-${i}`} className="flex flex-col">
+        <div
+          className={`w-fit max-w-[75%] px-4 py-3 shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${
+            isOwn ? "ml-auto bg-emerald-500/30 text-white" : "mr-auto bg-gray-200/10 text-white"
+          }`}
+        >
+          <p>{msg.message}</p>
+        </div>
+
+        {/* Receiver's avatar for last message in group */}
+        {!isOwn && isLastOfGroup && (
+          <div className="flex items-center gap-1 mt-1">
+            <img
+              src={profile?.profile_pic || "https://via.placeholder.com/150"}
+              alt="receiver avatar"
+              className="w-5 h-5 rounded-full"
+            />
           </div>
-        );
-      })}
-      <div ref={messagesEndRef} />
-    </div>
+        )}
+
+        {/* Seen/Sent stays only for your messages */}
+        {isOwn && isLastOfGroup && (
+          <p className="text-right text-xs text-gray-400 mt-1">
+            {msg.status === "seen" && msg.seen
+              ? `✓ Seen ${msg.seen}`
+              : "⏱︎ Sent"}
+          </p>
+        )}
+      </div>
+    );
+  })}
+  <div ref={messagesEndRef} />
+</div>
+
 
     {/* Typing Indicator */}
     {isTyping && (

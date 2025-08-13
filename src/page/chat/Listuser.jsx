@@ -18,8 +18,8 @@ export default function Listuser() {
 
     const [following, setFollowing] = useState([]);
     const [followers, setFollowers] = useState([]);
+    const [alllist, setalllist] = useState([]);
     const [loading, setLoading] = useState(true);
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -33,8 +33,52 @@ export default function Listuser() {
                     }),
                 ]);
 
-                setFollowing(followingRes.data);
-                setFollowers(followersRes.data);
+                const followingData = followingRes.data;
+                const followersData = followersRes.data;
+
+                // Merge and deduplicate by username
+                const combinedList = [...followersData, ...followingData];
+                const deduplicatedList = Array.from(
+                    new Map(combinedList.map(user => [user.username, user])).values()
+                );
+
+                // Fetch last message for each user in deduplicated list
+                const updatedList = await Promise.all(
+                    deduplicatedList.map(async (user) => {
+                        try {
+                            const roomName = [USERNAME, user.username].sort().join("__");
+                            const res = await fetch(
+                                `https://pixel-classes.onrender.com/api/chatting/${roomName}/`
+                            );
+                            const messages = await res.json();
+
+                            const lastMsg = messages.length ? messages[messages.length - 1] : null;
+
+                            return {
+                                ...user,
+                                lastMessage: lastMsg ? lastMsg.content : "",
+                                lastTime: lastMsg ? lastMsg.timestamp : null,
+                                lastSender: lastMsg ? lastMsg.sender : null,
+                                isSeen: lastMsg ? lastMsg.is_seen : true,
+
+                            };
+                        } catch (err) {
+                            console.error(`Failed to fetch last message for ${user.username}`, err);
+                            return { ...user, lastMessage: "", lastTime: null, isSeen: true };
+                        }
+                    })
+                );
+
+                // Sort by last message time descending
+                updatedList.sort((a, b) => new Date(b.lastTime) - new Date(a.lastTime));
+
+                setalllist(updatedList);
+
+
+                // setFollowing(followingData);
+                // setFollowers(followersData);
+                // setalllist(updatedList); // ✅ finally set it with enriched data
+
             } catch (err) {
                 console.error("Failed to fetch data:", err);
             } finally {
@@ -46,6 +90,7 @@ export default function Listuser() {
             fetchData();
         }
     }, [USERNAME]);
+
 
 
 
@@ -78,7 +123,7 @@ export default function Listuser() {
                     <div className="flex-1 overflow-y-auto mb-3 space-y-4">
                         {loading ? (
                             <p className="text-white/60">Loading...</p>
-                        ) : following.length === 0 ? (
+                        ) : alllist.length === 0 ? (
                             <div className="text-white/60 p-4">
                                 <p>You’re not following anyone yet.</p>
 
@@ -90,27 +135,53 @@ export default function Listuser() {
                             </div>
                         ) : (
                             <div className="grid grid-cols-1">
-                                {following.map((user) => (
-                                    <div
-                                        key={user.username}
-                                        className=" p-4  shadow backdrop-blur-md border border-white/10 flex items-center gap-4"
-                                    >
-                                        <a href={`${user.username}`} className="text-lg flex font-semibold hover:underline">
+                                {alllist.map((user) => {
+                                    console.log("User:", {
+                                        username: user.username,
+                                        lastSender: user.lastSender,
+                                        isSeen: user.isSeen,
+                                    });
 
-                                            <img
-                                                src={user.profile_pic}
-                                                alt={user.username}
-                                                className="w-9 h-9 lg:w-14 lg:h-14 rounded-full mr-2 border-2 border-white/20 object-cover"
-                                            />
-                                            <div>
-                                                {user.first_name || user.username} {user.last_name}
-                                                {/* <p className="text-sm text-white/60">
-                                                Joined on {user.joined_date ? new Date(user.joined_date).toLocaleDateString() : ""}
-                                            </p> */}
-                                            </div>
-                                        </a>
-                                    </div>
-                                ))}
+                                    return (
+                                        <div
+                                            key={user.username}
+                                            className="p-4 shadow backdrop-blur-md border border-white/10 flex items-center gap-4"
+                                        >
+                                            <a href={`/chat/${user.username}`} className="flex items-center gap-3 w-full">
+                                                <img
+                                                    src={user.profile_pic}
+                                                    alt={user.username}
+                                                    className="w-9 h-9 lg:w-14 lg:h-14 rounded-full border-2 border-white/20 object-cover"
+                                                />
+                                                <div className="flex flex-col flex-1">
+                                                    <span className="font-semibold">
+                                                        {user.first_name || user.username} {user.last_name}
+                                                    </span>
+                                                    <span className="text-sm text-white/60 truncate">
+                                                        {user.lastMessage || "No messages yet"}
+                                                    </span>
+                                                </div>
+
+                                                {/* 🔵 Blue dot if the last message is from them and is not seen */}
+                                                {user.lastSender && user.lastSender !== USERNAME && user.isSeen === false && (
+                                                    <span className="w-3 h-3 rounded-full bg-blue-500 ml-2 inline-block"></span>
+                                                )}
+
+                                                {user.lastTime && (
+                                                    <span className="text-xs text-white/40 ml-2">
+                                                        {new Date(user.lastTime).toLocaleTimeString([], {
+                                                            hour: "2-digit",
+                                                            minute: "2-digit",
+                                                        })}
+                                                    </span>
+                                                )}
+                                            </a>
+                                        </div>
+                                    );
+                                })}
+
+
+
                             </div>
                         )}
 
