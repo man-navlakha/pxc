@@ -158,7 +158,7 @@ export default function Listuser() {
                                                         {user.username}
                                                     </span>
                                                     <span className="text-sm text-white/60 truncate">
-                                                     {user.lastMessage || `${user.first_name} ${user.last_name}`}
+                                                        {user.lastMessage || `${user.first_name} ${user.last_name}`}
 
                                                     </span>
                                                 </div>
@@ -170,12 +170,13 @@ export default function Listuser() {
 
                                                 {user.lastTime && (
                                                     <span className="text-xs text-white/40 ml-2">
-                                                        {new Date(user.lastTime).toLocaleTimeString([], {
+                                                        {new Date(user.lastTime.replace(" ", "T")).toLocaleTimeString([], {
                                                             hour: "2-digit",
                                                             minute: "2-digit",
                                                         })}
                                                     </span>
                                                 )}
+
                                             </a>
                                         </div>
                                     );
