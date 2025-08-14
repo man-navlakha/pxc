@@ -136,11 +136,11 @@ export default function Listuser() {
                         ) : (
                             <div className="grid grid-cols-1">
                                 {alllist.map((user) => {
-                                    console.log("User:", {
-                                        username: user.username,
-                                        lastSender: user.lastSender,
-                                        isSeen: user.isSeen,
-                                    });
+                                    // console.log("User:", {
+                                    //     username: user.username,
+                                    //     lastSender: user.lastSender,
+                                    //     isSeen: user.isSeen,
+                                    // });
 
                                     return (
                                         <div

@@ -38,13 +38,14 @@ export default function Chat() {
 
       setMessages(prev =>
         prev.map(msg =>
-          msg.id === messageId || msg.temp_id === messageId
-            ? { ...msg, status: "seen" }
+          msg.id === messageId
+            ? { ...msg, status: "seen", seen: new Date().toISOString() }
             : msg
         )
       );
     }
   };
+
 
 
   // WebSocket connection + history
@@ -84,10 +85,10 @@ export default function Chat() {
     socket.onmessage = (e) => {
       const data = JSON.parse(e.data);
 
-      // Normalize temp_id from server (handles snake_case or camelCase)
+      // Normalize temp_id from server
       const incomingTempId = data.temp_id || data.tempId || null;
 
-      // 📍 Handle "seen" events
+      // ✅ Handle "seen" events from server
       if (data.type === "seen") {
         setMessages(prev =>
           prev.map(msg =>
@@ -99,27 +100,67 @@ export default function Chat() {
         return;
       }
 
-      // 📍 Handle "chat" events
+      // ✅ Handle "chat" events
       if (data.type === "chat") {
-        setMessages(prev => {
-          // Check by temp_id OR id
-          const alreadyExists = prev.some(m =>
-            (m.temp_id && m.temp_id === (data.temp_id || data.tempId)) ||
-            (m.id && data.id && String(m.id) === String(data.id))
-          );
-          if (alreadyExists) return prev;
+        const isFromReceiver = data.sender === RECEIVER;
 
-          return [...prev, {
+        setMessages(prev => {
+          const updated = [...prev];
+
+          // 1️⃣ Match optimistic message by temp_id if available
+          if (data.temp_id || data.tempId) {
+            const index = updated.findIndex(m => m.temp_id === (data.temp_id || data.tempId));
+            if (index !== -1) {
+              updated[index] = {
+                ...updated[index],
+                id: data.id,
+                status: "sent",
+              };
+              return updated;
+            }
+          }
+
+          // 2️⃣ Fallback: match by content + sender + "sending" status
+          const indexByContent = updated.findIndex(
+            m =>
+              m.sender === data.sender &&
+              m.message === data.message &&
+              m.status === "sending"
+          );
+          if (indexByContent !== -1) {
+            updated[indexByContent] = {
+              ...updated[indexByContent],
+              id: data.id,
+              status: "sent",
+            };
+            return updated;
+          }
+
+          // 3️⃣ Avoid exact duplicates by ID
+          if (data.id && updated.some(m => String(m.id) === String(data.id))) {
+            return updated;
+          }
+
+          // 4️⃣ Otherwise, it's a brand new message → push
+          updated.push({
             id: data.id,
             sender: data.sender,
             receiver: data.receiver,
             message: data.message,
             status: "sent",
-          }];
+          });
+
+          return updated;
         });
+
+        // Mark seen immediately if it's from the other user
+        if (isFromReceiver && data.id) {
+          sendSeenStatus(data.id);
+        }
       }
 
     };
+
 
 
 
@@ -128,28 +169,37 @@ export default function Chat() {
   }, [USERNAME, RECEIVER]);
 
   // Seen on scroll
+  // Seen on scroll + on load
   useEffect(() => {
-    const handleScroll = () => {
-      if (!messages.length || !messagesEndRef.current) return;
+    if (!messages.length || !RECEIVER) return;
+
+    const markVisibleMessagesAsSeen = () => {
+      if (!messagesEndRef.current) return;
+
       const atBottom =
         Math.abs(
-          messagesEndRef.current.getBoundingClientRect().bottom -
-          window.innerHeight
+          messagesEndRef.current.getBoundingClientRect().bottom - window.innerHeight
         ) < 30;
+
       if (atBottom) {
         messages
           .filter(
             (m) =>
               m.sender === RECEIVER &&
               m.status !== "seen" &&
-              !m.id.toString().startsWith("temp-")
+              m.id && // only if real server ID exists
+              !String(m.id).startsWith("temp-")
           )
           .forEach((m) => sendSeenStatus(m.id));
-
       }
     };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+
+    // Run immediately when messages change
+    markVisibleMessagesAsSeen();
+
+    // Also run on scroll
+    window.addEventListener("scroll", markVisibleMessagesAsSeen);
+    return () => window.removeEventListener("scroll", markVisibleMessagesAsSeen);
   }, [messages, RECEIVER]);
 
 
@@ -161,9 +211,9 @@ export default function Chat() {
   // Send message
   // Send message// Send message
   const sendMessage = () => {
-    if (!input.trim()) return;
+    if (!input.trim() || socketRef.current?.readyState !== WebSocket.OPEN) return;
 
-    const temp_id = `temp-${Date.now()}`; // unique optimistic id
+    const temp_id = `temp-${Date.now()}`;
     const msg = {
       type: "chat",
       temp_id,
@@ -173,14 +223,13 @@ export default function Chat() {
       status: "sending",
     };
 
-    // Optimistic UI
+    // Add optimistic message
     setMessages(prev => [...prev, msg]);
 
-    // Send via socket if open
-    if (socketRef.current?.readyState === WebSocket.OPEN) {
-      socketRef.current.send(JSON.stringify(msg));
-    }
+    // Send via socket
+    socketRef.current.send(JSON.stringify(msg));
 
+    // Clear input
     setInput("");
     if (textareaRef.current) textareaRef.current.style.height = "auto";
   };
@@ -207,148 +256,147 @@ export default function Chat() {
   }, [RECEIVER, token, navigate]);
 
   return (
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  <div className="flex h-screen ccf ">
-  {/* Left panel - User list */}
-  <div
-   className="resize-x overflow-auto border-r border-gray-700  hidden md:hidden lg:block"
-    style={{ minWidth: "200px", maxWidth: "50%" }}>
-    <Listuser />
-  </div>
 
-  {/* Right panel - Chat */}
-  <div className="flex-1 flex flex-col text-white">
-    {/* Header */}
-    <div className="sticky top-0 bg-gray-900 flex items-center gap-3 px-4 py-3 border-b border-gray-700">
-      <button onClick={() => navigate("/chat")} className="p-2">
-        <Undo2 className="text-white" />
-      </button>
-      <img
-        src={profile?.profile_pic || "https://via.placeholder.com/150"}
-        className="w-8 h-8 rounded-full"
-      />
-      <div className="flex flex-col">
-       <a href={`/profile/${profile?.username}`}></a> <span className="font-semibold">{profile?.username}</span>
-        <span className="text-xs text-gray-400">last seen</span>
+
+
+
+
+
+
+
+
+
+    <div className="flex h-screen ccf ">
+      {/* Left panel - User list */}
+      <div
+        className="resize-x overflow-auto border-r border-gray-700  hidden md:hidden lg:block"
+        style={{ minWidth: "200px", maxWidth: "50%" }}>
+        <Listuser />
       </div>
-    </div>
 
-    {/* Messages */}
-   <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
-  {messages.map((msg, i) => {
-    const isOwn = msg.sender === USERNAME;
-    const prevMsg = messages[i - 1];
-    const nextMsg = messages[i + 1];
-    const isFirstOfGroup = !prevMsg || prevMsg.sender !== msg.sender;
-    const isLastOfGroup = !nextMsg || nextMsg.sender !== msg.sender;
-
-    let bubbleClasses = "rounded-2xl";
-    if (isOwn) {
-      if (isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-br-sm";
-      else if (!isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-r-sm";
-      else if (!isFirstOfGroup && isLastOfGroup) bubbleClasses = "rounded-2xl rounded-tr-sm";
-    } else {
-      if (isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-bl-sm";
-      else if (!isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-l-sm";
-      else if (!isFirstOfGroup && isLastOfGroup) bubbleClasses = "rounded-2xl rounded-tl-sm";
-    }
-
-    return (
-      <div key={`${msg.id}-${i}`} className="flex flex-col">
-        <div
-          className={`w-fit max-w-[75%] px-4 py-3 shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${
-            isOwn ? "ml-auto bg-emerald-500/30 text-white" : "mr-auto bg-gray-200/10 text-white"
-          }`}
-        >
-          <p>{msg.message}</p>
+      {/* Right panel - Chat */}
+      <div className="flex-1 flex flex-col text-white">
+        {/* Header */}
+        <div className="sticky top-0 bg-gray-900 flex items-center gap-3 px-4 py-3 border-b border-gray-700">
+          <button onClick={() => navigate("/chat")} className="p-2">
+            <Undo2 className="text-white" />
+          </button>
+          <img
+            src={profile?.profile_pic || "https://via.placeholder.com/150"}
+            className="w-8 h-8 rounded-full"
+          />
+          <div className="flex flex-col">
+            <a href={`/profile/${profile?.username}`}></a> <span className="font-semibold">{profile?.username}</span>
+            <span className="text-xs text-gray-400">last seen</span>
+          </div>
         </div>
 
-        {/* Receiver's avatar for last message in group */}
-        {!isOwn && isLastOfGroup && (
-          <div className="flex items-center gap-1 mt-1">
-            <img
-              src={profile?.profile_pic || "https://via.placeholder.com/150"}
-              alt="receiver avatar"
-              className="w-5 h-5 rounded-full"
-            />
-          </div>
-        )}
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+          {messages.map((msg, i) => {
+            const isOwn = msg.sender === USERNAME;
+            const prevMsg = messages[i - 1];
+            const nextMsg = messages[i + 1];
+            const isFirstOfGroup = !prevMsg || prevMsg.sender !== msg.sender;
+            const isLastOfGroup = !nextMsg || nextMsg.sender !== msg.sender;
 
-        {/* Seen/Sent stays only for your messages */}
-        {isOwn && isLastOfGroup && (
-          <p className="text-right text-xs text-gray-400 mt-1">
-            {msg.status === "seen" && msg.seen
-              ? `✓ Seen ${msg.seen}`
-              : "⏱︎ Sent"}
+            let bubbleClasses = "rounded-2xl";
+            if (isOwn) {
+              if (isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-br-sm";
+              else if (!isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-r-sm";
+              else if (!isFirstOfGroup && isLastOfGroup) bubbleClasses = "rounded-2xl rounded-tr-sm";
+            } else {
+              if (isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-bl-sm";
+              else if (!isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-l-sm";
+              else if (!isFirstOfGroup && isLastOfGroup) bubbleClasses = "rounded-2xl rounded-tl-sm";
+            }
+
+            return (
+              <div key={`${msg.id}-${i}`} className="flex flex-col">
+                <div
+                  className={`w-fit max-w-[75%] px-4 py-3 shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn ? "ml-auto bg-emerald-500/30 text-white" : "mr-auto bg-gray-200/10 text-white"
+                    }`}
+                >
+                  <p>{msg.message}</p>
+                </div>
+
+                {/* Receiver's avatar for last message in group */}
+                {!isOwn && isLastOfGroup && (
+                  <div className="flex items-center gap-1 mt-1">
+                    <img
+                      src={profile?.profile_pic || "https://via.placeholder.com/150"}
+                      alt="receiver avatar"
+                      className="w-5 h-5 rounded-full"
+                    />
+                  </div>
+                )}
+
+                {/* Seen/Sent stays only for your messages */}
+                {isOwn && isLastOfGroup && (
+                  <p className="text-right text-xs text-gray-400 mt-1">
+                    {msg.status === "seen" && msg.seen
+                      ? `✓ Seen ${msg.seen}`
+                      : "⏱︎ Sent"}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+          <div ref={messagesEndRef} />
+        </div>
+
+
+        {/* Typing Indicator */}
+        {isTyping && (
+          <p className="text-xs text-gray-400 italic px-4 mb-1">
+            You are typing...
           </p>
         )}
-      </div>
-    );
-  })}
-  <div ref={messagesEndRef} />
-</div>
 
-
-    {/* Typing Indicator */}
-    {isTyping && (
-      <p className="text-xs text-gray-400 italic px-4 mb-1">
-        You are typing...
-      </p>
-    )}
-
-    {/* Input */}
-      <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                sendMessage();
+        {/* Input */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            sendMessage();
+          }}
+          className="sticky bottom-4 z-10 my-1 mx-3 rounded-2xl border border-gray-600/50 shadow-xl bg-white/10 backdrop-blur-md p-3 flex flex-col gap-1"
+        >
+          <div className="flex items-end gap-2">
+            <textarea
+              ref={textareaRef}
+              style={{ maxHeight: "200px", overflowY: "auto" }}
+              className="flex-1 resize-none px-4 py-2 rounded-xl bg-transparent text-white placeholder-white/70 focus:outline-none focus:ring-0"
+              rows={1}
+              placeholder="Type your message..."
+              value={input}
+              onChange={(e) => {
+                setInput(e.target.value);
+                setIsTyping(true);
+                const textarea = textareaRef.current;
+                if (textarea) {
+                  textarea.style.height = "auto";
+                  textarea.style.height = textarea.scrollHeight + "px";
+                }
+                if (typingTimeoutRef.current)
+                  clearTimeout(typingTimeoutRef.current);
+                typingTimeoutRef.current = setTimeout(
+                  () => setIsTyping(false),
+                  1000
+                );
               }}
-              className="sticky bottom-4 z-10 my-1 mx-3 rounded-2xl border border-gray-600/50 shadow-xl bg-white/10 backdrop-blur-md p-3 flex flex-col gap-1"
+              onKeyDown={handleKeyDown}
+            />
+            <button
+              type="submit"
+              className="p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50"
+              disabled={!input.trim()}
             >
-              <div className="flex items-end gap-2">
-                <textarea
-                  ref={textareaRef}
-                  style={{ maxHeight: "200px", overflowY: "auto" }}
-                  className="flex-1 resize-none px-4 py-2 rounded-xl bg-transparent text-white placeholder-white/70 focus:outline-none focus:ring-0"
-                  rows={1}
-                  placeholder="Type your message..."
-                  value={input}
-                  onChange={(e) => {
-                    setInput(e.target.value);
-                    setIsTyping(true);
-                    const textarea = textareaRef.current;
-                    if (textarea) {
-                      textarea.style.height = "auto";
-                      textarea.style.height = textarea.scrollHeight + "px";
-                    }
-                    if (typingTimeoutRef.current)
-                      clearTimeout(typingTimeoutRef.current);
-                    typingTimeoutRef.current = setTimeout(
-                      () => setIsTyping(false),
-                      1000
-                    );
-                  }}
-                  onKeyDown={handleKeyDown}
-                />
-                <button
-                  type="submit"
-                  className="p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50"
-                  disabled={!input.trim()}
-                >
-                  <Send className="h-full w-4" />
-                </button>
-              </div>
-            </form>
-  </div>
-</div>
+              <Send className="h-full w-4" />
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
   );
 }
