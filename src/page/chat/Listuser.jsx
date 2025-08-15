@@ -93,6 +93,13 @@ export default function Listuser() {
 
 
 
+function toISOStringCompat(dateString) {
+  // Input: "2025-08-14 13:45"
+  const [date, time] = dateString.split(" ");
+  // Add seconds if missing
+  const fullTime = time.length === 5 ? `${time}:00` : time;
+  return `${date}T${fullTime}`;
+}
 
     // Unified profile and posts fetch
     useEffect(() => {
@@ -157,10 +164,13 @@ export default function Listuser() {
                                                     <span className="font-semibold">
                                                         {user.username}
                                                     </span>
-                                                    <span className="text-sm text-white/60 truncate">
-                                                        {user.lastMessage || `${user.first_name} ${user.last_name}`}
+                                                  <div className="w-64 overflow-hidden">
+  <span className="text-sm text-white/60 truncate block">
+    {user.lastMessage || `${user.first_name} ${user.last_name}`}
+  </span>
+</div>
 
-                                                    </span>
+
                                                 </div>
 
                                                 {/* 🔵 Blue dot if the last message is from them and is not seen */}
@@ -168,14 +178,15 @@ export default function Listuser() {
                                                     <span className="w-3 h-3 rounded-full bg-blue-500 ml-2 inline-block"></span>
                                                 )}
 
-                                                {user.lastTime && (
-                                                    <span className="text-xs text-white/40 ml-2">
-                                                        {new Date(user.lastTime.replace(" ", "T")).toLocaleTimeString([], {
-                                                            hour: "2-digit",
-                                                            minute: "2-digit",
-                                                        })}
-                                                    </span>
-                                                )}
+                                               {user.lastTime && (
+  <span className="text-xs text-white/40 ml-2">
+    {new Date(toISOStringCompat(user.lastTime)).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    })}
+  </span>
+)}
+
 
                                             </a>
                                         </div>

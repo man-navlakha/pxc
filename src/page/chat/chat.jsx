@@ -170,37 +170,40 @@ export default function Chat() {
 
   // Seen on scroll
   // Seen on scroll + on load
-  useEffect(() => {
-    if (!messages.length || !RECEIVER) return;
+useEffect(() => {
+  if (!messages.length || !RECEIVER) return;
 
-    const markVisibleMessagesAsSeen = () => {
-      if (!messagesEndRef.current) return;
+  const markVisibleMessagesAsSeen = () => {
+    const container = messagesEndRef.current?.parentElement;
+    if (!container) return;
 
-      const atBottom =
-        Math.abs(
-          messagesEndRef.current.getBoundingClientRect().bottom - window.innerHeight
-        ) < 30;
+    messages
+      .filter(
+        m =>
+          m.sender === RECEIVER &&
+          m.status !== "seen" &&
+          m.id &&
+          !String(m.id).startsWith("temp-")
+      )
+      .forEach(m => {
+        // Check if message is visible in viewport
+        const msgEl = document.getElementById(`msg-${m.id}`);
+        if (msgEl) {
+          const rect = msgEl.getBoundingClientRect();
+          const fullyVisible = rect.top >= 0 && rect.bottom <= window.innerHeight;
+          if (fullyVisible) sendSeenStatus(m.id);
+        }
+      });
+  };
 
-      if (atBottom) {
-        messages
-          .filter(
-            (m) =>
-              m.sender === RECEIVER &&
-              m.status !== "seen" &&
-              m.id && // only if real server ID exists
-              !String(m.id).startsWith("temp-")
-          )
-          .forEach((m) => sendSeenStatus(m.id));
-      }
-    };
+  // Initial run on messages change
+  markVisibleMessagesAsSeen();
 
-    // Run immediately when messages change
-    markVisibleMessagesAsSeen();
+  // Also run on scroll
+  window.addEventListener("scroll", markVisibleMessagesAsSeen);
+  return () => window.removeEventListener("scroll", markVisibleMessagesAsSeen);
+}, [messages, RECEIVER]);
 
-    // Also run on scroll
-    window.addEventListener("scroll", markVisibleMessagesAsSeen);
-    return () => window.removeEventListener("scroll", markVisibleMessagesAsSeen);
-  }, [messages, RECEIVER]);
 
 
   // Auto-scroll
