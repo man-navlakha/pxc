@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Cookies from "js-cookie";
+import axios from "axios";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const token = Cookies.get('access_token');
   const [scrolled, setScrolled] = useState(false);
+  const USERNAME = Cookies.get("username");
+  const [alllist, setAlllist] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -15,6 +19,68 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (!USERNAME) return;
+
+    const fetchData = async () => {
+      try {
+        const [followingRes, followersRes] = await Promise.all([
+          axios.post("https://pixel-classes.onrender.com/api/Profile/following/", {
+            username: USERNAME,
+          }),
+          axios.post("https://pixel-classes.onrender.com/api/Profile/followers/", {
+            username: USERNAME,
+          }),
+        ]);
+
+        const combinedList = [
+          ...followersRes.data,
+          ...followingRes.data,
+        ];
+        const deduplicatedList = Array.from(
+          new Map(combinedList.map(user => [user.username, user])).values()
+        );
+
+        const updatedList = await Promise.all(
+          deduplicatedList.map(async (user) => {
+            try {
+              const roomName = [USERNAME, user.username].sort().join("__");
+              const res = await fetch(
+                `https://pixel-classes.onrender.com/api/chatting/${roomName}/`
+              );
+              const messages = await res.json();
+
+              const lastMsg = messages.length ? messages[messages.length - 1] : null;
+
+              return {
+                ...user,
+                lastMessage: lastMsg ? lastMsg.content : "",
+                lastTime: lastMsg ? lastMsg.timestamp : null,
+                lastSender: lastMsg ? lastMsg.sender : null,
+                isSeen: lastMsg ? lastMsg.is_seen : true,
+              };
+            } catch {
+              return { ...user, lastMessage: "", lastTime: null, isSeen: true };
+            }
+          })
+        );
+
+        setAlllist(updatedList);
+
+        // 🔵 Count unread messages (not seen + from others)
+        const count = updatedList.filter(
+          (u) => u.lastSender && u.lastSender !== USERNAME && u.isSeen === false
+        ).length;
+
+        setUnreadCount(count);
+
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+      }
+    };
+
+    fetchData();
+  }, [USERNAME]);
 
   const keroopen = () => {
     if (open === true) {
@@ -45,29 +111,29 @@ const Navbar = () => {
           {token ?
             <>
               <div className="flex  items-center justify-center gap-4"  >
-              <div >
+                <div >
 
 
-                <label className="flex flex-col gap-2 w-8">
-                  <input className="peer hidden" type="checkbox" onClick={keroopen} />
-                  <div
-                    className="rounded-2xl h-[3px] w-1/2 bg-white duration-500 peer-checked:rotate-[225deg] origin-right peer-checked:-translate-x-[12px] peer-checked:-translate-y-[1px]"
-                  ></div>
-                  <div
-                    className="rounded-2xl h-[3px] w-full bg-white duration-500 peer-checked:-rotate-45"
-                  ></div>
-                  <div
-                    className="rounded-2xl h-[3px] w-1/2 bg-white duration-500 place-self-end peer-checked:rotate-[225deg] origin-left peer-checked:translate-x-[12px] peer-checked:translate-y-[1px]"
-                  ></div>
-                </label>
-              </div>
-              <a href="/profile" className="flex flex-col items-center text-white hover:text-blue-400">
-                <img className="w-12 h-12 rounded-full border-4 border-white/30 shadow-lg object-cover"
-                  src={Cookies.get("profile_pic")}
-                  alt="Profile"
+                  <label className="flex flex-col gap-2 w-8">
+                    <input className="peer hidden" type="checkbox" onClick={keroopen} />
+                    <div
+                      className="rounded-2xl h-[3px] w-1/2 bg-white duration-500 peer-checked:rotate-[225deg] origin-right peer-checked:-translate-x-[12px] peer-checked:-translate-y-[1px]"
+                    ></div>
+                    <div
+                      className="rounded-2xl h-[3px] w-full bg-white duration-500 peer-checked:-rotate-45"
+                    ></div>
+                    <div
+                      className="rounded-2xl h-[3px] w-1/2 bg-white duration-500 place-self-end peer-checked:rotate-[225deg] origin-left peer-checked:translate-x-[12px] peer-checked:translate-y-[1px]"
+                    ></div>
+                  </label>
+                </div>
+                <a href="/profile" className="flex flex-col items-center text-white hover:text-blue-400">
+                  <img className="w-12 h-12 rounded-full border-4 border-white/30 shadow-lg object-cover"
+                    src={Cookies.get("profile_pic")}
+                    alt="Profile"
                   />
-              </a>
-                  </div>
+                </a>
+              </div>
 
               {/* <div className={`hidden md:hidden lg:block `} >
 
@@ -142,8 +208,16 @@ const Navbar = () => {
           </a>
           <a href="/Chat" className="flex flex-col items-center text-white hover:text-blue-400">
             <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.1" d="M21 13V7C21 5.11438 21 4.17157 20.4142 3.58579C19.8284 3 18.8856 3 17 3H7C5.11438 3 4.17157 3 3.58579 3.58579C3 4.17157 3 5.11438 3 7V13C3 14.8856 3 15.8284 3.58579 16.4142C4.17157 17 5.11438 17 7 17H7.5C7.77614 17 8 17.2239 8 17.5V20V20.1499C8 20.5037 8.40137 20.7081 8.6875 20.5L13.0956 17.2941C13.3584 17.103 13.675 17 14 17H17C18.8856 17 19.8284 17 20.4142 16.4142C21 15.8284 21 14.8856 21 13Z" fill="#fff"></path> <path d="M8 10H8.01" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M12 10H12.01" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M16 10H16.01" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M21 13V7C21 5.11438 21 4.17157 20.4142 3.58579C19.8284 3 18.8856 3 17 3H7C5.11438 3 4.17157 3 3.58579 3.58579C3 4.17157 3 5.11438 3 7V13C3 14.8856 3 15.8284 3.58579 16.4142C4.17157 17 5.11438 17 7 17H7.5C7.77614 17 8 17.2239 8 17.5V20V20.1499C8 20.5037 8.40137 20.7081 8.6875 20.5L13.0956 17.2941C13.3584 17.103 13.675 17 14 17H17C18.8856 17 19.8284 17 20.4142 16.4142C21 15.8284 21 14.8856 21 13Z" stroke="#fff" stroke-width="2" stroke-linejoin="round"></path> </g></svg>
-            <span className="text-xs">Chat</span>
+          
+            <span className="text-xs">Chat
+                {unreadCount > 0 && (
+          <span className="absolute top-[0.5rem] left-[9rem] bg-[#FF3B30] text-white text-md font-semibold rounded-full w-5 h-5 flex items-center justify-center leading-none select-none">
+            {unreadCount}
+          </span>
+        )}
+            </span>
           </a>
+          
           <a href="/search" className="flex flex-col items-center text-white hover:text-blue-400">
             <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.1" d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" fill="#fff"></path> <path d="M17 17L21 21" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> <path d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="#fff" stroke-width="2"></path> </g></svg>
             <span className="text-xs">Search</span>

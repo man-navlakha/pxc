@@ -10,6 +10,7 @@ const Footer = () => {
                 <div className="font-bold ">Dhruv ✌️ Man</div>
                 <div>Pixel Class © 2025 All rights reserved.</div>
             </div>
+            <div className='block md:block lg:hidden h-6'></div>
         </div>
     );
 };

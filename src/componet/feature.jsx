@@ -173,49 +173,49 @@ backdrop-contrast-100 border-2 border-[#f7fefc] rounded-xl shadow-[5px_5px_1px_0
            
 
 
-            <section class="flex items-center justify-center min-h-screen px-6 py-20">
-                <div class="glass max-w-4xl w-full p-10 rounded-3xl shadow-lg text-center">
-                    <h1 class="text-4xl md:text-6xl font-bold mb-6">Chat With Friend</h1>
-                    <p class="text-lg md:text-xl mb-6">Real-time messaging with friends and classmates. Stay connected, collaborate, and have fun — wherever you are.</p>
-                    <a href="/chat" class="inline-block bg-white text-gray-900 font-semibold py-3 px-6 rounded-full hover:bg-gray-200 transition">Start Chatting</a>
+            <section className="flex items-center justify-center min-h-screen px-6 py-20">
+                <div className="glass max-w-4xl w-full p-10 rounded-3xl shadow-lg text-center">
+                    <h1 className="text-4xl md:text-6xl font-bold mb-6">Chat With Friend</h1>
+                    <p className="text-lg md:text-xl mb-6">Real-time messaging with friends and classmates. Stay connected, collaborate, and have fun — wherever you are.</p>
+                    <a href="/chat" className="inline-block bg-white text-gray-900 font-semibold py-3 px-6 rounded-full hover:bg-gray-200 transition">Start Chatting</a>
 
-                    <div class="mt-10 flex justify-center">
-                        <img src="bgp.png" alt="Chat Screenshot" class="" />
+                    <div className="mt-10 flex justify-center">
+                        <img src="bgp.png" alt="Chat Screenshot" className="" />
                     </div>
                 </div>
             </section>
 
-            <section class="px-6 py-20 backdrop-blur-sm">
-                <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-10 text-center">
-                    <div class="glass p-6 rounded-xl">
-                        <h3 class="text-2xl font-semibold mb-3">Real-Time Messaging</h3>
+            <section className="px-6 py-20 backdrop-blur-sm">
+                <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10 text-center">
+                    <div className="glass p-6 rounded-xl">
+                        <h3 className="text-2xl font-semibold mb-3">Real-Time Messaging</h3>
                         <p>Send and receive messages instantly with your friends or classmates, anytime.</p>
                     </div>
-                    <div class="glass p-6 rounded-xl">
-                        <h3 class="text-2xl font-semibold mb-3">Collaborate on the Go</h3>
+                    <div className="glass p-6 rounded-xl">
+                        <h3 className="text-2xl font-semibold mb-3">Collaborate on the Go</h3>
                         <p>Discuss homework, group projects, or weekend plans — all in one chat.</p>
                     </div>
-                    <div class="glass p-6 rounded-xl">
-                        <h3 class="text-2xl font-semibold mb-3">Secure & Fun</h3>
+                    <div className="glass p-6 rounded-xl">
+                        <h3 className="text-2xl font-semibold mb-3">Secure & Fun</h3>
                         <p>End-to-end encryption, emojis, and reactions to make chatting private and lively.</p>
                     </div>
                 </div>
             </section>
-            <section class="px-6 py-20">
-                <div class="max-w-4xl mx-auto glass p-10 rounded-3xl text-center">
-                    <h2 class="text-3xl md:text-4xl font-bold mb-10">How It Works</h2>
-                    <div class="space-y-6 text-left text-lg">
-                        <div><span class="font-bold text-blue-300">1.</span> Invite a friend by link or username.</div>
-                        <div><span class="font-bold text-blue-300">2.</span> Start chatting in real-time, no delay.</div>
-                        <div><span class="font-bold text-blue-300">3.</span> Send emojis have a fun.</div>
+            <section className="px-6 py-20">
+                <div className="max-w-4xl mx-auto glass p-10 rounded-3xl text-center">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-10">How It Works</h2>
+                    <div className="space-y-6 text-left text-lg">
+                        <div><span className="font-bold text-blue-300">1.</span> Invite a friend by link or username.</div>
+                        <div><span className="font-bold text-blue-300">2.</span> Start chatting in real-time, no delay.</div>
+                        <div><span className="font-bold text-blue-300">3.</span> Send emojis have a fun.</div>
                     </div>
                 </div>
             </section>
 
-            <section class="px-6 py-20 text-center bg-black/80 rounded-2xl backdrop-blur-md">
-                <h2 class="text-4xl font-bold mb-6">Start Chatting Today</h2>
-                {/* <p class="mb-6 text-lg">No installs. No sign-ups. Just you and your friends.</p> */}
-                <a href="chat" class="inline-block bg-white text-gray-900 font-semibold py-3 px-6 rounded-full hover:bg-gray-200 transition">Launch Chat</a>
+            <section className="px-6 py-20 text-center bg-black/80 rounded-2xl backdrop-blur-md">
+                <h2 className="text-4xl font-bold mb-6">Start Chatting Today</h2>
+                {/* <p className="mb-6 text-lg">No installs. No sign-ups. Just you and your friends.</p> */}
+                <a href="chat" className="inline-block bg-white text-gray-900 font-semibold py-3 px-6 rounded-full hover:bg-gray-200 transition">Launch Chat</a>
             </section>
          </div>
 
