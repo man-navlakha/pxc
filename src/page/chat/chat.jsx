@@ -295,8 +295,9 @@ useEffect(() => {
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
-          {messages.map((msg, i) => {
+       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-1 flex flex-col justify-end">
+          {messages
+          .map((msg, i) => {
             const isOwn = msg.sender === USERNAME;
             const prevMsg = messages[i - 1];
             const nextMsg = messages[i + 1];
