@@ -8,6 +8,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import FollowingPage from './FollowingPage';
 import FollowersPage from './FollowersPage';
 import ProfileEditForm from './ProfileEditForm';
+import FloatingMessagesButton from '../componet/FloatingMessagesButton';
 
 const Profile = () => {
   const Username = Cookies.get("username");
@@ -393,7 +394,9 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      
       <Footer />
+      <FloatingMessagesButton />
 
 
       {/* Glassmorphism CSS */}

@@ -377,6 +377,25 @@ export default function Chat() {
     }
   };
 
+
+
+
+
+
+  useEffect(() => {
+  const params = new URLSearchParams(location.search);
+  const prefill = params.get("prefillMessage");
+  if (prefill) {
+    setInput(decodeURIComponent(prefill));
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
+    }
+  }
+}, [location.search]);
+
+
+
   return (
     <div className="flex h-screen ccf">
       {/* Left panel */}
@@ -407,7 +426,7 @@ export default function Chat() {
         {/* Messages */}
         <div
           ref={listRef}
-          className="flex-1 overflow-y-auto px-4 py-4 space-y-2 flex flex-col"
+          className="flex-1 overflow-y-auto overflow-hidden px-4 py-4 space-y-2 flex flex-col"
           // No justify-end: we keep natural flow, but we smart-scroll to bottom.
         >
           {messages.map((msg, i) => {
@@ -432,7 +451,7 @@ export default function Chat() {
               <div key={`${msg.id ?? "temp"}-${i}`} className="flex flex-col">
                 <div
                   id={msg.id ? `msg-${msg.id}` : undefined}
-                  className={`w-fit max-w-[75%] px-4 py-3 shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${
+                  className={`w-fit max-w-[75%] h-fit px-4 py-3 overflow-x-auto shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${
                     isOwn ? "ml-auto bg-emerald-500/30 text-white" : "mr-auto bg-gray-200/10 text-white"
                   }`}
                 >
@@ -529,7 +548,7 @@ export default function Chat() {
               style={{ maxHeight: "200px", overflowY: "auto" }}
               className="flex-1 resize-none px-4 py-2 rounded-xl bg-transparent text-white placeholder-white/70 focus:outline-none focus:ring-0"
               rows={1}
-              placeholder="Type your message or paste a link..."
+              placeholder="Type message or paste a link..."
               value={input}
               onChange={(e) => {
                 setInput(e.target.value);

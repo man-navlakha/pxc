@@ -3,6 +3,7 @@ import '../../new.css';
 import Cookies from "js-cookie";
 import Navbar from '../../componet/Navbar';
 import Footer from '../../componet/Footer';
+import SharePopup from '../../componet/SharePopup';
 import { useNavigate } from 'react-router-dom';
 
 const Ns = () => {
@@ -12,6 +13,12 @@ const Ns = () => {
     const idFromUrl = Cookies.get("pdfid");
     const sub = Cookies.get("sub");
 
+    const [shareModal, setShareModal] = useState({ isOpen: false, pdf: null });
+    const [showPopup, setShowPopup] = useState(false);
+
+
+
+
     const [loading, setLoading] = useState(true);
     const [isopen, setIsopen] = useState(false);
     const [downloadStates, setDownloadStates] = useState({});
@@ -19,45 +26,46 @@ const Ns = () => {
     const [pdfData, setPdfData] = useState([]);
     const [pdfSizes, setPdfSizes] = useState({});
     const [content, setContent] = useState("");
+    const [shareMessage, setShareMessage] = useState("Hey, check this PDF: http://localhost:5173/chat?");
     const [files, setFiles] = useState([]);
     const navigate = useNavigate();
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    
-    // Extract values
-    const sub = params.get('sub');
-    const id = params.get('id');
-    const course = params.get('course');
-    const choose = params.get('choose');
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
 
-    if (choose === "Assignment") {
-        Cookies.set("sub", sub);
-        Cookies.set("choose", choose);
-        Cookies.set("pdfid", id);
-        Cookies.set("from", "email");
-        navigate(`/select?sub=${sub}&id=${id}&course=B.C.A&choose=${choose}`)
-        
-    }
+        // Extract values
+        const sub = params.get('sub');
+        const id = params.get('id');
+        const course = params.get('course');
+        const choose = params.get('choose');
 
-    if (choose === "I.M.P") {
-        Cookies.set("sub", sub);
-        Cookies.set("choose", choose);
-        Cookies.set("pdfid", id);
-        Cookies.set("from", "email");
-        navigate(`/select?sub=${sub}&id=${id}&course=B.C.A&choose=${choose}`)
-        
-    }
+        if (choose === "Assignment") {
+            Cookies.set("sub", sub);
+            Cookies.set("choose", choose);
+            Cookies.set("pdfid", id);
+            Cookies.set("from", "email");
+            navigate(`/select?sub=${sub}&id=${id}&course=B.C.A&choose=${choose}`)
 
-    // Set cookies
+        }
 
-    if (sub) document.cookie = `sub=${sub}; path=/`;
-    if (id) document.cookie = `pdfid=${id}; path=/`;
-    if (course) document.cookie = `course=${course}; path=/`;
-    if (choose) document.cookie = `choose=${choose}; path=/`;
+        if (choose === "I.M.P") {
+            Cookies.set("sub", sub);
+            Cookies.set("choose", choose);
+            Cookies.set("pdfid", id);
+            Cookies.set("from", "email");
+            navigate(`/select?sub=${sub}&id=${id}&course=B.C.A&choose=${choose}`)
 
-    setLoading(false); 
-  }, []);
+        }
+
+        // Set cookies
+
+        if (sub) document.cookie = `sub=${sub}; path=/`;
+        if (id) document.cookie = `pdfid=${id}; path=/`;
+        if (course) document.cookie = `course=${course}; path=/`;
+        if (choose) document.cookie = `choose=${choose}; path=/`;
+
+        setLoading(false);
+    }, []);
 
     const handleFileChange = (e) => {
         setFiles(Array.from(e.target.files));
@@ -241,6 +249,27 @@ const Ns = () => {
             setLoadingStates(prevStates => ({ ...prevStates, [pdfId]: false }));
         }
     };
+
+
+    // Generates app-specific or https link depending on deep linking
+    const getShareLink = (pdf) => {
+        const basePath = window.location.origin; // adjust if deep linking
+        return `${pdf}`;
+    };
+
+    // Generates a QR code image URL using a public API
+    const generateQrCodeURL = (text) => {
+        return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(text)}`;
+    };
+
+    // Opens your chat app with a message containing the link
+    const openChatApp = (pdf) => {
+        const link = getShareLink(pdf);
+        // Assuming your in-app chat route includes query parameters
+        navigate(`/chat?prefillMessage=Hey%2C+check+this+PDF%3A+${encodeURIComponent(link)}`);
+        setShareModal({ isOpen: false, pdf: null });
+    };
+
     return (
         <>
             <div className="bg-pattern"></div>
@@ -254,7 +283,7 @@ const Ns = () => {
                             <span className='text-center m-3 text-3xl md:text-lg lg:text-5xl font-black bg-clip-text bg-gradient-to-tr from-slate-100 to-stone-500 text-transparent ccf '>Dowmload Free {choose}?</span>
                         </div>
                         <div>
-                            <span className='text-center text-xl md:text-xl lg:text-2xl my-3 text-gray-300 font-medium'>for {Subject}, {sem && (sem) } </span>
+                            <span className='text-center text-xl md:text-xl lg:text-2xl my-3 text-gray-300 font-medium'>for {Subject}, {sem && (sem)} </span>
                         </div>
                     </div>
                 </div>
@@ -262,58 +291,122 @@ const Ns = () => {
 
 
 
-                <div className='grid gap-2 nd:grid-cols-1  lg:grid-cols-3 w-full text-white p-6 '>
-                    {loading ?
-                        <>
-      <div className="flex justify-center items-center col-span-3">
-                            <div className=" border-t-2 rounded-full border-green-500 bg-gray-900 animate-spin
-aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
+                <div className='grid gap-4 md:grid-cols-1 lg:grid-cols-3 w-full text-white p-6'>
+                    {loading ? (
+                        <div className="flex justify-center items-center col-span-3">
+                            <div className="border-t-2 rounded-full border-green-500 bg-gray-900 animate-spin w-8 aspect-square"></div>
                         </div>
+                    ) : pdfData.length > 0 ? (
+                        pdfData
+                            .filter(pdf => pdf.choose === choose)
+                            .map((pdf) => {
+                                const isDownloading = loadingStates[pdf.id];
+                                const downloadIcon = isDownloading ? "arrow_circle_down" : (downloadStates[pdf.id] || "download");
+                                const shareIcon = isDownloading ? "share" : (downloadStates[pdf.id] || "share");
 
-
-                        </>
-                        :
-
-                        pdfData.length > 0 ? (
-                            pdfData
-                                .filter(pdf => pdf.choose === choose)
-                                .map((pdf, index) => (
-                                    <div onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)} key={index} className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60  hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 [box-shadow:0px_1px_8px_rgba(13,34,71,0.12),_0px_28px_108px_rgba(13,34,71,0.1),inset_0px_-1px_1px_rgba(13,34,71,0.12)] lg:min-w-[384px]">
-
+                                return (
+                                    <div
+                                        key={pdf.id}
+                                        className="flex gap-2 items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:shadow-lg hover:bg-blue-800/30 transition-all"
+                                    >
                                         <img
                                             src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
                                             alt="PDF Icon"
                                             className="w-12 h-12 object-contain"
                                         />
 
-                                        <div className='flex-1 flex flex-col'>
-                                            <p className='flex-1 text-xl'>{pdf.name}</p>
-                                            <div className='flex flex-col '>
-                                                <p className="text-md text-slate-400">
-                                                    {pdfSizes[pdf.pdf] || "Loading..."} • PDF • 2025
-                                                </p>
-                                            </div>
-
+                                        <div className="flex-1 flex flex-col">
+                                            <p className="text-xl truncate" title={pdf.name}>{pdf.name}</p>
+                                            <p className="text-md text-slate-400">
+                                                {pdfSizes[pdf.pdf] || "Loading..."} • PDF • 2025
+                                            </p>
                                         </div>
-                                        <div className="group relative mr-31">
-                                            <button>
-                                                <span className="material-symbols-outlined">
-                                                    {loadingStates[pdf.id] ? 'arrow_circle_down' : (downloadStates[pdf.id] || 'download')}
-                                                </span>
+                                        <div className="flex gap-3">
+                                            <button onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)}>
+                                                <span className="material-symbols-outlined">{downloadIcon}</span>
                                             </button>
+                                          <button
+  onClick={() => {
+    setShareModal({ isOpen: true, pdf });
+    setShareMessage(pdf.pdf); // use `pdf`, not `shareModal.pdf`
+    console.log(pdf.pdf);
+  }}
+>
+  <span className="material-symbols-outlined">{shareIcon}</span>
+</button>
+
+
                                         </div>
-
                                     </div>
-                                ))
-                        ) : (
-                            <p>No file for this</p>
-                        )
-
-
-                    }
+                                );
+                            })
+                    ) : (
+                        <p className="text-center text-white/60 col-span-3 mt-6">
+                            No files found for the selected category.
+                        </p>
+                    )}
                 </div>
 
 
+
+                {shareModal.isOpen && shareModal.pdf && (
+                    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+                        {console.log(shareModal.pdf)}
+                        <div className="bg-gray-800 text-white p-6 rounded-lg relative max-w-md w-full">
+                            <button
+                                className="absolute top-2 right-2 text-xl"
+                                onClick={() => setShareModal({ isOpen: false, pdf: null })}
+                            >
+                                &times;
+                            </button>
+                            <h2 className="text-lg font-semibold mb-4">Share "{shareModal.pdf.name}"</h2>
+
+                            {/* QR Code */}
+                            <div className="mb-4 flex justify-center">
+                                <img
+                                    src={generateQrCodeURL(getShareLink(shareModal.pdf.pdf))}
+                                    alt="QR Code"
+                                    className="w-32 h-32 bg-white p-2"
+                                />
+                            </div>
+
+                            {/* Shareable Link */}
+                            <div className="mb-2">
+                                <input
+                                    type="text"
+                                    readOnly
+                                    value={getShareLink(shareModal.pdf.pdf)}
+                                    className="w-full bg-gray-700 p-2 rounded"
+                                />
+                            </div>
+                            <div className="flex gap-2 mb-4">
+                                <button
+                                    className="bg-blue-500 px-3 py-1 rounded"
+                                    onClick={() => navigator.clipboard.writeText(getShareLink(shareModal.pdf.pdf) , setShareMessage(shareModal.pdf.pdf), console.log(shareMessage))}
+                                >
+                                    Copy Link
+                                </button>
+                                <button
+                                    className="bg-green-500 px-3 py-1 rounded"
+                                    onClick={() => setShowPopup(true)}
+                                >
+                                    Open Chat & Share
+                                </button>
+                            </div>
+
+                            <p className="text-sm text-gray-300">
+                                Scan or share the link—recipients can access the item and message inside the app.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {showPopup && (
+                    <SharePopup
+                        messageToShare={shareMessage}
+                        onClose={() => setShowPopup(false)}
+                    />
+                )}
 
             </div>
             <Footer />
