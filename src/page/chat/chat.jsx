@@ -383,16 +383,16 @@ export default function Chat() {
 
 
   useEffect(() => {
-  const params = new URLSearchParams(location.search);
-  const prefill = params.get("prefillMessage");
-  if (prefill) {
-    setInput(decodeURIComponent(prefill));
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
+    const params = new URLSearchParams(location.search);
+    const prefill = params.get("prefillMessage");
+    if (prefill) {
+      setInput(decodeURIComponent(prefill));
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+        textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
+      }
     }
-  }
-}, [location.search]);
+  }, [location.search]);
 
 
 
@@ -409,7 +409,7 @@ export default function Chat() {
       {/* Right panel */}
       <div className="flex-1 flex flex-col text-white">
         {/* Header */}
-        <div className="sticky top-0 bg-gray-900 flex items-center gap-3 px-4 py-3 border-b border-gray-700">
+        <div className="sticky top-0 bg-gray-900 overflow-hidden flex items-center gap-3 px-4 py-3 border-b border-gray-700">
           <button onClick={() => navigate("/chat")} className="p-2">
             <Undo2 className="text-white" />
           </button>
@@ -426,8 +426,8 @@ export default function Chat() {
         {/* Messages */}
         <div
           ref={listRef}
-          className="flex-1 overflow-y-auto overflow-hidden px-4 py-4 space-y-2 flex flex-col"
-          // No justify-end: we keep natural flow, but we smart-scroll to bottom.
+          className="flex-1 overflow-y-auto px-4 py-4 space-y-1 flex flex-col justify-end"
+        // No justify-end: we keep natural flow, but we smart-scroll to bottom.
         >
           {messages.map((msg, i) => {
             const isOwn = msg.sender === USERNAME;
@@ -451,9 +451,8 @@ export default function Chat() {
               <div key={`${msg.id ?? "temp"}-${i}`} className="flex flex-col">
                 <div
                   id={msg.id ? `msg-${msg.id}` : undefined}
-                  className={`w-fit max-w-[75%] h-fit px-4 py-3 overflow-x-auto shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${
-                    isOwn ? "ml-auto bg-emerald-500/30 text-white" : "mr-auto bg-gray-200/10 text-white"
-                  }`}
+                  className={`w-fit max-w-[75%] h-fit px-4 py-3 overflow-x-auto shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn ? "ml-auto bg-emerald-500/30 text-white" : "mr-auto bg-gray-200/10 text-white"
+                    }`}
                 >
                   {renderMedia(msg.message)}
                 </div>
