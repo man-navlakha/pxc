@@ -192,7 +192,7 @@ export default function Chat() {
   const isAtBottom = () => {
     const el = listRef.current;
     if (!el) return true;
-    const threshold = 50; // px
+    const threshold = 500; // px
     return el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
     // (works because we'll set container to overflow-y-auto)
   };
@@ -281,7 +281,12 @@ export default function Chat() {
       }
       const ext = getExtFromUrl(url);
       if (IMAGE_EXT.includes(ext)) {
-        return <img src={url} alt="image" className="rounded-lg max-w-xs" />;
+        return (
+          <div className="max-w-full overflow-hidden">
+            <img src={url} alt="image" className="rounded-lg w-full h-auto" />
+          </div>
+        );
+
       }
       if (VIDEO_EXT.includes(ext)) {
         return (
@@ -323,7 +328,7 @@ export default function Chat() {
       const yt = isYouTube(raw);
       if (yt) {
         return (
-          <div className="w-full max-w-xs aspect-video">
+          <div className="w-full max-w-min overflow-hidden">
             <iframe
               className="w-full h-full rounded-lg"
               src={yt}
@@ -399,10 +404,8 @@ export default function Chat() {
   return (
     <div className="flex h-screen ccf">
       {/* Left panel */}
-      <div
-        className="resize-x overflow-auto border-r border-gray-700 hidden md:hidden lg:block"
-        style={{ minWidth: "200px", maxWidth: "50%" }}
-      >
+     <div className="resize-x overflow-y-auto border-r border-gray-700 hidden lg:block">
+
         <Listuser />
       </div>
 
@@ -426,7 +429,7 @@ export default function Chat() {
         {/* Messages */}
         <div
           ref={listRef}
-          className="flex-1 overflow-y-auto px-4 py-4 space-y-1 flex flex-col justify-end"
+          className="flex flex-1 flex-col justify-end overflow-y-auto px-4 py-4 space-y-1"
         // No justify-end: we keep natural flow, but we smart-scroll to bottom.
         >
           {messages.map((msg, i) => {
@@ -451,9 +454,10 @@ export default function Chat() {
               <div key={`${msg.id ?? "temp"}-${i}`} className="flex flex-col">
                 <div
                   id={msg.id ? `msg-${msg.id}` : undefined}
-                  className={`w-fit max-w-[75%] h-fit px-4 py-3 overflow-x-auto shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn ? "ml-auto bg-emerald-500/30 text-white" : "mr-auto bg-gray-200/10 text-white"
-                    }`}
+                  className={`w-fit max-w-[75%] h-fit px-4 py-3 overflow-x-auto shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn ? "ml-auto bg-emerald-500/30 text-white" : "mr-auto bg-gray-200/10 text-white"}`}
                 >
+
+
                   {renderMedia(msg.message)}
                 </div>
 
