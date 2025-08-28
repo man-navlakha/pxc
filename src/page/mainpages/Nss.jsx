@@ -3,12 +3,13 @@ import '../../new.css';
 import Cookies from "js-cookie";
 import Navbar from '../../componet/Navbar';
 import Footer from '../../componet/Footer';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useParams} from 'react-router-dom';
 
 const Ns = () => {
+    const { osubject, ochoose } = useParams();
     const sem = Cookies.get("latest_sem");
-    const Subject = Cookies.get("sub");
-    const choose = Cookies.get("choose");
+    const sub = Cookies.get("sub");
+    const option = Cookies.get("choose");
 
        const navigate = useNavigate();
 
@@ -18,6 +19,9 @@ const Ns = () => {
     const [pdfData, setPdfData] = useState([]);
     const [pdfSizes, setPdfSizes] = useState({});
 
+
+    const Subject = (osubject || sub)
+    const choose = (ochoose || option)
 
 
     useEffect(() => {

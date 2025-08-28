@@ -27,14 +27,19 @@ const Ns = () => {
     const navigate = useNavigate();
 
 
-    const Subject = (osubject || Sub)
-    const choose = (ochoose || option)
+    const Subject = osubject || Sub;
+    const choose = ochoose || option;
+
 
 
     console.log(Subject)
     console.log(choose)
+    useEffect(() => {
+        if (["Assignment", "imp"].includes(choose)) {
+            navigate(`/nss/${Subject}/${choose}`);
+        }
+    }, [choose, Subject, navigate]);
 
-    // https://pixelclass.netlify.app/ns?sub=Linux&id=107&course=B.C.A&choose=imp
 
 
     useEffect(() => {
@@ -60,9 +65,9 @@ const Ns = () => {
         if (choose) Cookies.set("choose", choose);
 
         setLoading(false);
-    }, []);
+    }, [navigate]);
 
-     const handleFileChange = (e) => {
+    const handleFileChange = (e) => {
         setFiles(Array.from(e.target.files));
     };
 
@@ -276,7 +281,7 @@ const Ns = () => {
                 <div className='ccf'>
                     <div className='p-4 py-16 flex flex-col text-center content-center flex-nowrap justify-center gap-3 items-center'>
                         <div>
-                            <span className='text-center m-3 text-3xl md:text-lg lg:text-5xl font-black bg-clip-text bg-gradient-to-tr from-slate-100 to-stone-500 text-transparent ccf '>Dowmload Free {choose}?</span>
+                            <span className='text-center m-3 text-3xl md:text-lg lg:text-5xl font-black bg-clip-text bg-gradient-to-tr from-slate-100 to-stone-500 text-transparent ccf '>Dowmload Free {choose === "exam_papper" ? "Exam Paper" : choose}?</span>
                         </div>
                         <div>
                             <span className='text-center text-xl md:text-xl lg:text-2xl my-3 text-gray-300 font-medium'>for {Subject}, {sem && (sem)} </span>
@@ -303,7 +308,7 @@ const Ns = () => {
                                 return (
                                     <div
                                         key={pdf.id}
-                                        className="flex gap-2 items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:shadow-lg hover:bg-blue-800/30 transition-all"
+                                        className="flex gap-1 items-center py-4 px-3 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:shadow-lg hover:bg-blue-800/30 transition-all"
                                     >
                                         <img
                                             src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
@@ -311,17 +316,21 @@ const Ns = () => {
                                             className="w-12 h-12 object-contain"
                                         />
 
-                                        <div className="flex-1 flex flex-col">
-                                            <p className="text-xl truncate" title={pdf.name}>{pdf.name}</p>
+                                        <div className="flex-1 flex flex-col min-w-0">
+                                            <div className="overflow-hidden">
+                                                <p className="text-xl truncate" title={pdf.name}>{pdf.name}</p>
+                                            </div>
+
                                             <p className="text-md text-slate-400">
                                                 {pdfSizes[pdf.pdf] || "Loading..."} • PDF • 2025
                                             </p>
                                         </div>
-                                        <div className="flex gap-3">
-                                            <button onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)}>
+
+                                        <div className="flex items-center justify-center gap-3">
+                                            <button className='bg-blue-600/30 hover:bg-black/30 rounded px-3 py-2 flex items-center justify-center ' onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)}>
                                                 <span className="material-symbols-outlined">{downloadIcon}</span>
                                             </button>
-                                            <button
+                                            <button className='bg-blue-600/30 hover:bg-black/30 rounded px-3 py-2 flex items-center justify-center '
                                                 onClick={() => {
                                                     setShareModal({ isOpen: true, pdf });
                                                     setShareMessage(pdf.pdf); // use `pdf`, not `shareModal.pdf`
@@ -406,7 +415,7 @@ const Ns = () => {
 
             </div>
             <Footer />
-            <div role="button" onClick={() => setIsopen(true)} data-tooltip="Upload" aria-label="Upload" data-tooltip-className="Upload" tabIndex="0" className="border border-gray-700 fixed bottom-[6rem] right-5 rounded-[50%] flex justify-center items-center text-3xl w-16 h-16 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#27272a] via-[#52525b] to-[#a1a1aa] text-white font-black">
+            <div role="button" onClick={() => setIsopen(true)} data-tooltip="Upload" aria-label="Upload" data-tooltip-classname="Upload" tabIndex="0" className="border border-gray-700 fixed bottom-[6rem] right-5 rounded-[50%] flex justify-center items-center text-3xl w-16 h-16 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-[#27272a] via-[#52525b] to-[#a1a1aa] text-white font-black">
                 <div className="flex items-center justify-center bg-gradient-to-br from-white via-neutral-200 to-neutral-700 bg-clip-text text-transparent">
                     +
                 </div>

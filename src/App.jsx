@@ -155,6 +155,7 @@ function App() {
                     <Route path="/ns" element={<Protected> <Ns /></Protected>} />
                     <Route path="/ns/:osubject/:ochoose" element={<Protected> <Ns /></Protected>} />
                     <Route path="/nss" element={<Protected> <Nss /></Protected>} />
+                    <Route path="/nss/:osubject/:ochoose" element={<Protected> <Nss /></Protected>} />
                     <Route path="/select" element={<Protected> <Select /></Protected>} />
 
 

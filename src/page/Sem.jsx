@@ -7,6 +7,14 @@ import Navbar from '../componet/Navbar';
 import { useNavigate, useLocation, Link } from "react-router-dom";
 
 const Semester = () => {
+
+    const [expandedSubject, setExpandedSubject] = useState(null);
+
+const toggleSubject = (subjectName) => {
+  setExpandedSubject((prev) => (prev === subjectName ? null : subjectName));
+};
+
+
     const Semesters = ["3", "4", "5", "6"];
     const [selectedSem, setSelectedSem] = useState(Cookies.get("latest_sem") || null);
     const sectionRef = useRef(null);
@@ -30,9 +38,11 @@ const Semester = () => {
                     setApiResponse(result);
                 } catch (err) {
                     console.error('Error fetching subjects:', err);
-                    setError('Failed to load subjects. Please try again.');
+                    const message = err.response?.data?.message || err.message || 'Unknown error';
+                    setError(`Failed to load subjects. Please try again. ${message}`);
                     setApiResponse(null);
-                } finally {
+                }
+                finally {
                     setLoading(false);
                 }
             }
@@ -59,21 +69,17 @@ const Semester = () => {
         setSelectedSem(sem); // This will trigger the useEffect to fetch data
         Cookies.set("latest_sem", sem, { expires: 7 }); // Update the cookie
     };
-    const handlechooose = (choose, sub) => {
+    const handleChoose = (choose, sub) => {
         Cookies.set("sub", sub)
         Cookies.set("choose", choose)
-        choose === 'Notes' && nav(`/ns`);
-        choose === 'Assignment' && nav(`/nss`);
-        choose === 'exam_papper' && nav(`/ns`);
-        choose === 'practical' && nav(`/ns`);
-        choose === 'imp' &&
-            nav(`/nss`);
-            console.log(choose + sub)
-        };
+
+        nav(`/ns/${sub}/${choose}`);
+        console.log(choose + sub)
+    };
 
     return (
         <>
-         
+
             <div className="bg-pattern"></div>
             <div className=' ccfv mt-6 h-full min-h-screen'>
                 <div className='ccf'>
@@ -86,7 +92,7 @@ const Semester = () => {
                         </div>
                     </div>
                 </div>
-                <div className={`${selectedSem ? 'visible mt-10 h-max' : 'h-screen'}   p-8 `}>
+                <div className={`p-8 ${selectedSem ? 'mt-10' : 'min-h-screen flex items-center justify-center'}`}>
                     <div className='grid gap-4 text-white items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-flow-cols'>
                         {Semesters.map((sem, index) => (
                             <button className="relative" key={index}>
@@ -117,9 +123,9 @@ const Semester = () => {
                     <div className={` ${selectedSem ? 'visible mt-10 ' : 'hidden'}  text-2xl lg:text-3xl text-white`}>
                         <div>
                             {selectedSem && ( // Only show the title if a semester is selected
-                                <span ref={sectionRef} className="font-bold mb-8">Choose your subject for Semester {selectedSem}</span>
+                                <span ref={sectionRef} className="font-bold ">Choose your subject for Semester {selectedSem}</span>
                             )}
-                            {loading && <span className="text-xl mt-4 m-4 cursor-progress ">  <div className=" " >
+                            {loading && <span className="text-xl mt-6 cursor-progress ">  <div className=" " >
                                 <div className="book">
                                     <div className="flex flex-col gap-3 text-md cursor-progress  ">
                                         <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
@@ -137,38 +143,49 @@ const Semester = () => {
 
                                 {apiResponse && (
                                     <div className="mt-4 ml-10 text-xl">
-
-                                        {apiResponse && apiResponse.length > 0 ? (
-                                            <div className="grid gap-5 grid-cols-1 fc md:grid-cols-1 lg:grid-cols-3">
+                                        {apiResponse.length > 0 ? (
+                                            <div className="grid gap-5 grid-cols-1 md:grid-cols-1 lg:grid-cols-3">
                                                 {apiResponse.map((subject) => (
-                                                    <div className="" key={subject.id}>
-                                                        <div className="book">
-                                                            <div className="flex flex-col gap-3 text-md cursor-pointer ">
-                                                                <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Assignment", subject.name)} >📚 Assignments</button>
-                                                                <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Notes", subject.name)} >📝 Notes</button>
-                                                                <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("imp", subject.name)} >❓ IMP Q&A </button>
-                                                                <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("exam_papper", subject.name)} >📄 Exam Papers</button>
-                                                                <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("practical", subject.name)} >🧑‍💻 Genaral Book</button>
+                                                    <div key={subject.id}>
+                                                        <div className="book fc overflow-hidden p-0">
+                                                            <div className="flex flex-col gap-3 text-md cursor-pointer fc">
+                                                                {[
+                                                                    { label: "📚 Assignments", type: "Assignment" },
+                                                                    { label: "📝 Notes", type: "Notes" },
+                                                                    { label: "❓ IMP Q&A", type: "imp" },
+                                                                    { label: "📄 Exam Papers", type: "exam_papper" },
+                                                                    { label: "🧑‍💻 General Book", type: "practical" },
+                                                                ].map(({ label, type }) => (
+                                                                    <button
+                                                                        key={type}
+                                                                        aria-label={`Open ${label} for ${subject.name}`}
+                                                                        className="px-8  w-full min-w-[60px] py-1  hover:bg-gray-200 border-y border-gray-500/30"
+                                                                        onClick={() => handleChoose(type, subject.name)}
+                                                                    >
+                                                                        {label}
+                                                                    </button>
+                                                                ))}
                                                             </div>
-                                                            <div className=" p-2 cover border border-gray-300/60">
+                                                            <div className="p-2 cover border border-gray-300/60">
                                                                 <p>{subject.name}</p>
                                                             </div>
-                                                        </div></div>
+                                                        </div>
+                                                    </div>
                                                 ))}
                                             </div>
                                         ) : (
                                             <p className="text-xs text-red-500">No subjects found for this semester.</p>
                                         )}
-
                                     </div>
                                 )}
+
                             </div>
                         </div>
                     </div>
                 </div>
 
             </div>
-          
+
         </>
     );
 };
