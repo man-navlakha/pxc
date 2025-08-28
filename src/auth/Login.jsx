@@ -84,7 +84,7 @@ const redirectTo = queryParams.get("redirect") || "/";
                 username: e.target.username.value.toLowerCase(), // use email input
                 password: e.target.password.value,
             });
-            console.log(ress.data);
+         
             if (ress.data.message === "Login successful!") { // use ress
                 Cookies.set("access_token", ress.data.access_token,  { expires: 7 });
                 Cookies.set("username", ress.data.username,  { expires: 7 });

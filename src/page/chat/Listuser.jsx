@@ -103,7 +103,7 @@ export default function Listuser() {
     };
 
     fetchData();
-    intervalId = setInterval(fetchData, 3000);
+    intervalId = setInterval(fetchData, 60000);
 
     return () => clearInterval(intervalId);
   }, [USERNAME]);

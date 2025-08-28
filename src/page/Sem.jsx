@@ -64,11 +64,12 @@ const Semester = () => {
         Cookies.set("choose", choose)
         choose === 'Notes' && nav(`/ns`);
         choose === 'Assignment' && nav(`/nss`);
-        choose === 'Exam' && nav(`/ns`);
+        choose === 'exam_papper' && nav(`/ns`);
         choose === 'practical' && nav(`/ns`);
-        choose === 'I.M.P' &&
+        choose === 'imp' &&
             nav(`/nss`);
-    };
+            console.log(choose + sub)
+        };
 
     return (
         <>
@@ -85,7 +86,7 @@ const Semester = () => {
                         </div>
                     </div>
                 </div>
-                <div className={`${selectedSem ? 'visible mt-10 h-max' : 'h-screen'}   p-5`}>
+                <div className={`${selectedSem ? 'visible mt-10 h-max' : 'h-screen'}   p-8 `}>
                     <div className='grid gap-4 text-white items-center grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-flow-cols'>
                         {Semesters.map((sem, index) => (
                             <button className="relative" key={index}>
@@ -118,9 +119,9 @@ const Semester = () => {
                             {selectedSem && ( // Only show the title if a semester is selected
                                 <span ref={sectionRef} className="font-bold mb-8">Choose your subject for Semester {selectedSem}</span>
                             )}
-                            {loading && <span className="text-xl mt-4  cursor-progress ">  <div className=" " >
+                            {loading && <span className="text-xl mt-4 m-4 cursor-progress ">  <div className=" " >
                                 <div className="book">
-                                    <div className="flex flex-col gap-4 text-md cursor-progress  ">
+                                    <div className="flex flex-col gap-3 text-md cursor-progress  ">
                                         <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
                                         <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
                                         <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
@@ -145,8 +146,8 @@ const Semester = () => {
                                                             <div className="flex flex-col gap-3 text-md cursor-pointer ">
                                                                 <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Assignment", subject.name)} >📚 Assignments</button>
                                                                 <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Notes", subject.name)} >📝 Notes</button>
-                                                                <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("I.M.P", subject.name)} >❓ IMP Q&A </button>
-                                                                <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("Exam", subject.name)} >📄 Exam Papers</button>
+                                                                <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("imp", subject.name)} >❓ IMP Q&A </button>
+                                                                <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("exam_papper", subject.name)} >📄 Exam Papers</button>
                                                                 <button className="px-2 py-1 bg-gray-300 rounded-xl border border-gray-500/30 fc" onClick={() => handlechooose("practical", subject.name)} >🧑‍💻 Genaral Book</button>
                                                             </div>
                                                             <div className=" p-2 cover border border-gray-300/60">

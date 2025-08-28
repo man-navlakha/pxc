@@ -4,21 +4,17 @@ import Cookies from "js-cookie";
 import Navbar from '../../componet/Navbar';
 import Footer from '../../componet/Footer';
 import SharePopup from '../../componet/SharePopup';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const Ns = () => {
     const sem = Cookies.get("latest_sem");
-    const Subject = Cookies.get("sub");
-    const choose = Cookies.get("choose");
+    const Sub = Cookies.get("sub");
+    const option = Cookies.get("choose");
     const idFromUrl = Cookies.get("pdfid");
     const sub = Cookies.get("sub");
-
+    const { osubject, ochoose } = useParams();
     const [shareModal, setShareModal] = useState({ isOpen: false, pdf: null });
     const [showPopup, setShowPopup] = useState(false);
-
-
-
-
     const [loading, setLoading] = useState(true);
     const [isopen, setIsopen] = useState(false);
     const [downloadStates, setDownloadStates] = useState({});
@@ -30,47 +26,45 @@ const Ns = () => {
     const [files, setFiles] = useState([]);
     const navigate = useNavigate();
 
+
+    const Subject = (osubject || Sub)
+    const choose = (ochoose || option)
+
+
+    console.log(Subject)
+    console.log(choose)
+
+    // https://pixelclass.netlify.app/ns?sub=Linux&id=107&course=B.C.A&choose=imp
+
+
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
-
-        // Extract values
         const sub = params.get('sub');
         const id = params.get('id');
         const course = params.get('course');
-        const choose = params.get('choose');
+        const choose = params.get('choose'); // ⬅️ this `choose`, not from state
 
-        if (choose === "Assignment") {
+        if (["Assignment", "imp"].includes(choose)) {
             Cookies.set("sub", sub);
             Cookies.set("choose", choose);
             Cookies.set("pdfid", id);
             Cookies.set("from", "email");
-            navigate(`/select?sub=${sub}&id=${id}&course=B.C.A&choose=${choose}`)
-
+            navigate(`/select?sub=${sub}&id=${id}&course=${course}&choose=${choose}`);
+            return;
         }
 
-        if (choose === "I.M.P") {
-            Cookies.set("sub", sub);
-            Cookies.set("choose", choose);
-            Cookies.set("pdfid", id);
-            Cookies.set("from", "email");
-            navigate(`/select?sub=${sub}&id=${id}&course=B.C.A&choose=${choose}`)
-
-        }
-
-        // Set cookies
-
-        if (sub) document.cookie = `sub=${sub}; path=/`;
-        if (id) document.cookie = `pdfid=${id}; path=/`;
-        if (course) document.cookie = `course=${course}; path=/`;
-        if (choose) document.cookie = `choose=${choose}; path=/`;
+        // Save cookies
+        if (sub) Cookies.set("sub", sub);
+        if (id) Cookies.set("pdfid", id);
+        if (course) Cookies.set("course", course);
+        if (choose) Cookies.set("choose", choose);
 
         setLoading(false);
     }, []);
 
-    const handleFileChange = (e) => {
+     const handleFileChange = (e) => {
         setFiles(Array.from(e.target.files));
     };
-
 
 
     const handleSubmit = async (event) => {
@@ -270,6 +264,8 @@ const Ns = () => {
         setShareModal({ isOpen: false, pdf: null });
     };
 
+
+
     return (
         <>
             <div className="bg-pattern"></div>
@@ -325,15 +321,15 @@ const Ns = () => {
                                             <button onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)}>
                                                 <span className="material-symbols-outlined">{downloadIcon}</span>
                                             </button>
-                                          <button
-  onClick={() => {
-    setShareModal({ isOpen: true, pdf });
-    setShareMessage(pdf.pdf); // use `pdf`, not `shareModal.pdf`
-    console.log(pdf.pdf);
-  }}
->
-  <span className="material-symbols-outlined">{shareIcon}</span>
-</button>
+                                            <button
+                                                onClick={() => {
+                                                    setShareModal({ isOpen: true, pdf });
+                                                    setShareMessage(pdf.pdf); // use `pdf`, not `shareModal.pdf`
+                                                    console.log(pdf.pdf);
+                                                }}
+                                            >
+                                                <span className="material-symbols-outlined">{shareIcon}</span>
+                                            </button>
 
 
                                         </div>
@@ -382,7 +378,7 @@ const Ns = () => {
                             <div className="flex gap-2 mb-4">
                                 <button
                                     className="bg-blue-500 px-3 py-1 rounded"
-                                    onClick={() => navigator.clipboard.writeText(getShareLink(shareModal.pdf.pdf) , setShareMessage(shareModal.pdf.pdf), console.log(shareMessage))}
+                                    onClick={() => navigator.clipboard.writeText(getShareLink(shareModal.pdf.pdf), setShareMessage(shareModal.pdf.pdf), console.log(shareMessage))}
                                 >
                                     Copy Link
                                 </button>

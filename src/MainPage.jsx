@@ -38,7 +38,7 @@ const MainPage = () => {
       setLoading(true);
       axios.post('https://pixel-classes.onrender.com/api/Profile/details/', { username: userToFetch })
         .then(res => setProfile(res.data))
-        .catch(() => setError("Failed to load profile details"))
+        .catch(() => setError(`Faild to Load profile details either ${message}`))
         .finally(() => handleLoading());
     }, [username])
 

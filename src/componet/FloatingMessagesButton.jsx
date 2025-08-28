@@ -70,7 +70,7 @@ useEffect(() => {
   };
 
   fetchData(); // Initial fetch immediately
-  intervalId = setInterval(fetchData, 3000); // Poll every 3 seconds
+  intervalId = setInterval(fetchData, 60000); // Poll every 3 seconds
 
   return () => {
     clearInterval(intervalId); // Cleanup on unmount or USERNAME change

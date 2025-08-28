@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Cookies from "js-cookie";
 import axios from "axios";
 import './App.css';
@@ -71,6 +72,7 @@ function App() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [courses, setCourses] = useState([]);
     const [isOnline, setIsOnline] = useState(navigator.onLine);
+    const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -122,7 +124,7 @@ function App() {
 
             <div className="App transition-all duration-500 ease-in-out dark:bg-[#1e1e1e] dark:text-white bg-black">
                 <Routes>
-                    <Route path="*" element={<NotFound />} />
+                    <Route path="*"  />
 
                     {/* Beta */}
                     <Route
@@ -151,6 +153,7 @@ function App() {
                     <Route path="/profile" element={<Protected> <Prof /></Protected>} />
                     <Route path="/profile/:nameFromUrl" element={<Protected> <Prof /></Protected>} />
                     <Route path="/ns" element={<Protected> <Ns /></Protected>} />
+                    <Route path="/ns/:osubject/:ochoose" element={<Protected> <Ns /></Protected>} />
                     <Route path="/nss" element={<Protected> <Nss /></Protected>} />
                     <Route path="/select" element={<Protected> <Select /></Protected>} />
 
