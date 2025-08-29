@@ -3,7 +3,7 @@ import '../../new.css';
 import Cookies from "js-cookie";
 import Navbar from '../../componet/Navbar';
 import Footer from '../../componet/Footer';
-import { Navigate, useNavigate, useParams} from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 const Ns = () => {
     const { osubject, ochoose } = useParams();
@@ -11,7 +11,7 @@ const Ns = () => {
     const sub = Cookies.get("sub");
     const option = Cookies.get("choose");
 
-       const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const [loading, setLoading] = useState(false);
     const [downloadStates, setDownloadStates] = useState({});
@@ -62,7 +62,7 @@ const Ns = () => {
                     [url]: (contentLength / 1024).toFixed(2) + ' KB' // Convert bytes to KB
                 }));
             }
-          
+
         } catch (error) {
             console.error('Error fetching PDF size:', error);
         }
@@ -70,14 +70,25 @@ const Ns = () => {
 
 
 
-  const handleDownload = async (pdfId, pdfSizes, pdfurl, pdfname, pdfyear) => {
-      Cookies.set("pdfid" , pdfId)
-      Cookies.set("pdfSizes" , pdfSizes)
-      Cookies.set("pdfurl" , pdfurl)
-      Cookies.set("pdfname" , pdfname)
-      Cookies.set("pdfyear" , pdfyear)
-      navigate(`/select/`)
+   const handleDownload = async (pdfId, pdfSizes, pdfurl, pdfname, pdfyear) => {
+    // Store values in cookies
+    Cookies.set("pdfid", pdfId);
+    Cookies.set("pdfSizes", pdfSizes);
+    Cookies.set("pdfurl", pdfurl);
+    Cookies.set("pdfname", pdfname);
+    Cookies.set("pdfyear", pdfyear);
+
+    // Helper: Base64 URL-safe encoding
+    function base64UrlEncode(str) {
+        return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+
+    const encodedUrl = base64UrlEncode(pdfurl); // ✅ Encode the URL
+
+    // Navigate with the encoded URL
+    navigate(`/select/${pdfId}`);
 };
+
     return (
         <>
             <div className='mesh_ns h-screen ccf overflow-y-scroll '>
@@ -95,12 +106,12 @@ const Ns = () => {
 
 
                 <div className='grid gap-2 nd:grid-cols-1  lg:grid-cols-3 w-full text-white p-6 '>
-                   {loading ?
+                    {loading ?
                         <>
-      <div className="flex justify-center items-center col-span-3">
-                            <div className=" border-t-2 rounded-full border-green-500 bg-gray-900 animate-spin
+                            <div className="flex justify-center items-center col-span-3">
+                                <div className=" border-t-2 rounded-full border-green-500 bg-gray-900 animate-spin
 aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
-                        </div>
+                            </div>
 
 
                         </>
@@ -120,10 +131,10 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                                         <div className='flex-1 flex flex-col'>
                                             <p className='flex-1 text-xl'>{pdf.name}</p>
                                             <div className='flex gap-2 '>
-<p className="text-md text-slate-400">
+                                                <p className="text-md text-slate-400">
                                                     {pdfSizes[pdf.pdf] || "Loading..."} • PDF • {2025}
                                                 </p>
-                                                 </div>
+                                            </div>
 
                                         </div>
                                         <div onClick={() => handleDownload(pdf.id, pdfSizes[pdf.pdf], pdf.pdf, pdf.name, pdf.year)} className="group relative mr-31">

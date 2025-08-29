@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 import '../../new.css';
 import Navbar from '../../componet/Navbar';
 import Footer from '../../componet/Footer';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 
 const Select = () => {
     const [loading, setLoading] = useState(false);
@@ -18,6 +19,13 @@ const Select = () => {
     const [loadingStates, setLoadingStates] = useState({});
 
     const [isopen, setIsopen] = useState(false);
+
+    const { sid } = useParams();
+
+
+    console.log(sid)
+
+
     const params = new URLSearchParams(window.location.search);
 
     const [content, setContent] = useState("");
@@ -25,52 +33,44 @@ const Select = () => {
     const [pdfData, setPdfData] = useState([]);
     const [pdfSizes, setPdfSizes] = useState({});
 
+   const pdfID = sid || Cookies.get("id") || Cookies.get("pdfid") || params.get("pdfid");
+
 
 
     useEffect(() => {
-        const fetchPDFs = async () => {
-            const isFromEmail = Cookies.get("from") === "email";
-            const id = isFromEmail ? new URLSearchParams(window.location.search).get("id") : Cookies.get("pdfid");
+    const fetchPDFs = async () => {
+        if (!pdfID) return;
 
-            if (!id) return;
+        setLoading(true);
+        try {
+            const response = await fetch('https://pixel-classes.onrender.com/api/home/AnsPdf/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: pdfID })
+            });
 
-            if (isFromEmail) {
-                // Save URL params to cookies if accessed from email
-                const params = new URLSearchParams(window.location.search);
-                const sub = params.get("sub");
-                const course = params.get("course");
-                const choose = params.get("choose");
+            const data = await response.json();
+            setPdfData(data);
 
-                if (sub) Cookies.set("sub", sub);
-                if (course) Cookies.set("course", course);
-                if (choose) Cookies.set("choose", choose);
-                Cookies.set("id", id);
-            }
+            data.forEach(pdf => {
+                if (pdf.pdf) fetchPdfSize(pdf.pdf);
+            });
+        } catch (error) {
+            console.error("Error fetching PDFs:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-            setLoading(true);
-            try {
-                const response = await fetch('https://pixel-classes.onrender.com/api/home/AnsPdf/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id })
-                });
+    fetchPDFs();
 
-                const data = await response.json();
-                setPdfData(data);
+     Cookies.remove("pdfid", pdfid);
+        Cookies.remove("pdfSizes", pdfSizes);
+        Cookies.remove("pdfurl", pdfurl);
+        Cookies.remove("pdfname", pdfname);
+        Cookies.remove("pdfyear", pdfyear);
+}, [pdfID]);
 
-                // Get sizes for all PDFs
-                for (const pdf of data) {
-                    if (pdf.pdf) fetchPdfSize(pdf.pdf);
-                }
-            } catch (error) {
-                console.error("Error fetching PDFs:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPDFs();
-    }, []);
 
 
     useEffect(() => {
@@ -114,7 +114,8 @@ const Select = () => {
         }
 
         const name = Cookies.get("username");
-        const idToUse = Cookies.get("pdfid") || Cookies.get("id");
+        const idToUse = pdfID;
+
 
         if (!idToUse) {
             alert("Missing ID to upload answer.");

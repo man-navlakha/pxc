@@ -39,8 +39,8 @@ const Ns = () => {
             navigate(`/nss/${Subject}/${choose}`);
         }
     }, [choose, Subject, navigate]);
-
-
+const params = new URLSearchParams(window.location.search);
+if (params) {
 
     useEffect(() => {
         const params = new URLSearchParams(window.location.search);
@@ -66,7 +66,7 @@ const Ns = () => {
 
         setLoading(false);
     }, [navigate]);
-
+}
     const handleFileChange = (e) => {
         setFiles(Array.from(e.target.files));
     };
