@@ -23,16 +23,16 @@ const Profile = () => {
   const location = useLocation();
   const urlParams = new URLSearchParams(location.search);
   const urlusername = urlParams.get('username');
-  const {nameFromUrl} =  useParams();
+  const { nameFromUrl } = useParams();
   const [isFollowing, setIsFollowing] = useState(false);
   const usernamec = Cookies.get("username");
   const token = Cookies.get('access_token');
   const navigate = useNavigate();
 
-  {urlusername && navigate(`/profile/${urlusername}`) }
+  { urlusername && navigate(`/profile/${urlusername}`) }
   // Unified profile and posts fetch
   useEffect(() => {
-!token && navigate("/")
+    !token && navigate("/")
     const userToFetch = nameFromUrl || Username;
     if (!userToFetch) return;
     setLoading(true);
@@ -154,7 +154,7 @@ const Profile = () => {
         await axios.delete(
           "https://pixel-classes.onrender.com/api/Profile/deletePost/",
           {
-            data: { pdf_url: pdfUrlStr }
+            data: { pdf_url: pdfUrlStr, username: Cookies.get("username") }
           }
         );
         setPosts(posts.filter(p => p.pdf !== pdfUrlStr));
@@ -251,7 +251,7 @@ const Profile = () => {
                         <span className="material-symbols-outlined">person_add</span> Follow
                       </button>
                     )}
-                    <button  onClick={() => navigate(`/chat/${nameFromUrl}`)} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-gray-800/30 hover:bg-gray-500/50 text-white font-bold shadow transition">
+                    <button onClick={() => navigate(`/chat/${nameFromUrl}`)} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-gray-800/30 hover:bg-gray-500/50 text-white font-bold shadow transition">
                       <span className="material-symbols-outlined">chat</span> Message
                     </button>
                   </div>
@@ -394,7 +394,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      
+
       <Footer />
       <FloatingMessagesButton />
 

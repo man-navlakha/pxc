@@ -39,73 +39,73 @@ const ProfileEditForm = ({ profile }) => {
   };
 
   const handleProfileEdit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
 
-  // If username hasn't changed, skip duplicate check
-  if (usernameEdit !== usernamec) {
-    try {
-      // Check if username already exists using your API
-      const res = await axios.get(
-        "https://pixel-classes.onrender.com/api/Profile/UserSearch/",
-        { params: { username: usernameEdit } }
-      );
+    // If username hasn't changed, skip duplicate check
+    if (usernameEdit !== usernamec) {
+      try {
+        // Check if username already exists using your API
+        const res = await axios.get(
+          "https://pixel-classes.onrender.com/api/Profile/UserSearch/",
+          { params: { username: usernameEdit } }
+        );
 
-      // Assuming API returns an array or object with users matching that username
-      // Adjust this logic based on your API response structure
-      if (res.data && res.data.exists) {
-        alert("This username is already taken. Please choose another.");
+        // Assuming API returns an array or object with users matching that username
+        // Adjust this logic based on your API response structure
+        if (res.data && res.data.exists) {
+          alert("This username is already taken. Please choose another.");
+          setLoading(false);
+          return;
+        }
+      } catch (error) {
+        console.error("Error checking username availability:", error);
+        alert("Could not verify username availability. Please try again.");
         setLoading(false);
         return;
       }
-    } catch (error) {
-      console.error("Error checking username availability:", error);
-      alert("Could not verify username availability. Please try again.");
+    }
+
+    // Proceed with form submission if username is valid and available
+    const formData = new FormData();
+    formData.append("username", usernamec);
+    formData.append("new_username", usernameEdit);
+
+    const fileInput = e.target.profile_pic;
+    if (fileInput?.files[0]) {
+      formData.append("profile_pic", fileInput.files[0]);
+    }
+
+    try {
+      const response = await axios.put(
+        "https://pixel-classes.onrender.com/api/Profile/edit/",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.data.message) {
+        alert("Profile updated successfully!");
+        if (usernamec !== usernameEdit) {
+          Cookies.set("username", usernameEdit);
+        }
+        window.location.reload();
+      } else {
+        alert("Failed to update profile.");
+      }
+    } catch (err) {
+      console.error("Error updating profile:", err);
+      alert("An error occurred while updating your profile.");
+      console.log(err.response.data.error)
+      setError(err.response.data.error)
+    } finally {
       setLoading(false);
-      return;
     }
-  }
-
-  // Proceed with form submission if username is valid and available
-  const formData = new FormData();
-  formData.append("username", usernamec);
-  formData.append("new_username", usernameEdit);
-
-  const fileInput = e.target.profile_pic;
-  if (fileInput?.files[0]) {
-    formData.append("profile_pic", fileInput.files[0]);
-  }
-
-  try {
-    const response = await axios.put(
-      "https://pixel-classes.onrender.com/api/Profile/edit/",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-
-    if (response.data.message) {
-      alert("Profile updated successfully!");
-      if (usernamec !== usernameEdit) {
-        Cookies.set("username", usernameEdit);
-      }
-      window.location.reload();
-    } else {
-      alert("Failed to update profile.");
-    }
-  } catch (err) {
-    console.error("Error updating profile:", err);
-    alert("An error occurred while updating your profile.");
-    console.log(err.response.data.error)
-    setError(err.response.data.error)
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <form onSubmit={handleProfileEdit}>
