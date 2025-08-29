@@ -76,7 +76,7 @@ const Ns = () => {
       Cookies.set("pdfurl" , pdfurl)
       Cookies.set("pdfname" , pdfname)
       Cookies.set("pdfyear" , pdfyear)
-      navigate(`/select`)
+      navigate(`/select/`)
 };
     return (
         <>

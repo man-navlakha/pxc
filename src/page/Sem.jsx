@@ -10,9 +10,9 @@ const Semester = () => {
 
     const [expandedSubject, setExpandedSubject] = useState(null);
 
-const toggleSubject = (subjectName) => {
-  setExpandedSubject((prev) => (prev === subjectName ? null : subjectName));
-};
+    const toggleSubject = (subjectName) => {
+        setExpandedSubject((prev) => (prev === subjectName ? null : subjectName));
+    };
 
 
     const Semesters = ["3", "4", "5", "6"];
@@ -69,13 +69,19 @@ const toggleSubject = (subjectName) => {
         setSelectedSem(sem); // This will trigger the useEffect to fetch data
         Cookies.set("latest_sem", sem, { expires: 7 }); // Update the cookie
     };
-    const handleChoose = (choose, sub) => {
-        Cookies.set("sub", sub)
-        Cookies.set("choose", choose)
+    
 
-        nav(`/ns/${sub}/${choose}`);
-        console.log(choose + sub)
-    };
+        const handleChoose = (choose, sub) => {
+            Cookies.set("sub", sub)
+            Cookies.set("choose", choose)
+            if (["Assignment", "imp"].includes(choose)) {
+                nav(`/nss/${sub}/${choose}`);
+            } else {
+
+                nav(`/ns/${sub}/${choose}`);
+                console.log(choose + sub)
+            }
+        };
 
     return (
         <>
