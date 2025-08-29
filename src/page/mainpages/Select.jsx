@@ -28,15 +28,7 @@ const Select = () => {
     const sub = Cookies.get("sub");
 
     // Always call useEffect, but inside check for pdfname
-    useEffect(() => {
-        if (pdfname) {
-            Cookies.remove("pdfid");
-            Cookies.remove("pdfSizes");
-            Cookies.remove("pdfurl");
-            Cookies.remove("pdfname");
-            Cookies.remove("pdfyear");
-        }
-    }, [pdfID, pdfname]);
+
 
 
     // Fetch PDF data from API
@@ -135,6 +127,11 @@ const Select = () => {
 
     // Handle PDF download, update states and store history in localStorage
     const handleDownload = async (pdfUrl, pdfName, pdfId) => {
+
+        console.log("Initiating download...");
+        console.log("PDF URL:", pdfUrl);
+        console.log("PDF Name:", pdfName);
+
         const getDownloadHistory = () => {
             try {
                 const historyString = localStorage.getItem('downloadHistory');
@@ -183,6 +180,7 @@ const Select = () => {
                 downloadDate: new Date().toISOString()
             });
             saveDownloadHistory(history);
+            console.log("Downloading from URL:", pdfUrl);
 
         } catch (error) {
             console.error("Download failed:", error);
