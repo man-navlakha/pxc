@@ -48,21 +48,26 @@ if (params) {
         const id = params.get('id');
         const course = params.get('course');
         const choose = params.get('choose'); // ⬅️ this `choose`, not from state
+         Cookies.remove("pdfid", pdfId);
+    Cookies.remove("pdfSizes", pdfSizes);
+    Cookies.remove("pdfurl", pdfurl);
+    Cookies.remove("pdfname", pdfname);
+    Cookies.remove("pdfyear", pdfyear);
 
         if (["Assignment", "imp"].includes(choose)) {
-            Cookies.set("sub", sub);
-            Cookies.set("choose", choose);
-            Cookies.set("pdfid", id);
+            Cookies.remove("sub", sub);
+            Cookies.remove("choose", choose);
+            Cookies.remove("pdfid", id);
             Cookies.set("from", "email");
             navigate(`/select?sub=${sub}&id=${id}&course=${course}&choose=${choose}`);
             return;
         }
 
         // Save cookies
-        if (sub) Cookies.set("sub", sub);
-        if (id) Cookies.set("pdfid", id);
-        if (course) Cookies.set("course", course);
-        if (choose) Cookies.set("choose", choose);
+        if (sub) Cookies.remove("sub", sub);
+        if (id) Cookies.remove("pdfid", id);
+        if (course) Cookies.remove("course", course);
+        if (choose) Cookies.remove("choose", choose);
 
         setLoading(false);
     }, [navigate]);
