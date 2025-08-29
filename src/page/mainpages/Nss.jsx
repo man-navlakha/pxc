@@ -100,7 +100,9 @@ const Nss = () => {
               .filter(pdf => pdf.choose === choose)
               .map((pdf, index) => (
                 <div
-                  key={index}
+                  key={index} onClick={() =>
+                        handleDownload(pdf.id, pdfSizes[pdf.pdf], pdf.pdf, pdf.name, pdf.year)
+                      }
                   className="flex gap-2 max-w-[100vw] items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur bg-opacity-60 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 lg:min-w-[384px]"
                 >
                   <img

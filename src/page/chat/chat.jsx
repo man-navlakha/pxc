@@ -416,11 +416,11 @@ export default function Chat() {
           <button onClick={() => navigate("/chat")} className="p-2">
             <Undo2 className="text-white" />
           </button>
-          <img
+          <img onClick={() => navigate(`/profile/${profile?.username}`)} 
             src={profile?.profile_pic || "https://via.placeholder.com/150"}
             className="w-8 h-8 rounded-full"
           />
-          <div className="flex flex-col">
+          <div onClick={() => navigate(`/profile/${profile?.username}`)} className="flex flex-col">
             <span className="font-semibold">{profile?.username}</span>
             <span className="text-xs text-gray-400">last seen</span>
           </div>
