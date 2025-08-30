@@ -80,7 +80,7 @@ useEffect(() => {
   return (
     <button
       onClick={() => navigate("/chat")}
-      className="fixed ccf hidden md:hidden lg:block bottom-[6rem] right-6  border border-[#f8f9f90d] space-x-4 hover:bg-[#3A3B3C] bg-[#212328] rounded-full px-6 py-3 max-w-[120px] w-full shadow-lg z-50"
+      className="fixed ccf hidden md:hidden lg:block bottom-[3rem] right-6  border border-[#f8f9f90d] space-x-4 hover:bg-[#3A3B3C] bg-[#212328] rounded-full px-6 py-3 max-w-[120px] w-full shadow-lg z-50"
     >
         <div className=" flex items-center gap-2 justify-center">
       <div className="relative">

@@ -86,7 +86,7 @@ const Semester = () => {
     return (
         <>
 
-            <div className="bg-pattern"></div>
+            {/* <div className="bg-pattern"></div> */}
             <div className=' ccfv mt-6 h-full min-h-screen'>
                 <div className='ccf'>
                     <div className='p-4 py-16 flex flex-col text-center content-center flex-nowrap justify-center gap-3 items-center'>

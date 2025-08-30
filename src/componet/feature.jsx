@@ -170,92 +170,72 @@ backdrop-contrast-100 border-2 border-[#f7fefc] rounded-xl shadow-[5px_5px_1px_0
 
                     </div>
                 </div>
-           
+            </div>
 
 
-            <section className="flex items-center justify-center min-h-screen px-6 py-20">
-                <div className="glass max-w-4xl w-full p-10 rounded-3xl shadow-lg text-center">
-                    <h1 className="text-4xl md:text-6xl font-bold mb-6">Chat With Friend</h1>
-                    <p className="text-lg md:text-xl mb-6">Real-time messaging with friends and classmates. Stay connected, collaborate, and have fun — wherever you are.</p>
-                    <a href="/chat" className="inline-block bg-white text-gray-900 font-semibold py-3 px-6 rounded-full hover:bg-gray-200 transition">Start Chatting</a>
+<section className="flex items-center justify-center min-h-screen px-6 py-20 bg-gradient-to-b from-black via-gray-900 to-black">
+  <div className="glass bg-gradient-to-t from-black/30 via-gray-900/30 to-black/30 max-w-4xl w-full p-10 rounded-3xl shadow-2xl text-center">
+    <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6">Chat With Friends</h1>
+    <p className="text-lg md:text-xl text-gray-300 mb-8">
+      Connect in real-time with classmates and friends. Collaborate, chat, and have fun — wherever you are.
+    </p>
+    <a href="/chat" className="inline-block bg-white text-black font-semibold py-3 px-8 rounded-full hover:bg-gray-200 transition-all duration-200">
+      Start Chatting
+    </a>
+    <div className="mt-10 flex justify-center">
+      <img src="bgp.png" alt="Chat Preview" className="rounded-xl shadow-md w-full max-w-md" />
+    </div>
+  </div>
+</section>
 
-                    <div className="mt-10 flex justify-center">
-                        <img src="bgp.png" alt="Chat Screenshot" className="" />
-                    </div>
-                </div>
-            </section>
+<section className="px-6 py-20 backdrop-blur-md bg-black/50">
+  <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8 text-center text-white">
+    {[
+      {
+        title: "Real-Time Messaging",
+        desc: "Send and receive messages instantly. Stay in sync with your peers any time, anywhere.",
+      },
+      {
+        title: "Collaborate on the Go",
+        desc: "Discuss projects, brainstorm ideas, or just make weekend plans — all within the chat.",
+      },
+      {
+        title: "Secure & Fun",
+        desc: "Enjoy end-to-end encrypted messaging with emojis, reactions, and a user-friendly design.",
+      },
+    ].map((item, index) => (
+      <div key={index} className="glass p-6 rounded-xl shadow-lg hover:scale-[1.02] bg-gradient-to-l from-black via-gray-900 to-black transition-transform duration-200">
+        <h3 className="text-2xl font-bold mb-3">{item.title}</h3>
+        <p className="text-gray-200">{item.desc}</p>
+      </div>
+    ))}
+  </div>
+</section>
 
-            <section className="px-6 py-20 backdrop-blur-sm">
-                <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-10 text-center">
-                    <div className="glass p-6 rounded-xl">
-                        <h3 className="text-2xl font-semibold mb-3">Real-Time Messaging</h3>
-                        <p>Send and receive messages instantly with your friends or classmates, anytime.</p>
-                    </div>
-                    <div className="glass p-6 rounded-xl">
-                        <h3 className="text-2xl font-semibold mb-3">Collaborate on the Go</h3>
-                        <p>Discuss homework, group projects, or weekend plans — all in one chat.</p>
-                    </div>
-                    <div className="glass p-6 rounded-xl">
-                        <h3 className="text-2xl font-semibold mb-3">Secure & Fun</h3>
-                        <p>End-to-end encryption, emojis, and reactions to make chatting private and lively.</p>
-                    </div>
-                </div>
-            </section>
-            <section className="px-6 py-20">
-                <div className="max-w-4xl mx-auto glass p-10 rounded-3xl text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-10">How It Works</h2>
-                    <div className="space-y-6 text-left text-lg">
-                        <div><span className="font-bold text-blue-300">1.</span> Invite a friend by link or username.</div>
-                        <div><span className="font-bold text-blue-300">2.</span> Start chatting in real-time, no delay.</div>
-                        <div><span className="font-bold text-blue-300">3.</span> Send emojis have a fun.</div>
-                    </div>
-                </div>
-            </section>
+<section className="px-6 py-20  text-white">
+  <div className="max-w-4xl mx-auto bg-gradient-to-l from-black via-gray-900 to-black glass p-10 rounded-3xl text-center">
+    <h2 className="text-3xl md:text-4xl font-bold mb-10">How It Works</h2>
+    <ol className="space-y-6 text-left text-lg text-gray-200 pl-6 list-decimal list-inside">
+      <li><span className="font-semibold text-blue-400">Invite</span> your friend via a link or username.</li>
+      <li><span className="font-semibold text-blue-400">Chat</span> instantly — no delays, just messages.</li>
+      <li><span className="font-semibold text-blue-400">React</span> with emojis, stickers, and more for fun.</li>
+    </ol>
+  </div>
+</section>
 
-            <section className="px-6 py-20 text-center bg-black/80 rounded-2xl backdrop-blur-md">
-                <h2 className="text-4xl font-bold mb-6">Start Chatting Today</h2>
-                {/* <p className="mb-6 text-lg">No installs. No sign-ups. Just you and your friends.</p> */}
-                <a href="chat" className="inline-block bg-white text-gray-900 font-semibold py-3 px-6 rounded-full hover:bg-gray-200 transition">Launch Chat</a>
-            </section>
-         </div>
+<section className="px-6 py-20 text-white text-center rounded-2xl backdrop-blur-md">
+  <h2 className="text-4xl md:text-5xl font-extrabold mb-6">Start Chatting Today</h2>
+  <p className="mb-8 text-lg text-gray-300">Fast, secure, and built for students. No downloads needed.</p>
+  <a href="/chat" className="inline-block bg-white text-black font-semibold py-3 px-8 rounded-full hover:bg-gray-200 transition-all duration-200">
+    Launch Chat
+  </a>
+</section>
 
 
+
+            
 
         </>
-
-        // <div className='flex flex-col justify-center content-center  items-center'>
-        //     <div className=''>
-        //         <div className='w-full max-w-[360px] flex my-4 items-center gap-2 text-center text-gray-100 '>
-        //             <span className='border-b-2 flex-1 border-gradient-l   w-14'></span>
-
-        //             <span className='font-bold'>Why Us </span>
-        //             <span className='border-b-2 flex-1  border-gradient  w-14'></span>
-        //         </div>
-
-        //     </div>
-
-        //     <div className='flex  gap-2'>
-
-        //         <marquee behavior="" direction="">
-        //             <div className='flex gap-2'>
-        //                 <div className='flex items-center gap-1.5 text-sm text-gray-500 p-1 pl-2 pr-3 rounded-full bg-white bg-opacity-80 shadow backdrop-blur max-sm:hidden'>
-        //                     Trusted by <span className='text-black'>67+</span> users.
-        //                 </div>
-        //                 <div className='flex items-center gap-1.5 text-sm text-gray-500 p-1 pl-2 pr-3 rounded-full bg-white bg-opacity-80 shadow backdrop-blur max-sm:hidden'>
-        //                     Top <span className='text-black'>15+</span> subjects.
-        //                 </div>
-        //                 <div className='flex items-center gap-1.5 text-sm text-gray-500 p-1 pl-2 pr-3 rounded-full bg-white bg-opacity-80 shadow backdrop-blur max-sm:hidden'>
-        //                     <span className='text-black'>AI</span> implemented.
-        //                 </div>
-        //                 <div className='flex items-center gap-1.5 text-sm text-gray-500 p-1 pl-2 pr-3 rounded-full bg-white bg-opacity-80 shadow backdrop-blur max-sm:hidden'>
-        //                     Experience premium <span className='text-black'>handwritten</span> notes.
-        //                 </div>
-        //             </div>
-        //         </marquee>
-        //         <span className='bg-linear-to-b from-violet-500 to-fuchsia-500'></span>
-        //     </div>
-
-        // </div>
     )
 }
 

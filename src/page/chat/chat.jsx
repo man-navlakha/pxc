@@ -417,7 +417,7 @@ export default function Chat() {
             <Undo2 className="text-white" />
           </button>
           <img onClick={() => navigate(`/profile/${profile?.username}`)} 
-            src={profile?.profile_pic || "https://via.placeholder.com/150"}
+            src={profile?.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"}
             className="w-8 h-8 rounded-full"
           />
           <div onClick={() => navigate(`/profile/${profile?.username}`)} className="flex flex-col">
@@ -464,7 +464,7 @@ export default function Chat() {
                 {!isOwn && isLastOfGroup && (
                   <div className="flex items-center gap-1 mt-1">
                     <img
-                      src={profile?.profile_pic || "https://via.placeholder.com/150"}
+                      src={profile?.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"}
                       alt="receiver avatar"
                       className="w-5 h-5 rounded-full"
                     />
