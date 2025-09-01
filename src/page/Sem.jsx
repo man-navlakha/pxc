@@ -126,13 +126,6 @@ const Semester = () => {
                             )}
                             {loading && <span className="text-xl mt-6 cursor-progress ">  <div className=" " >
                                 <div className="book">
-                                    <div className="flex flex-col gap-3 text-md cursor-progress  ">
-                                        <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
-                                        <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
-                                        <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
-                                        <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
-                                        <div className="px-2 py-1 bg-gray-300 rounded-xl border w-[170px] h-8 border-gray-500/30 fc" onClick={handleSemClick} >  </div>
-                                    </div>
                                     <div className=" p-2 cover border border-gray-300/60">
                                         <p>Loading...</p>
                                     </div>
@@ -147,12 +140,7 @@ const Semester = () => {
                                                 {apiResponse.map((subject) => (
                                                     <div key={subject.id}>
                                                         <div onClick={() => handleChoose(subject.name)} className="book fc overflow-hidden p-0">
-                                                            <div className="flex flex-col gap-3 text-md cursor-pointer fc">
-                                                                Opening...
-                                                            </div>
-                                                            <div className="p-2 cover border border-gray-300/60">
-                                                                <p>{subject.name}</p>
-                                                            </div>
+                                                           <p>{subject.name}</p>
                                                         </div>
                                                     </div>
                                                 ))}

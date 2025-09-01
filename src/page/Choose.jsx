@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import { useNavigate, useParams } from 'react-router-dom';
 import SharePopup from '../componet/SharePopup';
@@ -15,9 +15,15 @@ const menuOptions = [
     { key: 'exam_papper', label: '📄 Exam Papers' },
     { key: 'practical', label: '🧑‍💻 General Book' },
 ];
+const Optio = [
+    { key: 'notes', label: '📝 Notes' },
+    { key: 'exam_papper', label: '📄 Exam Papers' },
+    { key: 'practical', label: '🧑‍💻 General Book' },
+];
 
 
 import useFileUploadHandler from '../hooks/useFileUploadHandler';
+import useDownloadHandler from '../hooks/useDownloadHandler';
 
 
 // --- UI Components ---
@@ -66,19 +72,13 @@ const SubjectPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null); // New state for handling errors
 
-    // --- Placeholder states for detailed view actions ---
-    const [loadingStates, setLoadingStates] = useState({});
-    const [downloadStates, setDownloadStates] = useState({});
-
-
-
 
     const {
         files, content, setContent, handleFileChange,
         handleSubmit, isUploading
     } = useFileUploadHandler();
 
-
+const { handleDownload, downloadStates, loadingStates } = useDownloadHandler();
 
 
     const [showPopup, setShowPopup] = useState(false);
@@ -161,11 +161,21 @@ const SubjectPage = () => {
         fetchData();
     }, []); // Empty array means this effect runs only once
 
-    // --- Placeholder Handlers for Detailed View ---
-    const handleDownload = (pdfUrl, pdfName, pdfId) => {
-        console.log(`Downloading ${pdfName} from ${pdfUrl} with id ${pdfId}`);
-    };
+   const handleopen = useCallback((pdfId, size, url, name, year) => {
+    console.log("Opening PDF with:", { pdfId, size, url, name, year });
 
+    Cookies.set("pdfid", pdfId);
+    Cookies.set("pdfSizes", size);
+    Cookies.set("pdfurl", url);
+    Cookies.set("pdfname", name);
+    Cookies.set("pdfyear", year);
+
+    navigate(`/select/${pdfId}`);
+
+}, [navigate]);
+
+    
+    console.log(handleopen)
 
     const handleNavigation = (subject, choice) => {
         if (["assignment", "imp"].includes(choice)) {
@@ -242,10 +252,11 @@ const SubjectPage = () => {
                         </div>
                     ) : filteredPdfs.length > 0 ? (
                         <ul className="space-y-4">
+                            
                             {filteredPdfs.map((pdf) => (
                                 ['assignment', 'imp'].includes(normalizeType(pdf.choose)) ? (
                                     <li
-                                        key={pdf.id} onClick={() => navigate(`/select/${pdf.id}`)}
+                                        key={pdf.id} onClick={() => handleopen(pdf.id, pdfSizes[pdf.pdf], pdf.pdf, pdf.name, pdf.year)}
                                         className="flex gap-2 items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900/60 backdrop-blur hover:shadow-lg hover:bg-gray-800/30 transition-all"
                                     >
                                         <img src="https://www.freeiconspng.com/uploads/pdf-icon-9.png" alt="PDF Icon" className="w-12 h-12 object-contain" />
@@ -274,19 +285,23 @@ const SubjectPage = () => {
                                             </p>
                                         </div>
                                         <div className="flex items-center justify-center gap-3">
-                                            <button
-                                                className='bg-gray-600/30 hover:bg-black/30 rounded p-2 sm:p-3 transition-colors'
-                                                onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)}
-                                            >
-                                                <DownloadIcon />
-                                            </button>
-                                            <button
-                                                className='bg-gray-600/30 hover:bg-black/30 rounded p-2 sm:p-3 transition-colors'
-                                                onClick={() => openShareModal(pdf)}
-                                            >
-                                                <ShareIcon />
-                                            </button>
-                                        </div>
+                    <button
+                      className='bg-blue-600/30 hover:bg-black/30 rounded px-3 py-2 flex items-center justify-center'
+                      onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)}
+                    >
+                      <span className="material-symbols-outlined">
+                        {loadingStates[pdf.id] ? "arrow_circle_down" : downloadStates[pdf.id] || "download"}
+                      </span>
+                    </button>
+                    <button
+                      className='bg-blue-600/30 hover:bg-black/30 rounded px-3 py-2 flex items-center justify-center'
+                      onClick={() => openShareModal(pdf)}
+                    >
+                      <span className="material-symbols-outlined">
+                        {"share"}
+                      </span>
+                    </button>
+                  </div>
                                     </li>
                                 )
                             ))}
@@ -347,13 +362,17 @@ const SubjectPage = () => {
 
             <>
                 {/* Upload Floating Button */}
-                <div
-                    role="button"
-                    onClick={() => setIsopen(true)}
-                    className="border border-gray-700 fixed bottom-[6rem] right-5 rounded-[50%] flex justify-center items-center text-3xl w-16 h-16 bg-gradient-to-br from-[#27272a] via-[#52525b] to-[#a1a1aa] text-white font-black"
-                >
-                    <div className="flex items-center justify-center text-transparent bg-clip-text bg-gradient-to-br from-white via-neutral-200 to-neutral-700">+</div>
-                </div>
+               {["notes","exam_papper", "practical"].includes(activeOption) && (
+    <div
+        role="button"
+        onClick={() => setIsopen(true)}
+        className="border border-gray-700 fixed bottom-[6rem] right-5 rounded-[50%] flex justify-center items-center text-3xl w-16 h-16 bg-gradient-to-br from-[#27272a] via-[#52525b] to-[#a1a1aa] text-white font-black"
+    >
+        <div className="flex items-center justify-center text-transparent bg-clip-text bg-gradient-to-br from-white via-neutral-200 to-neutral-700">
+            +
+        </div>
+    </div>
+)}
 
                 {/* Upload Modal */}
                 {isopen && (
@@ -379,26 +398,26 @@ const SubjectPage = () => {
 
                                 <input type="hidden" className='text-black' value={"1"} onChange={(e) => setCource(e.target.value)} name="" />
                                 <input type="hidden" className='text-black' value={subject} onChange={(e) => setSubject(e.target.value)} name="" />
-                              <select
-  className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg mb-4"
-  value={choose}
-  required
-  onChange={(e) => setChoose(e.target.value)}
->
-  <option value="" disabled>
-    -- Select Category --
-  </option>
+                                <select
+                                    className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg mb-4"
+                                    value={choose}
+                                    required
+                                    onChange={(e) => setChoose(e.target.value)}
+                                >
+                                    <option value="" disabled>
+                                        -- Select Category --
+                                    </option>
 
-  {menuOptions.map(option => (
-    <option
-      key={option.key}
-      value={option.key}
-      disabled={option.key === 'all'}
-    >
-      {option.label}
-    </option>
-  ))}
-</select>
+                                    {Optio.map(opt=> (
+                                        <option
+                                            key={opt.key}
+                                            value={opt.key}
+                                            disabled={opt.key === 'all'}
+                                        >
+                                            {opt.label}
+                                        </option>
+                                    ))}
+                                </select>
 
                                 <textarea
                                     className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg mb-4"
@@ -415,9 +434,9 @@ const SubjectPage = () => {
                                     className="w-full p-2 border border-gray-300 text-gray-100 bg-[#383838] rounded-lg mb-4"
                                 />
                                 <button type="submit"
-                                    disabled={isUploading} 
+                                    disabled={isUploading}
                                     class="smky-btn3 relative hover:text-[#778464] py-2 px-6 after:absolute after:h-1 after:hover:h-[200%] transition-all duration-500 hover:transition-all hover:duration-500 after:transition-all after:duration-500 after:hover:transition-all after:hover:duration-500 overflow-hidden z-20 after:z-[-20] after:bg-[#abd373] after:rounded-t-full after:w-full after:bottom-0 after:left-0 text-gray-200">
-                                     {isUploading ? <div className="s-loading"></div> : "Submit"}
+                                    {isUploading ? <div className="s-loading"></div> : "Submit"}
                                 </button>
                             </form>
                         </div>
