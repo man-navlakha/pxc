@@ -5,6 +5,10 @@ import Cookies from 'js-cookie';
 export default function useFileUploadHandler() {
     const [files, setFiles] = useState([]);
     const [content, setContent] = useState('');
+    const [subject, setSubject] = useState('');
+    const [cource, setCource] = useState('' || "1");
+    const [sem, setSem] = useState('');
+    const [choose, setChoose] = useState('');
     const [isUploading, setUploading] = useState(false);
 
     const handleFileChange = (e) => {
@@ -29,9 +33,9 @@ export default function useFileUploadHandler() {
         formData.append("name", content);
         formData.append("username", Cookies.get("username"));
         formData.append("course_id", 1);
-        formData.append("sem", Cookies.get("latest_sem"));
-        formData.append("choose", Cookies.get("choose"));
-        formData.append("sub", Cookies.get("sub"));
+        formData.append("sem", sem);
+        formData.append("choose", choose);
+        formData.append("sub", subject);
 
         files.forEach(file => formData.append("pdf", file));
 
@@ -59,6 +63,8 @@ export default function useFileUploadHandler() {
         files,
         content,
         setContent,
+        setChoose,
+        setSem, setCource, setSubject,
         handleFileChange,
         handleSubmit,
         isUploading

@@ -12,6 +12,9 @@ import Chat from './page/chat/chat';
 import Chatlist from './page/chat/Listuser';
 
 
+import Page from './page/Choose';
+
+
 
 import Password from './auth/password';
 import Verification from './auth/verification';
@@ -122,9 +125,9 @@ function App() {
             )}
             {/* <p className={` ${loading ? 'visible ':'hidden'} w-screen text-center p-2 bg-blue-500 text-white`} ><span className="m-2">Please wait!</span> <span className="m-2">Please wait!</span> <span className="m-2">Please wait!</span></p> */}
 
-            <div className="App transition-all duration-500 ease-in-out dark:bg-[#1e1e1e] dark:text-white bg-black">
+            <div className="App transition-all duration-500 ease-in-out bg-black">
                 <Routes>
-                    <Route path="*"  />
+                  
 
                     {/* Beta */}
                     <Route
@@ -138,7 +141,7 @@ function App() {
                     <Route path="/following" element={<Protected> <FollowingPage /></Protected>} />
                     <Route path="/follwers" element={<Protected> <FollowersPage /></Protected>} />
 
-                    <Route path="/chat" element={<Protected> <Chatlist /></Protected>} />
+                    <Route path="/chat" element={<> <Chatlist /></>} />
                     <Route path="/chat/:RECEIVER" element={<Protected> <Chat /></Protected>} />
                     <Route path="/:RECEIVER" element={<Protected> <Chat /></Protected>} />
 
@@ -152,6 +155,7 @@ function App() {
                     <Route path="/sem" element={<Protected> <Sem /></Protected>} />
                     <Route path="/profile" element={<Protected> <Prof /></Protected>} />
                     <Route path="/profile/:nameFromUrl" element={<Protected> <Prof /></Protected>} />
+                    <Route path="/:sem/:subject" element={<Protected> <Page /></Protected>} />
                     <Route path="/ns" element={<Protected> <Ns /></Protected>} />
                     <Route path="/ns/:osubject/:ochoose" element={<Protected> <Ns /></Protected>} />
                     <Route path="/nss" element={<Protected> <Nss /></Protected>} />

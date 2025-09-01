@@ -71,16 +71,9 @@ const Semester = () => {
     };
     
 
-        const handleChoose = (choose, sub) => {
+        const handleChoose = (sub) => {
             Cookies.set("sub", sub)
-            Cookies.set("choose", choose)
-            if (["Assignment", "imp"].includes(choose)) {
-                nav(`/nss/${sub}/${choose}`);
-            } else {
-
-                nav(`/ns/${sub}/${choose}`);
-                console.log(choose + sub)
-            }
+            nav(`/${selectedSem}/${sub}`);
         };
 
     return (
@@ -153,24 +146,9 @@ const Semester = () => {
                                             <div className="grid gap-5 grid-cols-1 md:grid-cols-1 lg:grid-cols-3">
                                                 {apiResponse.map((subject) => (
                                                     <div key={subject.id}>
-                                                        <div className="book fc overflow-hidden p-0">
+                                                        <div onClick={() => handleChoose(subject.name)} className="book fc overflow-hidden p-0">
                                                             <div className="flex flex-col gap-3 text-md cursor-pointer fc">
-                                                                {[
-                                                                    { label: "📚 Assignments", type: "Assignment" },
-                                                                    { label: "📝 Notes", type: "Notes" },
-                                                                    { label: "❓ IMP Q&A", type: "imp" },
-                                                                    { label: "📄 Exam Papers", type: "exam_papper" },
-                                                                    { label: "🧑‍💻 General Book", type: "practical" },
-                                                                ].map(({ label, type }) => (
-                                                                    <button
-                                                                        key={type}
-                                                                        aria-label={`Open ${label} for ${subject.name}`}
-                                                                        className="px-8  w-full min-w-[60px] py-1  hover:bg-gray-200 border-y border-gray-500/30"
-                                                                        onClick={() => handleChoose(type, subject.name)}
-                                                                    >
-                                                                        {label}
-                                                                    </button>
-                                                                ))}
+                                                                Opening...
                                                             </div>
                                                             <div className="p-2 cover border border-gray-300/60">
                                                                 <p>{subject.name}</p>

@@ -128,7 +128,7 @@ export default function Listuser() {
   // ---------------- UI ----------------
   if (loading) {
     return (
-      <div className="min-h-screen ccf flex m-3  items-center justify-center text-white/60">
+      <div className="min-h-screen ccf flex p-4 items-center justify-center text-2xl text-white/60">
         Loading...
       </div>
     );
