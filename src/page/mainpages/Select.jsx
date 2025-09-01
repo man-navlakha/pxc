@@ -275,21 +275,21 @@ const Select = () => {
                 </div>
             </div>
 
-            <div
-                role="button"
-                onClick={() => setIsOpen(true)}
-                data-tooltip="Upload"
-                aria-label="Upload"
-                tabIndex="0"
-                className="border border-gray-700 fixed bottom-[6rem] right-5 rounded-full flex justify-center items-center text-3xl w-16 h-16 bg-gradient-radial from-[#27272a] via-[#52525b] to-[#a1a1aa] text-white font-black"
-            >
-                <div className="flex items-center justify-center bg-gradient-to-br from-white via-neutral-200 to-neutral-700 bg-clip-text text-transparent">
-                    +
-                </div>
-            </div>
+            
+             <div
+        role="button"
+        onClick={() => setIsOpen(true)}
+        className="border border-gray-700 fixed bottom-[6rem] right-5 rounded-[50%] flex justify-center items-center text-3xl w-16 h-16 bg-gradient-to-br from-[#27272a] via-[#52525b] to-[#a1a1aa] text-white font-black"
+    >
+        <div className="flex items-center justify-center text-transparent bg-clip-text bg-gradient-to-br from-white via-neutral-200 to-neutral-700">
+                            <span class="material-symbols-outlined font-black text-4xl">
+                                add
+                            </span>
+                        </div>
+    </div>
 
             {isOpen && (
-                <div className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50 p-4">
+                <div className="fixed ccf inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50 p-4">
                     <div className="relative flex flex-col p-6 rounded-lg border-2 border-white shadow-lg bg-gradient-to-br from-[#1d4ed8] via-[#1e40af] to-[#111827]">
                         <button
                             disabled={loading}
@@ -323,13 +323,11 @@ const Select = () => {
                                 className="w-full p-2 rounded-lg border border-gray-300 bg-[#383838] text-gray-100"
                                 onChange={handleFileChange}
                             />
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className="relative py-2 px-6 text-white font-bold rounded hover:text-[#778464] transition-all duration-500 overflow-hidden"
-                            >
-                                {loading ? <div className="s-loading"></div> : "Submit"}
-                            </button>
+                            <button type="submit"
+                                    disabled={loading}
+                                    class="smky-btn3 relative hover:text-[#778464] py-2 px-6 after:absolute after:h-1 after:hover:h-[200%] transition-all duration-500 hover:transition-all hover:duration-500 after:transition-all after:duration-500 after:hover:transition-all after:hover:duration-500 overflow-hidden z-20 after:z-[-20] after:bg-[#abd373] after:rounded-t-full after:w-full after:bottom-0 after:left-0 text-gray-200">
+                                   {loading ? <div className="s-loading"></div> : "Submit"}
+                                </button>
                         </form>
                     </div>
                 </div>

@@ -78,7 +78,7 @@ const SubjectPage = () => {
         handleSubmit, isUploading
     } = useFileUploadHandler();
 
-const { handleDownload, downloadStates, loadingStates } = useDownloadHandler();
+    const { handleDownload, downloadStates, loadingStates } = useDownloadHandler();
 
 
     const [showPopup, setShowPopup] = useState(false);
@@ -161,20 +161,20 @@ const { handleDownload, downloadStates, loadingStates } = useDownloadHandler();
         fetchData();
     }, []); // Empty array means this effect runs only once
 
-   const handleopen = useCallback((pdfId, size, url, name, year) => {
-    console.log("Opening PDF with:", { pdfId, size, url, name, year });
+    const handleopen = useCallback((pdfId, size, url, name, year) => {
+        console.log("Opening PDF with:", { pdfId, size, url, name, year });
 
-    Cookies.set("pdfid", pdfId);
-    Cookies.set("pdfSizes", size);
-    Cookies.set("pdfurl", url);
-    Cookies.set("pdfname", name);
-    Cookies.set("pdfyear", year);
+        Cookies.set("pdfid", pdfId);
+        Cookies.set("pdfSizes", size);
+        Cookies.set("pdfurl", url);
+        Cookies.set("pdfname", name);
+        Cookies.set("pdfyear", year);
 
-    navigate(`/select/${pdfId}`);
+        navigate(`/select/${pdfId}`);
 
-}, [navigate]);
+    }, [navigate]);
 
-    
+
     console.log(handleopen)
 
     const handleNavigation = (subject, choice) => {
@@ -207,15 +207,15 @@ const { handleDownload, downloadStates, loadingStates } = useDownloadHandler();
 
 
     return (
-        <div className="font-sans mesh_ns ccf min-h-screen text-white flex flex-col">
+        <div className=" ccf mesh_ns ccf min-h-screen text-white flex flex-col">
             <Navbar />
 
             <div className="flex-1 w-full px-4 sm:px-6 md:px-10 py-4 max-w-6xl mx-auto">
 
                 {/* HEADER */}
                 <header className="mt-6 sm:mt-10 mb-6 border-b border-white/20">
-                    <h1 className="text-2xl sm:text-3xl font-bold">{courseDetails.subjectName}</h1>
-                    <h2 className="text-base sm:text-lg font-light opacity-80">Semester {courseDetails.semester}</h2>
+                    <h1 className="text-3xl fc  sm:text-4xl font-bold">{courseDetails.subjectName}</h1>
+                    <h2 className="text-lg sm:text-xl font-light opacity-80">Semester {courseDetails.semester}</h2>
                 </header>
 
                 {/* CATEGORY NAV */}
@@ -252,7 +252,7 @@ const { handleDownload, downloadStates, loadingStates } = useDownloadHandler();
                         </div>
                     ) : filteredPdfs.length > 0 ? (
                         <ul className="space-y-4">
-                            
+
                             {filteredPdfs.map((pdf) => (
                                 ['assignment', 'imp'].includes(normalizeType(pdf.choose)) ? (
                                     <li
@@ -285,23 +285,23 @@ const { handleDownload, downloadStates, loadingStates } = useDownloadHandler();
                                             </p>
                                         </div>
                                         <div className="flex items-center justify-center gap-3">
-                    <button
-                      className='bg-blue-600/30 hover:bg-black/30 rounded px-3 py-2 flex items-center justify-center'
-                      onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)}
-                    >
-                      <span className="material-symbols-outlined">
-                        {loadingStates[pdf.id] ? "arrow_circle_down" : downloadStates[pdf.id] || "download"}
-                      </span>
-                    </button>
-                    <button
-                      className='bg-blue-600/30 hover:bg-black/30 rounded px-3 py-2 flex items-center justify-center'
-                      onClick={() => openShareModal(pdf)}
-                    >
-                      <span className="material-symbols-outlined">
-                        {"share"}
-                      </span>
-                    </button>
-                  </div>
+                                            <button
+                                                className='bg-blue-600/30 hover:bg-black/30 rounded px-3 py-2 flex items-center justify-center'
+                                                onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)}
+                                            >
+                                                <span className="material-symbols-outlined">
+                                                    {loadingStates[pdf.id] ? "arrow_circle_down" : downloadStates[pdf.id] || "download"}
+                                                </span>
+                                            </button>
+                                            <button
+                                                className='bg-blue-600/30 hover:bg-black/30 rounded px-3 py-2 flex items-center justify-center'
+                                                onClick={() => openShareModal(pdf)}
+                                            >
+                                                <span className="material-symbols-outlined">
+                                                    {"share"}
+                                                </span>
+                                            </button>
+                                        </div>
                                     </li>
                                 )
                             ))}
@@ -362,33 +362,39 @@ const { handleDownload, downloadStates, loadingStates } = useDownloadHandler();
 
             <>
                 {/* Upload Floating Button */}
-               {["notes","exam_papper", "practical"].includes(activeOption) && (
-    <div
-        role="button"
-        onClick={() => setIsopen(true)}
-        className="border border-gray-700 fixed bottom-[6rem] right-5 rounded-[50%] flex justify-center items-center text-3xl w-16 h-16 bg-gradient-to-br from-[#27272a] via-[#52525b] to-[#a1a1aa] text-white font-black"
-    >
-        <div className="flex items-center justify-center text-transparent bg-clip-text bg-gradient-to-br from-white via-neutral-200 to-neutral-700">
-            +
-        </div>
-    </div>
-)}
+                {["notes", "exam_papper", "practical"].includes(activeOption) && (
+                    <div
+                        role="button"
+                        onClick={() => setIsopen(true)}
+                        className="border border-gray-700 fixed bottom-[6rem] right-5 rounded-[50%] flex justify-center items-center text-3xl w-16 h-16 bg-gradient-to-br from-[#27272a] via-[#52525b] to-[#a1a1aa] text-white font-black"
+                    >
+                        <div className="flex items-center justify-center text-transparent bg-clip-text bg-gradient-to-br from-white via-neutral-200 to-neutral-700">
+                            <span class="material-symbols-outlined font-black text-4xl">
+                                add
+                            </span>
+                        </div>
+                    </div>
+                )}
 
                 {/* Upload Modal */}
                 {isopen && (
                     <div className="z-50 loveff flex justify-center items-center inset-0 fixed bg-black p-4 bg-opacity-50">
-                        <div className="flex flex-col border-2 border-white p-6 rounded-lg shadow-lg relative bg-gradient-to-br from-[#1d4ed8] via-[#1e40af] to-[#111827]">
+                        <div className="flex flex-col  w-full max-w-[360px] border-2 border-white p-6 rounded-lg shadow-lg relative bg-gradient-to-br from-[#1d4ed8] via-[#1e40af] to-[#111827]">
                             <button
                                 onClick={() => setIsopen(false)}
                                 className="absolute top-2 right-4 text-3xl text-red-500 hover:text-red-200"
                                 disabled={isUploading}
                             >
-                                x
+                               <span class="material-symbols-outlined font-black text-2xl">
+close
+</span>
                             </button>
                             <h2 className="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-tr from-white via-stone-400 to-neutral-300">Add your Notes</h2>
                             <p className='text-gray-400 mb-4'>for {subject} - Semester {sem}</p>
 
-                            <form onSubmit={(e) => {
+                            <form
+                            className='justify-center items-center'
+                            onSubmit={(e) => {
                                 e.preventDefault();
                                 handleSubmit();
                                 setIsopen(false);
@@ -408,7 +414,7 @@ const { handleDownload, downloadStates, loadingStates } = useDownloadHandler();
                                         -- Select Category --
                                     </option>
 
-                                    {Optio.map(opt=> (
+                                    {Optio.map(opt => (
                                         <option
                                             key={opt.key}
                                             value={opt.key}
