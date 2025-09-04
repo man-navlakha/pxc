@@ -1,41 +1,72 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Cookies from "js-cookie";
-import '../../new.css';
+import { useParams } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'react-toastify';
+
 import Navbar from '../../componet/Navbar';
 import Footer from '../../componet/Footer';
-import { useParams } from 'react-router-dom';
+
+// --- UI Components ---
+const SkeletonLoader = () => (
+    <div className="space-y-8 animate-pulse">
+        <div className="p-6 rounded-2xl bg-white/5 space-y-3">
+            <div className="h-6 w-3/4 rounded-md bg-white/10"></div>
+            <div className="h-4 w-1/2 rounded-md bg-white/10"></div>
+            <div className="h-12 w-full rounded-lg bg-white/10 mt-4"></div>
+        </div>
+        <div className="p-6 rounded-2xl bg-white/5 space-y-3">
+            <div className="h-10 w-full rounded-lg bg-white/10"></div>
+            <div className="space-y-3 mt-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="h-16 w-full rounded-lg bg-white/10"></div>
+                ))}
+            </div>
+        </div>
+    </div>
+);
+
+const EmptyState = ({ onUploadClick }) => (
+    <div className="text-center py-16 px-6 rounded-2xl bg-white/5 border border-white/10">
+        <span className="material-symbols-outlined text-6xl text-white/20">history_edu</span>
+        <h3 className="mt-4 text-2xl font-bold text-white/80">Be the First!</h3>
+        <p className="mt-1 text-white/40 max-w-sm mx-auto">No answers have been contributed for this question yet. Why not upload yours?</p>
+        <button onClick={onUploadClick} className="mt-6 px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 transition-colors font-semibold">
+            Upload Answer
+        </button>
+    </div>
+);
 
 const Select = () => {
-    const [loading, setLoading] = useState(false);
-    const [downloadStates, setDownloadStates] = useState({});
-    const [loadingStates, setLoadingStates] = useState({});
-    const [isOpen, setIsOpen] = useState(false);
-
+    const { sid } = useParams();
+    const [answerPdfs, setAnswerPdfs] = useState([]);
+    const [pdfSizes, setPdfSizes] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [isUploadOpen, setIsUploadOpen] = useState(false);
     const [content, setContent] = useState("");
     const [files, setFiles] = useState([]);
-    const [pdfData, setPdfData] = useState([]);
-    const [pdfSizes, setPdfSizes] = useState({});
+    const [isUploading, setIsUploading] = useState(false);
+    
+    // --- FIX: Get the main "Question" PDF details from cookies ---
+    const pdfID = sid || Cookies.get("pdfid");
+    const questionPdf = {
+        id: pdfID,
+        name: Cookies.get("pdfname"),
+        year: Cookies.get("pdfyear"),
+        size: Cookies.get("pdfSizes"),
+        url: Cookies.get("pdfurl"),
+        sub: Cookies.get("sub"),
+    };
 
-    const { sid } = useParams();
-    const params = new URLSearchParams(window.location.search);
-
-    // Getting pdfID from URL params, Cookies or sid
-    const pdfID = sid || Cookies.get("id") || Cookies.get("pdfid") || params.get("pdfid");
-    const pdfname = Cookies.get("pdfname");
-    const pdfyear = Cookies.get("pdfyear");
-    const pdfsize = Cookies.get("pdfSizes");
-    const pdfurl = Cookies.get("pdfurl");
-    const sub = Cookies.get("sub");
-
-    // Always call useEffect, but inside check for pdfname
-
-
-
-    // Fetch PDF data from API
+    // --- FIX: Fetch only the "Answers" from your existing API ---
     useEffect(() => {
-        if (!pdfID) return;
+        if (!pdfID) {
+            toast.error("No document ID found.");
+            setLoading(false);
+            return;
+        }
 
-        const fetchPDFs = async () => {
+        const fetchAnswers = async () => {
             setLoading(true);
             try {
                 const response = await fetch('https://pixel-classes.onrender.com/api/home/AnsPdf/', {
@@ -44,64 +75,48 @@ const Select = () => {
                     body: JSON.stringify({ id: pdfID })
                 });
 
+                if (!response.ok) throw new Error("Failed to fetch answers.");
+                
                 const data = await response.json();
-                setPdfData(data);
+                setAnswerPdfs(data || []);
 
-                // Fetch sizes for all PDFs
-                data.forEach(pdf => {
-                    if (pdf.pdf) fetchPdfSize(pdf.pdf);
-                });
+                // Fetch sizes for each answer PDF (re-instated logic)
+                const sizes = {};
+                await Promise.all((data || []).map(async (pdf) => {
+                    if (pdf.pdf) {
+                        try {
+                            const res = await fetch(pdf.pdf, { method: 'HEAD' });
+                            const size = res.headers.get('Content-Length');
+                            sizes[pdf.pdf] = size ? (parseInt(size) / 1024 / 1024).toFixed(2) + ' MB' : 'N/A';
+                        } catch {
+                            sizes[pdf.pdf] = 'N/A';
+                        }
+                    }
+                }));
+                setPdfSizes(sizes);
+
             } catch (error) {
-                console.error("Error fetching PDFs:", error);
+                console.error("Error fetching answers:", error);
+                toast.error(error.message);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchPDFs();
+        fetchAnswers();
     }, [pdfID]);
 
-    // Fetch PDF file size
-    const fetchPdfSize = async (url) => {
-        try {
-            const response = await fetch(url, { method: 'HEAD' });
-            const contentLength = response.headers.get('Content-Length');
-            if (contentLength) {
-                setPdfSizes(prev => ({
-                    ...prev,
-                    [url]: (contentLength / (1024 * 1024)).toFixed(2) + ' MB'
-                }));
-            }
-        } catch (error) {
-            console.error('Error fetching PDF size:', error);
-        }
-    };
+    const handleFileChange = (e) => setFiles(Array.from(e.target.files));
 
-    // File input change handler
-    const handleFileChange = (e) => {
-        setFiles(Array.from(e.target.files));
-    };
-
-    // Submit form handler to upload answer PDFs
     const handleSubmit = async (event) => {
         event.preventDefault();
-
         if (!content.trim() || files.length === 0) {
-            alert("Please provide description and select files.");
-            return;
+            return toast.warn("Please provide a description and select at least one file.");
         }
-
-        const username = Cookies.get("username");
-        if (!pdfID) {
-            alert("Missing ID to upload answer.");
-            return;
-        }
-
-        setLoading(true);
-
+        setIsUploading(true);
         try {
             const formData = new FormData();
-            formData.append("name", username);
+            formData.append("name", Cookies.get("username") || "Anonymous");
             formData.append("content", content);
             formData.append("id", pdfID);
             files.forEach(file => formData.append("pdf", file));
@@ -111,230 +126,118 @@ const Select = () => {
                 body: formData,
             });
 
-            if (!res.ok) throw new Error("Upload failed");
-
-            alert("Upload successful");
-            setIsOpen(false);
+            if (!res.ok) throw new Error("Upload failed. Please try again.");
+            
+            toast.success("Upload successful! Your answer may take a moment to appear.");
+            setIsUploadOpen(false);
             setContent("");
             setFiles([]);
         } catch (err) {
-            console.error(err);
-            alert("Upload failed");
+            toast.error(err.message);
         } finally {
-            setLoading(false);
+            setIsUploading(false);
         }
     };
 
-    // Handle PDF download, update states and store history in localStorage
-    const handleDownload = async (pdfUrl, pdfName, pdfId) => {
-
-        console.log("Initiating download...");
-        console.log("PDF URL:", pdfUrl);
-        console.log("PDF Name:", pdfName);
-
-        const getDownloadHistory = () => {
-            try {
-                const historyString = localStorage.getItem('downloadHistory');
-                return historyString ? JSON.parse(historyString) : [];
-            } catch (error) {
-                console.error("Error parsing download history:", error);
-                return [];
-            }
-        };
-
-        const saveDownloadHistory = (history) => {
-            try {
-                const MAX_HISTORY_ITEMS = 50;
-                if (history.length > MAX_HISTORY_ITEMS) {
-                    history = history.slice(0, MAX_HISTORY_ITEMS);
-                }
-                localStorage.setItem('downloadHistory', JSON.stringify(history));
-            } catch (error) {
-                console.error("Error saving download history:", error);
-            }
-        };
-
-        setLoadingStates(prev => ({ ...prev, [pdfId]: true }));
-        setDownloadStates(prev => ({ ...prev, [pdfId]: 'downloading' }));
-
+    const handleDownload = async (pdfUrl, pdfName) => {
+        if (!pdfUrl) return toast.error("No download URL available.");
+        toast.info(`Starting download for ${pdfName}`);
         try {
             const response = await fetch(pdfUrl);
-            const arrayBuffer = await response.arrayBuffer();
-
-            const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
-
-            const anchor = document.createElement("a");
-            anchor.href = URL.createObjectURL(blob);
-            anchor.download = `${pdfName}.pdf` || "download.pdf";
-            document.body.appendChild(anchor);
-            anchor.click();
-            document.body.removeChild(anchor);
-            URL.revokeObjectURL(anchor.href);
-
-            setDownloadStates(prev => ({ ...prev, [pdfId]: 'download_done' }));
-
-            const history = getDownloadHistory();
-            history.unshift({
-                pdfName,
-                pdfUrl,
-                downloadDate: new Date().toISOString()
-            });
-            saveDownloadHistory(history);
-            console.log("Downloading from URL:", pdfUrl);
-
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${pdfName}.pdf` || 'download.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
         } catch (error) {
-            console.error("Download failed:", error);
-            setDownloadStates(prev => ({ ...prev, [pdfId]: 'error' }));
-        } finally {
-            setLoadingStates(prev => ({ ...prev, [pdfId]: false }));
+            toast.error("Download failed.");
         }
     };
-
+    
     return (
         <>
-            <div className='mesh_select h-screen ccf overflow-y-scroll'>
-                <Navbar />
-                <div className='ccf'>
-                    <div className='py-16 flex flex-col text-center justify-center items-center'>
-                        <span className='text-3xl md:text-lg lg:text-3xl font-black bg-clip-text bg-gradient-to-tr from-slate-100 to-stone-500 text-transparent'>
-                            Get Answer of {pdfname} for free?
-                        </span>
-                    </div>
-                </div>
-
-                <div className='mx-6'>
-                    <div
-                        onClick={() => handleDownload(pdfurl, pdfname, pdfID)}
-                        className="flex gap-2 max-w-[100vw] text-white items-center px-6 p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-600 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-30 hover:shadow-lg hover:bg-blue-500/20 backdrop-saturate-100 backdrop-contrast-100 lg:min-w-[384px]"
-                    >
-                        <img
-                            src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
-                            alt="PDF Icon"
-                            className="w-12 h-12 object-contain"
-                        />
-                        <div className='flex-1 flex flex-col ml-2'>
-                            <p className='text-lg mb-2'>{pdfname}</p>
-                            <p className="text-sm text-slate-400">{pdfsize} • PDF • {pdfyear}</p>
-                        </div>
-                        <div className="group relative mr-31">
-                            <button>
-                                <span className="material-symbols-outlined">
-                                    {loadingStates[pdfID] ? 'arrow_circle_down' : (downloadStates[pdfID] || 'download')}
-                                </span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div className='mx-6 font-bold text-white py-4'>
-                    <span>Answers of {pdfname}</span>
-                </div>
-
-                <div className='grid gap-2 nd:grid-cols-1 lg:grid-cols-3 w-full text-white px-6 mb-6'>
-                    {loading ? (
-                        <div className="flex justify-center items-center col-span-3">
-                            <div className="border-t-2 rounded-full border-green-500 bg-gray-900 animate-spin aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
-                        </div>
-                    ) : (
-                        pdfData.length > 0 ? (
-                            pdfData.map((pdf, index) => (
-                                <div
-                                    key={index}
-                                    onClick={() => handleDownload(pdf.pdf, `Answer of ${pdfname} by ${pdf.name}`, pdf.id)}
-                                    className="flex gap-2 max-w-[100vw] text-white items-center p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-30 hover:shadow-lg hover:bg-blue-800/30 backdrop-saturate-100 backdrop-contrast-100 lg:min-w-[384px]"
-                                >
-                                    <img
-                                        src="https://www.freeiconspng.com/uploads/pdf-icon-9.png"
-                                        alt="PDF Icon"
-                                        className="w-12 h-12 object-contain"
-                                    />
-                                    <div className='flex-1 flex flex-col'>
-                                        <p className='text-xl'>{pdf.contant}</p>
-                                        <div>
-                                            <p className="text-md text-slate-400">
-                                                {pdfSizes[pdf.pdf] || "Loading..."} • PDF • {pdfyear}
-                                            </p>
-                                            <a href={`/profile/${pdf.name}`}>
-                                                <p className='text-md pb-1'>@<span className='text-gray-100'>{pdf.name}</span></p>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <div className="group relative mr-31">
-                                        <button>
-                                            <span className="material-symbols-outlined">
-                                                {loadingStates[pdf.id] ? 'arrow_circle_down' : (downloadStates[pdf.id] || 'download')}
-                                            </span>
-                                        </button>
-                                    </div>
+        <div className='mesh_select ccf min-h-screen text-white'>
+            <Navbar />
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                {loading ? <SkeletonLoader /> : (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                        <div className="lg:col-span-1 lg:sticky top-24">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0, transition: { delay: 0.1 } }}>
+                                <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                                    <p className="text-sm text-white/50 mb-2">Question Paper</p>
+                                    <h1 className='text-2xl font-bold text-white mb-3'>{questionPdf?.name || "No Question Found"}</h1>
+                                    <p className="text-sm text-white/50">{questionPdf?.size || "..."} • PDF • {questionPdf?.year || "..."}</p>
+                                    <button
+                                        onClick={() => handleDownload(questionPdf?.url, questionPdf?.name)}
+                                        className="mt-6 w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-500 transition-colors font-semibold"
+                                    >
+                                        <span className="material-symbols-outlined">download</span>
+                                        Download Question
+                                    </button>
                                 </div>
-                            ))
-                        ) : (
-                            <p>No file for this</p>
-                        )
-                    )}
-                </div>
+                            </motion.div>
+                        </div>
+
+                        <div className="lg:col-span-2">
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0, transition: { delay: 0.2 } }} className="space-y-6">
+                                <div className="flex justify-between items-center">
+                                    <h2 className="text-3xl font-bold">Answers ({answerPdfs.length})</h2>
+                                    <button onClick={() => setIsUploadOpen(true)} className="px-5 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors font-semibold">
+                                        Contribute
+                                    </button>
+                                </div>
+
+                                {answerPdfs.length > 0 ? (
+                                    <motion.ul initial="hidden" animate="visible" variants={{ visible: { transition: { staggerChildren: 0.1 } } }} className="space-y-4">
+                                        {answerPdfs.map((pdf, index) => (
+                                            <motion.li key={index} variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
+                                                <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-transparent hover:border-white/20 hover:bg-white/10 transition-all">
+                                                    <img src={pdf.uploader_pic || `https://www.freeiconspng.com/uploads/pdf-icon-9.png`} alt={pdf.name} className="w-10 h-10 rounded-full object-cover" />
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className='font-semibold truncate'>{pdf.contant}</p>
+                                                        <p className="text-sm text-white/50">by {pdf.name} • {pdfSizes[pdf.pdf] || "..."}</p>
+                                                    </div>
+                                                    <button onClick={() => handleDownload(pdf.pdf, `Answer by ${pdf.name}`)} className="p-3 rounded-full bg-white/5 hover:bg-blue-500/50 transition-colors">
+                                                        <span className="material-symbols-outlined">download</span>
+                                                    </button>
+                                                </div>
+                                            </motion.li>
+                                        ))}
+                                    </motion.ul>
+                                ) : (
+                                    <EmptyState onUploadClick={() => setIsUploadOpen(true)} />
+                                )}
+                            </motion.div>
+                        </div>
+                    </motion.div>
+                )}
             </div>
 
-            
-             <div
-        role="button"
-        onClick={() => setIsOpen(true)}
-        className="border border-gray-700 fixed bottom-[6rem] right-5 rounded-[50%] flex justify-center items-center text-3xl w-16 h-16 bg-gradient-to-br from-[#27272a] via-[#52525b] to-[#a1a1aa] text-white font-black"
-    >
-        <div className="flex items-center justify-center text-transparent bg-clip-text bg-gradient-to-br from-white via-neutral-200 to-neutral-700">
-                            <span class="material-symbols-outlined font-black text-4xl">
-                                add
-                            </span>
-                        </div>
-    </div>
-
-            {isOpen && (
-                <div className="fixed ccf inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50 p-4">
-                    <div className="relative flex flex-col p-6 rounded-lg border-2 border-white shadow-lg bg-gradient-to-br from-[#1d4ed8] via-[#1e40af] to-[#111827]">
-                        <button
-                            disabled={loading}
-                            onClick={() => setIsOpen(false)}
-                            className="absolute top-2 right-4 text-3xl text-red-500 hover:text-red-200"
-                        >
-                            x
-                        </button>
-                        <span className="text-2xl font-black text-transparent bg-gradient-to-tr from-white via-stone-400 to-neutral-300 bg-clip-text mb-2 text-center">
-                            Add your Answer PDF
-                        </span>
-                        <p className='text-gray-400'>
-                            for {sub},<br />in {pdfname}
-                        </p>
-                        <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
-                            <textarea
-                                name="content"
-                                id="content"
-                                rows="4"
-                                placeholder='Description'
-                                className="w-full p-2 rounded-lg border border-gray-300 bg-[#383838] text-gray-100"
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                                required
-                            />
-                            <input
-                                type="file"
-                                name="files"
-                                id="files"
-                                multiple
-                                className="w-full p-2 rounded-lg border border-gray-300 bg-[#383838] text-gray-100"
-                                onChange={handleFileChange}
-                            />
-                            <button type="submit"
-                                    disabled={loading}
-                                    class="smky-btn3 relative hover:text-[#778464] py-2 px-6 after:absolute after:h-1 after:hover:h-[200%] transition-all duration-500 hover:transition-all hover:duration-500 after:transition-all after:duration-500 after:hover:transition-all after:hover:duration-500 overflow-hidden z-20 after:z-[-20] after:bg-[#abd373] after:rounded-t-full after:w-full after:bottom-0 after:left-0 text-gray-200">
-                                   {loading ? <div className="s-loading"></div> : "Submit"}
+            <AnimatePresence>
+                {isUploadOpen && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-gray-900/70 border border-white/20 p-6 rounded-2xl relative w-full max-w-md">
+                            <button onClick={() => setIsUploadOpen(false)} disabled={isUploading} className="absolute top-3 right-3 text-white/50 hover:text-white transition-colors">&times;</button>
+                            <h2 className="text-2xl font-bold">Contribute Your Answer</h2>
+                            <p className='text-white/50 mb-4'>for {questionPdf?.name}</p>
+                            <form onSubmit={handleSubmit} className="space-y-4">
+                                <textarea className="w-full p-3 border border-white/20 text-white bg-white/5 rounded-lg" rows="3" placeholder='Brief description (e.g., "Complete handwritten notes")' value={content} onChange={(e) => setContent(e.target.value)} required />
+                                <input type="file" multiple onChange={handleFileChange} className="w-full text-sm text-white file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                                <button type="submit" disabled={isUploading} className="w-full py-3 px-6 rounded-lg bg-blue-600 hover:bg-blue-500 transition-colors disabled:bg-gray-500 disabled:cursor-not-allowed">
+                                    {isUploading ? "Uploading..." : "Submit Answer"}
                                 </button>
-                        </form>
-                    </div>
-                </div>
-            )}
-
+                            </form>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
             <Footer />
-        </>
+            </>
     );
 };
 

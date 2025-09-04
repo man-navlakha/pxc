@@ -158,7 +158,7 @@ function App() {
                     <Route path="/profile/:nameFromUrl" element={<Protected> <Prof /></Protected>} />
                     <Route path="/:sem/:subject" element={<Protected> <Page /></Protected>} />
                     <Route path="/ns" element={<Protected> <ResourcePage />  </Protected>} />
-                    {/* <Route path="/ns/:osubject/:ochoose" element={<Protected> <Ns /></Protected>} /> */}
+                    <Route path="/ns/:osubject/:ochoose" element={<Protected> <Ns /></Protected>} />
                     <Route path="/nss" element={<Protected> <Nss /></Protected>} />
                     <Route path="/nss/:osubject/:ochoose" element={<Protected> <Nss /></Protected>} />
                     <Route path="/select" element={<Protected> <Select /></Protected>} />

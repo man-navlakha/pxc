@@ -1,62 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import '../new.css'
+import React, { useState, useEffect, Suspense, lazy } from 'react';
+import '../new.css';
 import Cookies from "js-cookie";
-import Navbar from '../componet/Navbar'
-import Footer from '../componet/Footer'
+import Navbar from '../componet/Navbar';
+import Footer from '../componet/Footer';
 import axios from "axios";
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import FollowingPage from './FollowingPage';
-import FollowersPage from './FollowersPage';
-import ProfileEditForm from './ProfileEditForm';
 import FloatingMessagesButton from '../componet/FloatingMessagesButton';
+
+// Code Splitting is still active
+const FollowingPage = lazy(() => import('./FollowingPage'));
+const FollowersPage = lazy(() => import('./FollowersPage'));
+const ProfileEditForm = lazy(() => import('./ProfileEditForm'));
 
 const Profile = () => {
   const Username = Cookies.get("username");
-  const sem = Cookies.get("latest_sem");
   const [profile, setProfile] = useState(null);
   const [page, setPage] = useState(null);
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [isopen, setIsopen] = useState(false);
-  const [usernameedit, setusernameedit] = useState("");
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const location = useLocation();
-  const urlParams = new URLSearchParams(location.search);
-  const urlusername = urlParams.get('username');
   const { nameFromUrl } = useParams();
   const [isFollowing, setIsFollowing] = useState(false);
   const usernamec = Cookies.get("username");
   const token = Cookies.get('access_token');
   const navigate = useNavigate();
+  const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
 
-  { urlusername && navigate(`/profile/${urlusername}`) }
-  // Unified profile and posts fetch
+  const location = useLocation();
+  const urlParams = new URLSearchParams(location.search);
+  const urlusername = urlParams.get('username');
+
   useEffect(() => {
-    !token && navigate("/")
+    if (urlusername) {
+      navigate(`/profile/${urlusername}`);
+    }
+  }, [urlusername, navigate]);
+
+  // --- REVERTED: Data fetching effect now gets ALL posts at once ---
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+      return;
+    }
     const userToFetch = nameFromUrl || Username;
     if (!userToFetch) return;
+
     setLoading(true);
-    axios.post('https://pixel-classes.onrender.com/api/Profile/details/', { username: userToFetch })
-      .then(res => setProfile(res.data))
-      .catch(() => setError("Failed to load profile details"))
-      .finally(() => setLoading(false));
+    setProfile(null);
+    setPosts([]);
+    setError(null);
 
-    axios.post('https://pixel-classes.onrender.com/api/Profile/posts/', { username: userToFetch })
-      .then(res => setPosts(res.data.posts || []))
-      .catch(() => setError("Failed to load Notes"));
-  }, [nameFromUrl, Username, token]);
+    const profilePromise = axios.post(`https://pixel-classes.onrender.com/api/Profile/details/`, { username: userToFetch });
+    const postsPromise = axios.post(`https://pixel-classes.onrender.com/api/Profile/posts/`, { username: userToFetch }); // Fetches all posts
 
-  // Follow status
+    Promise.all([profilePromise, postsPromise])
+      .then(([profileRes, postsRes]) => {
+        setProfile(profileRes.data);
+        setPosts(postsRes.data.posts || []);
+      })
+      .catch((err) => {
+        console.error("Failed to load profile data:", err);
+        setError("Could not load profile. The user may not exist.");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [nameFromUrl, Username, token, navigate]);
+
   useEffect(() => {
-    if (!nameFromUrl || !usernamec) return;
+    if (!nameFromUrl || !usernamec || nameFromUrl === usernamec) return;
     const fetchFollowStatus = async () => {
       try {
-        const followingRes = await axios.post(
-          "https://pixel-classes.onrender.com/api/Profile/following/",
-          { username: usernamec }
-        );
-        const followingUsernames = followingRes.data.map(u => u.username);
-        setIsFollowing(followingUsernames.includes(nameFromUrl));
+        const res = await axios.post("https://pixel-classes.onrender.com/api/Profile/following/", { username: usernamec });
+        const isUserFollowing = res.data.some(u => u.username === nameFromUrl);
+        setIsFollowing(isUserFollowing);
       } catch (err) {
         console.error("Error checking follow status:", err);
       }
@@ -64,20 +82,25 @@ const Profile = () => {
     fetchFollowStatus();
   }, [nameFromUrl, usernamec]);
 
-  // Follow/unfollow functions
+  useEffect(() => {
+    const fetchSuggestions = async () => {
+      try {
+        const res = await axios.get("https://pixel-classes.onrender.com/api/users/suggested/", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setSuggestions(res.data.filter(user => user.username !== usernamec && user.username !== nameFromUrl).slice(0, 5));
+      } catch (err) {
+        console.error("Error fetching suggestions:", err);
+      }
+    };
+    if (token) fetchSuggestions();
+  }, [token, usernamec, nameFromUrl]);
+
   const follow = async (follow_username) => {
     try {
-      const response = await axios.post(
-        "https://pixel-classes.onrender.com/api/Profile/follow/",
-        {
-          username: usernamec,
-          follow_username: follow_username,
-        }
-      );
-      if (response.data.message) {
-        alert(`You are now following ${follow_username}`);
-        setIsFollowing(true);
-      }
+      await axios.post("https://pixel-classes.onrender.com/api/Profile/follow/", { username: usernamec, follow_username });
+      setIsFollowing(true);
+      setProfile(p => ({ ...p, follower_count: p.follower_count + 1 }));
     } catch (error) {
       console.error("Error following user:", error);
     }
@@ -85,79 +108,21 @@ const Profile = () => {
 
   const unfollow = async (unfollow_username) => {
     try {
-      const response = await axios.post(
-        "https://pixel-classes.onrender.com/api/Profile/unfollow/",
-        {
-          username: usernamec,
-          unfollow_username: unfollow_username,
-        }
-      );
-      if (response.data.message) {
-        alert(`removed`);
-        setIsFollowing(false);
-      }
+      await axios.post("https://pixel-classes.onrender.com/api/Profile/unfollow/", { username: usernamec, unfollow_username });
+      setIsFollowing(false);
+      setProfile(p => ({ ...p, follower_count: p.follower_count - 1 }));
     } catch (error) {
-      console.error("Error unfollow user:", error);
-    }
-  };
-
-  // Edit profile handler
-  const handleProfileEdit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    const formData = new FormData(e.target);
-    formData.append("username", Username);
-
-    try {
-      const response = await axios.put(
-        "https://pixel-classes.onrender.com/api/Profile/edit/",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
-      if (response.data.success) {
-        alert("Profile updated successfully!");
-        window.location.reload();
-      } else {
-        alert("Failed to update profile.");
-      }
-    } catch (err) {
-      alert("Error updating profile.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Edit post handler
-  const handleEdit = async (post) => {
-    const newTitle = prompt("Edit repository name:", post.title);
-    if (newTitle && newTitle !== post.title) {
-      try {
-        await axios.put('https://pixel-classes.onrender.com/api/Profile/editPost/', {
-          id: post.id,
-          title: newTitle,
-        });
-        setPosts(posts.map(p => p.id === post.id ? { ...p, title: newTitle } : p));
-      } catch {
-        alert("Failed to edit repository.");
-      }
+      console.error("Error unfollowing user:", error);
     }
   };
 
   const handleDelete = async (pdf_url) => {
-    if (!pdf_url) {
-      alert("PDF URL is required to delete the repository.");
-      return;
-    }
-    const pdfUrlStr = String(pdf_url);
     if (window.confirm("Are you sure you want to delete this repository?")) {
       try {
-        await axios.delete(
-          "https://pixel-classes.onrender.com/api/Profile/deletePost/",
-          {
-            data: { pdf_url: pdfUrlStr, username: Cookies.get("username") }
-          }
-        );
-        setPosts(posts.filter(p => p.pdf !== pdfUrlStr));
+        await axios.delete("https://pixel-classes.onrender.com/api/Profile/deletePost/", {
+          data: { pdf_url: String(pdf_url), username: Cookies.get("username") }
+        });
+        setPosts(posts.filter(p => p.pdf !== pdf_url));
       } catch (err) {
         console.error("Delete error:", err.response?.data || err.message);
         alert("Failed to delete repository.");
@@ -165,256 +130,188 @@ const Profile = () => {
     }
   };
 
+  if (nameFromUrl === usernamec) {
+    navigate("/profile", { replace: true });
+    return null;
+  }
+
   return (
     <>
       <div className="bg-pattern"></div>
-      <div className='mesh_profile ccf text-white pb-14 h-full min-h-screen'>
+      <div className='mesh_profile ccf text-white pb-14 min-h-screen'>
         <Navbar />
-        <div className='flex flex-col items-center mt-10 justify-center'>
-          <div className="w-full max-w-4xl mx-auto mt-10">
-            {/* Profile Header */}
-            <div className="glass-card rounded-3xl m-3 border border-white/20 bg-white/10 backdrop-blur-xl p-8 flex flex-col md:flex-row items-center gap-8">
-              <div className="flex flex-col items-center md:items-start">
-                <div className="relative">
-                  {loading ? (
-                    <>
-                      <svg
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        xmlns="http://www.w3.org/2000/svg"
-                        aria-hidden="true"
-                        className="w-32 h-32 rounded-full border-4 border-white/30 shadow-lg object-cover me-3 text-gray-200 dark:text-gray-400"
-                      >
-                        <path
-                          d="M10 0a10 10 0 1 0 10 10A10.011 10.011 0 0 0 10 0Zm0 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6Zm0 13a8.949 8.949 0 0 1-4.951-1.488A3.987 3.987 0 0 1 9 13h2a3.987 3.987 0 0 1 3.951 3.512A8.949 8.949 0 0 1 10 18Z"
-                        ></path>
-                      </svg>
-                      <span className="absolute bottom-2 right-2 bg-green-400/80 text-white px-2 py-1 rounded-full text-xs font-bold shadow">
-                        {loading && "loading..."}
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <img
-                        className="w-32 h-32 rounded-full border-4 border-white/30 shadow-lg object-cover"
-                        src={profile?.profile_pic
-                          ? profile.profile_pic
-                          : "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"}
-                        alt="Profile"
-                      />
-                      <span className="absolute bottom-2 right-2 bg-green-400/80 text-white px-2 py-1 rounded-full text-xs font-bold shadow">
-                        {Username ? "Active" : "Guest"}
-                      </span>
-                    </>
-                  )}
+        <main className='flex flex-col items-center mt-10 justify-center px-4'>
+          <div className="w-full max-w-6xl mx-auto mt-10">
+            {loading ? (
+              <div className="glass-card rounded-3xl m-3 p-8 flex flex-col md:flex-row items-center gap-8 animate-pulse">
+                <div className="w-32 h-32 rounded-full bg-gray-700/50 flex-shrink-0"></div>
+                <div className="flex-1 flex flex-col items-center md:items-start w-full">
+                  <div className="h-8 bg-gray-700/50 rounded-md w-2/3 md:w-1/3 mb-4"></div>
+                  <div className='flex items-center justify-center gap-6 mt-2'>
+                    <div className='flex flex-col items-center gap-2'><div className="h-5 bg-gray-700/50 rounded-md w-8"></div><div className="h-4 bg-gray-700/50 rounded-md w-14"></div></div>
+                    <div className='flex flex-col items-center gap-2'><div className="h-5 bg-gray-700/50 rounded-md w-8"></div><div className="h-4 bg-gray-700/50 rounded-md w-16"></div></div>
+                    <div className='flex flex-col items-center gap-2'><div className="h-5 bg-gray-700/50 rounded-md w-8"></div><div className="h-4 bg-gray-700/50 rounded-md w-16"></div></div>
+                  </div>
+                  <div className="mt-6 flex gap-4"><div className="h-10 bg-gray-700/50 rounded-xl w-32"></div><div className="h-10 bg-gray-700/50 rounded-xl w-32"></div></div>
                 </div>
               </div>
-
-              {nameFromUrl === usernamec && navigate("/profile")}
-
-              <div className="flex-1 flex flex-col items-center md:items-start">
-                {loading ? (
-                  <h1 className="flex items-center justify-center text-4xl font-extrabold bg-gradient-to-tr from-blue-300 to-green-500 text-transparent bg-clip-text text-center md:text-left">
-                    <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[160px]"> </div>
-                  </h1>
-                ) : (
-                  <>
-                    <h1 className="flex items-center justify-center mb-2 text-4xl font-extrabold bg-gradient-to-tr from-blue-300 to-green-500 text-transparent bg-clip-text text-center md:text-left">
-                      <span className="material-symbols-outlined"></span>{profile?.username || "Guest"}
-                    </h1>
-                    <div className='flex cursor-pointer items-center justify-between gap-3 '>
-                      <div onClick={() => setPage("followers")} className='flex flex-col items-center justify-center'>
-                        <p>{profile?.follower_count || 0}</p>
-                        <p>Followers</p>
-                      </div>
-                      <div onClick={() => setPage("following")} className='flex cursor-pointer flex-col items-center justify-center'>
-                        <p>{profile?.following_count || 0}</p>
-                        <p>Following</p>
-                      </div>
-                    </div>
-                  </>
-                )}
-                {nameFromUrl ? (
-                  <div className="mt-4 flex gap-4">
-                    {isFollowing ? (
-                      <button
-                        onClick={() => unfollow(nameFromUrl)}
-                        className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-red-500/80 hover:bg-red-600/90 text-white font-bold shadow transition"
-                      >
-                        <span className="material-symbols-outlined">person_remove</span> Unfollow
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => follow(nameFromUrl)}
-                        className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition"
-                      >
-                        <span className="material-symbols-outlined">person_add</span> Follow
-                      </button>
-                    )}
-                    <button onClick={() => navigate(`/chat/${nameFromUrl}`)} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-gray-800/30 hover:bg-gray-500/50 text-white font-bold shadow transition">
-                      <span className="material-symbols-outlined">chat</span> Message
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    {loading ? (
-                      <div className="mt-4 flex gap-4">
-                        <button className="glass-btn flex items-center gap-2 px-5 py-3 rounded-xl shadow transition">
-                          <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[120px]"> </div>
-                        </button>
-                        <button className="glass-btn flex items-center gap-2 px-5 py-3 rounded-xl shadow transition">
-                          <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[120px]"> </div>
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="mt-4 flex gap-4">
-                        <button onClick={() => navigate("/logout")} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-red-500/80 hover:bg-red-600/90 text-white font-bold shadow transition">
-                          <span className="material-symbols-outlined">logout</span> Logout
-                        </button>
-                        <button onClick={() => setPage("edit")} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-white/30 hover:bg-white/50 text-black font-bold shadow transition">
-                          <span className="material-symbols-outlined">edit_square</span> Update
-                        </button>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-
-            {/* Conditional Pages */}
-            {page === "following" ? (
-              <FollowingPage username={profile?.username || Username} />
-            ) : page === "followers" ? (
-              <FollowersPage username={profile?.username || Username} />
-            ) : page === "edit" ? (
-              <div className="flex flex-col p-4">
-                <button onClick={() => window.location.reload()} className='flex w-full max-w-max px-6 py-1 rounded justify- my-2 bg-gray-100
-    bg-clip-padding
-    backdrop-filter
-    backdrop-blur-xl
-    bg-opacity-10
-    backdrop-saturate-100
-    backdrop-contrast-100 '>
-                  Close
-                </button>
-                <ProfileEditForm profile={usernamec} />
-
-              </div>
             ) : (
-              // Notes Section
-              <div className="mt-10">
-                <h2 className="text-2xl font-bold text-white/90 mb-4 m-6 flex items-center gap-2">
-                  <span className="material-symbols-outlined">book_5</span> Notes
-                </h2>
-                {loading && (
-                  <div className="glass-info p-6 m-3 rounded-xl border border-white/10 bg-white/10 backdrop-blur-lg shadow flex flex-col gap-2">
-                    <div className="flex items-top gap-2">
-                      <span className="material-symbols-outlined text-blue-400">
-                        <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[50px]"> </div>
-                      </span>
-                      <span className="font-bold text-lg text-white mr-2">
-                        <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[170px]"> </div>
-                        <div className='flex items-center mt-3'>
-                          <span className="material-symbols-outlined text-blue-400 mr-2 ">
-                            <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[50px]"> </div>
-                          </span>
-                          <span className='font-medium text-md text-gray-300'>
-                            <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[200px]"> </div>
-                          </span>
-                        </div>
-                      </span>
-                    </div>
-                    <div className="flex gap-2 mt-2">
-                      <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[170px]"> </div>
-                      {!nameFromUrl && (
-                        <>
-                          <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[170px]"> </div>
-                          <div className="animate-pulse rounded-md bg-gray-500 h-4 w-[170px]"> </div>
-                        </>
-                      )}
-                    </div>
+              <div className="glass-card rounded-3xl m-3 border border-white/20 bg-white/10 backdrop-blur-xl p-8 flex flex-col md:flex-row items-center gap-8">
+                <div className="relative cursor-pointer" onClick={() => profile?.profile_pic && setIsPhotoModalOpen(true)}>
+                  <img className="w-32 h-32 rounded-full border-4 border-white/30 shadow-lg object-cover" src={profile?.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"} alt="Profile"/>
+                  <span className="absolute bottom-2 right-2 bg-green-500/90 text-white px-2 py-1 rounded-full text-xs font-bold shadow-md border border-white/20">Active</span>
+                </div>
+                <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
+                  <h1 className="mb-2 text-4xl font-extrabold bg-gradient-to-tr from-blue-300 to-green-500 text-transparent bg-clip-text">{profile?.username || "..."}</h1>
+                  <div className='flex items-center justify-center gap-6 mt-2'>
+                    <div className='flex flex-col items-center justify-center text-center'><p className="font-bold text-xl">{profile?.post_count || posts.length}</p><p className="text-sm text-gray-300">Posts</p></div>
+                    <div onClick={() => setPage("followers")} className='flex flex-col items-center justify-center cursor-pointer text-center'><p className="font-bold text-xl">{profile?.follower_count || 0}</p><p className="text-sm text-gray-300">Followers</p></div>
+                    <div onClick={() => setPage("following")} className='flex flex-col items-center justify-center cursor-pointer text-center'><p className="font-bold text-xl">{profile?.following_count || 0}</p><p className="text-sm text-gray-300">Following</p></div>
                   </div>
-                )}
-                <div className=" gap-6">
-                  {posts.length === 0 && !loading ? (
-                    <div className="glass-info p-6 m-2 rounded-xl border border-white/10 bg-white/10 backdrop-blur-lg shadow text-center text-white/70">
-                      No Notes found.
-                      {error && <div className="text-center text-red-400 mt-4">{error}</div>}
-                    </div>
-                  ) : (
-                    posts.map(post => (
-                      <div key={post.id} className="glass-info p-6 m-3 rounded-xl border border-white/10 bg-white/10 backdrop-blur-lg shadow flex flex-col gap-2">
-                        <div className="flex items-top gap-2">
-                          <span className="material-symbols-outlined text-blue-400">book</span>
-                          <span className="font-bold text-lg text-white">{post.contant}
-                            <div className='flex items-top'>
-                              <span className="material-symbols-outlined text-blue-400">chevron_forward</span>
-                              <span className='font-medium text-md text-gray-300' >{post.choose} in {post.sub} for Semester {post.sem}</span>
-                            </div>
-                          </span>
-                        </div>
-                        <div className="flex gap-2 mt-2">
-                          <a
-                            href={post.pdf}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-3 py-1 rounded backdrop-filter
-    backdrop-blur-xl bg-blue-800/60 hover:bg-blue-600/50 text-white font-semibold flex items-center gap-1"
-                          >
-                            <span className="material-symbols-outlined">download</span> PDF
-                          </a>
-                          {!nameFromUrl && (
-                            <>
-                              {/* <button
-                                className="px-3 py-1 rounded bg-yellow-400/80  bg-clip-padding
-    backdrop-filter
-    backdrop-blur-xl
-    bg-opacity-10
-    backdrop-saturate-100
-    backdrop-contrast-100  hover:bg-yellow-800/30 hover:text-white text-black font-semibold"
-                                onClick={() => handleEdit(post)}
-                              >
-                                Edit
-                              </button> */}
-                              <button
-                                className="px-3 py-1 rounded bg-red-500/80 hover:bg-red-600 text-white font-semibold"
-                                onClick={() => handleDelete(post.pdf)}
-                              >
-                                Delete
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    ))
-                  )}
+                  <div className="mt-6 flex gap-4">
+                    {nameFromUrl ? (
+                      <>{isFollowing ? (<button onClick={() => unfollow(nameFromUrl)} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-red-500/80 hover:bg-red-600/90 text-white font-bold shadow transition"><span className="material-symbols-outlined">person_remove</span> Unfollow</button>) : (<button onClick={() => follow(nameFromUrl)} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition"><span className="material-symbols-outlined">person_add</span> Follow</button>)}<button onClick={() => navigate(`/chat/${nameFromUrl}`)} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-white/20 hover:bg-white/40 text-white font-bold shadow transition"><span className="material-symbols-outlined">chat</span> Message</button></>
+                    ) : (
+                      <><button onClick={() => setPage("edit")} className="glass-btn flex items-center gap-2 px-3 py-2 rounded-xl bg-white/30 hover:bg-white/50 text-black font-bold shadow transition"><span className="material-symbols-outlined">edit_square</span> Edit Profile</button><button onClick={() => navigate("/logout")} className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-red-500/80 hover:bg-red-600/90 text-white font-bold shadow transition"><span className="material-symbols-outlined">logout</span> Logout</button></>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
+            
+            <Suspense fallback={<div className="flex justify-center items-center p-10"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div></div>}>
+              {page === "following" ? (<FollowingPage username={profile?.username || Username} />) : 
+               page === "followers" ? (<FollowersPage username={profile?.username || Username} />) : 
+               page === "edit" ? (
+                 <div className="glass-card m-3 p-6">
+    <button onClick={() => setPage(null)} className='flex items-center gap-2 w-full max-w-max px-4 py-2 rounded-lg mb-4 bg-white/10 hover:bg-white/20 transition'>
+      <span className="material-symbols-outlined">arrow_back</span> Back to Profile
+    </button>
+    <ProfileEditForm 
+      profile={profile} 
+      onUpdateSuccess={(updatedProfileData) => {
+        setProfile(updatedProfileData); // Update the profile state with new data from API
+        setPage(null); // Close the edit form
+      }}
+    />
+  </div>
+              ) : (
+                <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="lg:col-span-2">
+                    <h2 className="text-2xl font-bold text-white/90 mb-4 px-3 flex items-center gap-2"><span className="material-symbols-outlined">description</span> Notes</h2>
+                    <div className="space-y-4">
+                      {loading ? (
+                        Array.from({ length: 3 }).map((_, index) => (<div key={index} className="glass-info p-5 m-3 rounded-2xl border border-white/10 bg-white/10 animate-pulse"><div className="flex justify-between items-center"><div><div className="h-5 bg-gray-600 rounded w-48 mb-2"></div><div className="h-4 bg-gray-700 rounded w-64"></div></div><div className="h-8 bg-gray-600 rounded w-20"></div></div></div>))
+                      ) : posts.length === 0 ? (
+                        <div className="glass-info p-6 m-3 rounded-xl text-center text-white/70">
+                          This user hasn't posted any notes yet.
+                          {error && <div className="text-red-400 mt-4">{error}</div>}
+                        </div>
+                      ) : (
+                        // --- REVERTED: Simple map without refs ---
+                        posts.map(post => (
+                          <div key={post.id} className="glass-info p-5 m-3 rounded-2xl border border-white/10 bg-white/10 backdrop-blur-lg shadow-lg hover:bg-white/15 transition-all duration-300">
+                            <div className="flex justify-between items-start">
+                              <div className="flex items-start gap-4">
+                                <span className="material-symbols-outlined text-blue-400 mt-1">description</span>
+                                <div>
+                                  <h3 className="font-bold text-lg text-white">{post.contant}</h3>
+                                  <p className='font-medium text-sm text-gray-300 mt-1'>{post.choose} in {post.sub} for Semester {post.sem}</p>
+                                </div>
+                              </div>
+                              <div className="flex gap-2 mt-1">
+                                <a href={post.pdf} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-lg bg-blue-600/80 hover:bg-blue-500/80 text-white font-semibold flex items-center gap-1 transition"><span className="material-symbols-outlined text-sm">download</span> PDF</a>
+                                {!nameFromUrl && (<button onClick={() => handleDelete(post.pdf)} className="px-3 py-1.5 rounded-lg bg-red-500/80 hover:bg-red-600/80 text-white font-semibold flex items-center gap-1 transition"><span className="material-symbols-outlined text-sm">delete</span></button>)}
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+<aside className="lg:col-span-1">
+    <h2 className="text-2xl font-bold text-white/90 mb-4 px-3 flex items-center gap-2">
+        <span className="material-symbols-outlined">group_add</span> Suggested For You
+    </h2>
+    <div className="glass-info p-4 m-3 rounded-2xl border border-white/10 bg-white/10">
+        {loading ? (
+            <div className="space-y-4">
+                {Array.from({ length: 4 }).map((_, index) => (
+                    <div key={index} className="flex items-center justify-between animate-pulse">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gray-700/50"></div>
+                            <div className="h-4 bg-gray-700/50 rounded-md w-24"></div>
+                        </div>
+                        <div className="h-8 bg-gray-700/50 rounded-lg w-20"></div>
+                    </div>
+                ))}
+            </div>
+        ) : suggestions.length > 0 ? (
+            <ul className="space-y-2">
+                <AnimatePresence>
+                    {suggestions.map(user => (
+                        <motion.li
+                            key={user.username}
+                            layout
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 50, transition: { duration: 0.3 } }}
+                            className="flex items-center justify-between"
+                        >
+                            <div 
+                                onClick={() => navigate(`/profile/${user.username}`)} 
+                                className="flex items-center gap-3 cursor-pointer group"
+                            >
+                                <img 
+                                    src={user.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"} 
+                                    alt={user.username} 
+                                    className="w-10 h-10 rounded-full object-cover"
+                                />
+                                <span className="font-semibold text-white/90 group-hover:underline">{user.username}</span>
+                            </div>
+                            <button 
+                                onClick={() => onFollow(user.username)} // Use the new onFollow prop
+                                className="px-4 py-1.5 text-sm rounded-lg bg-blue-600 hover:bg-blue-500 font-semibold transition-colors"
+                            >
+                                Follow
+                            </button>
+                        </motion.li>
+                    ))}
+                </AnimatePresence>
+            </ul>
+        ) : (
+            <p className="text-center text-white/60 text-sm py-4">No suggestions right now.</p>
+        )}
+    </div>
+</aside>
+                </div>
+              )}
+            </Suspense>
           </div>
-        </div>
+        </main>
       </div>
 
       <Footer />
       <FloatingMessagesButton />
 
+      {isPhotoModalOpen && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setIsPhotoModalOpen(false)}>
+          <img src={profile?.profile_pic} alt="Profile full view" className="max-w-[90vw] max-h-[90vh] rounded-lg shadow-2xl object-contain" onClick={(e) => e.stopPropagation()}/>
+          <button className="absolute top-5 right-5 text-white text-3xl" onClick={() => setIsPhotoModalOpen(false)}>&times;</button>
+        </div>
+      )}
 
-      {/* Glassmorphism CSS */}
       <style>{`
-        .glass-card {
-          background: rgba(255,255,255,0.08);
-          border-radius: 20px;
-          border: 1px solid rgba(255,255,255,0.18);
+        .glass-card, .glass-info {
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.18);
         }
         .glass-btn {
           backdrop-filter: blur(8px);
         }
-        .glass-info {
-          backdrop-filter: blur(6px);
-        }
       `}</style>
     </>
-  )
-}
+  );
+};
 
-export default Profile
+export default Profile;
