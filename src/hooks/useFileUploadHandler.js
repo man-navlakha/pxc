@@ -36,8 +36,12 @@ export default function useFileUploadHandler() {
         formData.append("sem", sem);
         formData.append("choose", choose);
         formData.append("sub", subject);
+        files.forEach(file => formData.append("pdf", file));  // multiple pdf files
 
-        files.forEach(file => formData.append("pdf", file));
+
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}:`, value);
+        }
 
         try {
             setUploading(true);
@@ -46,7 +50,11 @@ export default function useFileUploadHandler() {
                 body: formData,
             });
 
-            if (!res.ok) throw new Error("Upload failed");
+            if (!res.ok) {
+                const errorText = await res.text();
+                console.error("Upload failed with response:", errorText);
+                throw new Error("Upload failed");
+            }
 
             alert("Uploaded successfully");
             setFiles([]);
@@ -58,6 +66,7 @@ export default function useFileUploadHandler() {
             setUploading(false);
         }
     };
+
 
     return {
         files,

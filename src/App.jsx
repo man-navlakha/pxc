@@ -54,6 +54,7 @@ import Profile from "./old/pages/profile";
 import Forgetpassword from "./auth/Forgetpassword";
 import FollowingPage from "./page/FollowingPage";
 import FollowersPage from "./page/FollowersPage";
+import ResourcePage from "./page/mainpages/ResourcePage";
 
 // import Sign from './old/newcom/Sign';
 // import Verify from './old/newcom/veri';
@@ -156,8 +157,8 @@ function App() {
                     <Route path="/profile" element={<Protected> <Prof /></Protected>} />
                     <Route path="/profile/:nameFromUrl" element={<Protected> <Prof /></Protected>} />
                     <Route path="/:sem/:subject" element={<Protected> <Page /></Protected>} />
-                    <Route path="/ns" element={<Protected> <Ns /></Protected>} />
-                    <Route path="/ns/:osubject/:ochoose" element={<Protected> <Ns /></Protected>} />
+                    <Route path="/ns" element={<Protected> <ResourcePage />  </Protected>} />
+                    {/* <Route path="/ns/:osubject/:ochoose" element={<Protected> <Ns /></Protected>} /> */}
                     <Route path="/nss" element={<Protected> <Nss /></Protected>} />
                     <Route path="/nss/:osubject/:ochoose" element={<Protected> <Nss /></Protected>} />
                     <Route path="/select" element={<Protected> <Select /></Protected>} />

@@ -175,8 +175,6 @@ const SubjectPage = () => {
     }, [navigate]);
 
 
-    console.log(handleopen)
-
     const handleNavigation = (subject, choice) => {
         if (["assignment", "imp"].includes(choice)) {
             navigate(`/nss/${subject}/${choice}`);
