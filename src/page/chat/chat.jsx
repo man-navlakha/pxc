@@ -5,6 +5,11 @@ import { Send, Undo2, Image as ImageIcon } from "lucide-react";
 import axios from "axios";
 import "../../new.css";
 import Listuser from "./Listuser";
+import { motion, AnimatePresence } from "framer-motion";
+import { Clipboard } from "lucide-react"; // Assuming you use lucide-react
+
+import { verifiedUsernames } from "../../verifiedAccounts";
+import VerifiedBadge from "../../componet/VerifiedBadge";
 
 export default function Chat() {
   const [messages, setMessages] = useState([]);
@@ -205,6 +210,40 @@ export default function Chat() {
     }
   };
 
+
+
+
+
+
+  const handleSendUrl = () => {
+    const url = imageUrl.trim();
+    if (!url || socketRef.current?.readyState !== WebSocket.OPEN) return;
+
+    // This reuses the sendMessage logic from your main component
+    sendMessage(url);
+
+    setImageUrl("");
+    setShowImagePopup(false);
+  };
+
+  // Add this useEffect to your Chat component to handle Escape key
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        setShowImagePopup(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+
+
+
+
   useEffect(() => {
     // on new messages, conditionally stick to bottom
     scrollToBottom();
@@ -402,9 +441,9 @@ export default function Chat() {
 
 
   return (
-    <div className="flex h-screen ccf">
+    <div className="flex h-screen ccf bg-gray-900">
       {/* Left panel */}
-     <div className="resize-x overflow-y-auto border-r border-gray-700 hidden lg:block">
+      <div className="resize-x min-w-90 overflow-y-auto border-r border-gray-700 hidden lg:block">
 
         <Listuser />
       </div>
@@ -416,12 +455,12 @@ export default function Chat() {
           <button onClick={() => navigate("/chat")} className="p-2">
             <Undo2 className="text-white" />
           </button>
-          <img onClick={() => navigate(`/profile/${profile?.username}`)} 
+          <img onClick={() => navigate(`/profile/${profile?.username}`)}
             src={profile?.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"}
             className="w-8 h-8 rounded-full"
           />
           <div onClick={() => navigate(`/profile/${profile?.username}`)} className="flex flex-col">
-            <span className="font-semibold">{profile?.username}</span>
+            <span className="font-semibold flex justify-center items-center gap-1">{profile?.username} {verifiedUsernames.has(profile?.username) && <VerifiedBadge size={24}  />}</span>
             <span className="text-xs text-gray-400">last seen</span>
           </div>
         </div>
@@ -429,8 +468,8 @@ export default function Chat() {
         {/* Messages */}
         <div
           ref={listRef}
-          className="flex flex-1 flex-col justify-end overflow-y-auto px-4 py-4 space-y-1"
-        // No justify-end: we keep natural flow, but we smart-scroll to bottom.
+          className="flex flex-1 flex-col overflow-y-auto px-4 py-4 space-y-1"
+        // No justify-end: we keep natural flow, but we smart-scroll to bottom. 
         >
           {messages.map((msg, i) => {
             const isOwn = msg.sender === USERNAME;
@@ -482,87 +521,128 @@ export default function Chat() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Image/URL popup */}
-        {showImagePopup && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50">
-            <div className="bg-gray-900 p-6 rounded-2xl shadow-xl w-96 flex flex-col gap-4">
-              <h2 className="text-white font-semibold text-lg">Paste media link</h2>
-              <p className="text-xs text-gray-400">
-                Works with images, videos, audio, docs, and YouTube URLs.
-              </p>
-              <input
-                type="text"
-                placeholder="https://example.com/file.png or https://youtu.be/ID"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                className="px-3 py-2 rounded-lg bg-gray-800 text-white w-full focus:outline-none"
+
+
+
+
+        <AnimatePresence>
+          {showImagePopup && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              // Use this onClick to close the modal when clicking the backdrop
+              onClick={() => setShowImagePopup(false)}
+            >
+              {/* Backdrop with Blur */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
               />
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={() => setShowImagePopup(false)}
-                  className="px-4 py-2 rounded-lg bg-gray-700 text-white hover:bg-gray-600"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => {
-                    const url = imageUrl.trim();
-                    if (!url || socketRef.current?.readyState !== WebSocket.OPEN) return;
-                    const temp_id = `temp-${Date.now()}`;
-                    const msg = {
-                      type: "chat",
-                      temp_id,
-                      sender: USERNAME,
-                      receiver: RECEIVER,
-                      message: url, // we auto-detect type when rendering
-                      status: "sending",
-                    };
-                    setMessages((prev) => [...prev, msg]);
-                    socketRef.current.send(JSON.stringify(msg));
-                    setImageUrl("");
-                    setShowImagePopup(false);
-                    setTimeout(() => scrollToBottom(true), 0);
-                  }}
-                  className="px-4 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700"
-                >
-                  Send
-                </button>
-              </div>
+
+              {/* Modal Panel */}
+              <motion.div
+                // Stop propagation to prevent closing when clicking inside the modal
+                onClick={(e) => e.stopPropagation()}
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: 50, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                className="relative z-10 flex w-full max-w-md flex-col gap-4 rounded-2xl border border-white/10 bg-black/30 p-6 shadow-2xl shadow-black/40 backdrop-blur-xl"
+              >
+                <div className="flex flex-col">
+                  <h2 className="text-lg font-semibold text-white">Share Media</h2>
+                  <p className="text-sm text-neutral-400">
+                    Paste a link to an image, video, or YouTube URL.
+                  </p>
+                </div>
+
+                {/* Input with Paste Button */}
+                <div className="relative flex w-full items-center">
+                  <input
+                    type="text"
+                    placeholder="https://... or youtu.be/..."
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    // Auto-focus the input when the modal opens
+                    autoFocus
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 pr-10 text-white placeholder-neutral-500 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+                  />
+                  <button
+                    onClick={async () => {
+                      try {
+                        const text = await navigator.clipboard.readText();
+                        setImageUrl(text);
+                      } catch (err) {
+                        console.error("Failed to read clipboard contents: ", err);
+                      }
+                    }}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-neutral-400 transition hover:text-white"
+                    title="Paste from clipboard"
+                  >
+                    <Clipboard size={18} />
+                  </button>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => setShowImagePopup(false)}
+                    className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-neutral-300 transition hover:bg-white/20"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSendUrl}
+                    className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-neutral-600 disabled:opacity-50 disabled:shadow-none"
+                    disabled={!imageUrl.trim()}
+                  >
+                    Send
+                  </button>
+                </div>
+              </motion.div>
             </div>
-          </div>
-        )}
+          )}
+        </AnimatePresence>
+
+
+
+
 
         {/* Typing indicator */}
         {isTyping && (
-          <p className="text-xs text-gray-400 italic px-4 mb-1">You are typing...</p>
+          <p className="text-xs text-neutral-400 italic px-4 mb-1">
+            typing...
+          </p>
         )}
 
-        {/* Input */}
+        {/* Input Form with Enhanced Glassmorphism */}
         <form
           onSubmit={(e) => {
             e.preventDefault();
             sendMessage();
           }}
-          className="sticky bottom-4 z-10 my-1 mx-3 rounded-2xl border border-gray-600/50 shadow-xl bg-white/10 backdrop-blur-md p-3 flex flex-col gap-1"
+          // --- REDESIGNED CLASSES ---
+          className="sticky bottom-4 z-10 m-4 rounded-2xl border border-white/10 bg-black/20 shadow-2xl shadow-black/20 backdrop-blur-lg"
         >
-          <div className="flex items-end gap-2">
+          <div className="flex items-end gap-2 p-2">
             <textarea
               ref={textareaRef}
               style={{ maxHeight: "200px", overflowY: "auto" }}
-              className="flex-1 resize-none px-4 py-2 rounded-xl bg-transparent text-white placeholder-white/70 focus:outline-none focus:ring-0"
+              className="flex-1 resize-none bg-transparent px-3 py-2 text-base text-white placeholder-neutral-400 transition-colors duration-200 focus:outline-none focus:ring-0"
               rows={1}
-              placeholder="Type message or paste a link..."
+              placeholder="Type a message..."
               value={input}
               onChange={(e) => {
                 setInput(e.target.value);
                 setIsTyping(true);
-                const ta = textareaRef.current;
-                if (ta) {
-                  ta.style.height = "auto";
-                  ta.style.height = ta.scrollHeight + "px";
-                }
+                // Auto-resize logic
+                const ta = e.target;
+                ta.style.height = "auto";
+                ta.style.height = `${ta.scrollHeight}px`;
+                // Typing indicator timeout
                 if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-                typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1000);
+                typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1500);
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {
@@ -572,20 +652,22 @@ export default function Chat() {
               }}
             />
 
+            {/* --- REDESIGNED ICON BUTTON --- */}
             <button
               type="button"
               onClick={() => setShowImagePopup(true)}
-              className="p-2 bg-gray-700/50 rounded-lg hover:bg-gray-600"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-neutral-400 transition-colors duration-200 hover:bg-white/10 hover:text-white"
             >
-              <ImageIcon className="w-5 h-5 text-white" />
+              <ImageIcon className="h-5 w-5" />
             </button>
 
+            {/* --- REDESIGNED SEND BUTTON --- */}
             <button
               type="submit"
-              className="p-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:shadow-none"
               disabled={!input.trim()}
             >
-              <Send className="h-full w-4" />
+              <Send className="h-5 w-5" />
             </button>
           </div>
         </form>

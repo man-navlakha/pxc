@@ -7,6 +7,9 @@ import axios from "axios";
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import FloatingMessagesButton from '../componet/FloatingMessagesButton';
 
+import { verifiedUsernames } from "../verifiedAccounts";
+import VerifiedBadge from "../componet/VerifiedBadge";
+
 // Code Splitting is still active
 const FollowingPage = lazy(() => import('./FollowingPage'));
 const FollowersPage = lazy(() => import('./FollowersPage'));
@@ -162,7 +165,7 @@ const Profile = () => {
                   <span className="absolute bottom-2 right-2 bg-green-500/90 text-white px-2 py-1 rounded-full text-xs font-bold shadow-md border border-white/20">Active</span>
                 </div>
                 <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
-                  <h1 className="mb-2 text-4xl font-extrabold bg-gradient-to-tr from-blue-300 to-green-500 text-transparent bg-clip-text">{profile?.username || "..."}</h1>
+                  <h1 className="mb-2 text-4xl font-extrabold flex justify-center items-center gap-1 bg-gradient-to-tr from-blue-300 to-green-500 text-transparent bg-clip-text">{profile?.username || "..."} {verifiedUsernames.has(profile?.username) && <VerifiedBadge size={30} />}</h1>
                   <div className='flex items-center justify-center gap-6 mt-2'>
                     <div className='flex flex-col items-center justify-center text-center'><p className="font-bold text-xl">{profile?.post_count || posts.length}</p><p className="text-sm text-gray-300">Posts</p></div>
                     <div onClick={() => setPage("followers")} className='flex flex-col items-center justify-center cursor-pointer text-center'><p className="font-bold text-xl">{profile?.follower_count || 0}</p><p className="text-sm text-gray-300">Followers</p></div>

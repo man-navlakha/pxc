@@ -2,9 +2,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Undo2 } from "lucide-react";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
+import { verifiedUsernames } from "../verifiedAccounts";
+import VerifiedBadge from "../componet/VerifiedBadge";
+
 
 const UserCardSkeleton = () => (
     <div className="flex items-center gap-4 p-4 animate-pulse">
@@ -27,6 +32,10 @@ const FollowingPage = ({ username, onClose }) => {
     const [following, setFollowing] = useState([]);
     const [loading, setLoading] = useState(true);
     const currentUserUsername = Cookies.get("username");
+
+     
+        const location = useLocation();
+        const navigate = useNavigate();
 
     useEffect(() => {
         if (!username) return;
@@ -61,12 +70,12 @@ const FollowingPage = ({ username, onClose }) => {
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto py-4 px-2 sm:px-6">
-            <div className="flex items-center mb-6">
-                <button onClick={onClose} className='flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors'>
-                    <span className="material-symbols-outlined">arrow_back</span> Back
-                </button>
-                <h1 className="text-3xl font-bold text-white/90 text-center flex-1">Following</h1>
-            </div>
+           <div className="flex items-center mb-6">
+                            <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-white/10 transition-colors">
+                               <Undo2 className="text-white" />
+                           </button>
+                           <h1 className="text-3xl font-bold text-white/90 text-center flex-1">Followers</h1>
+                       </div>
 
             {loading ? (
                 <div className="space-y-4">
@@ -81,6 +90,7 @@ const FollowingPage = ({ username, onClose }) => {
                             <Link to={`/profile/${user.username}`} className="flex items-center gap-3 min-w-0">
                                 <img src={user.profile_pic} alt={user.username} className="w-12 h-12 rounded-full border-2 border-white/20 object-cover" />
                                 <p className="font-semibold truncate">{user.username}</p>
+                                {verifiedUsernames.has(user?.username) && <VerifiedBadge />}
                             </Link>
                             {username === currentUserUsername && (
                                 <button onClick={() => handleUnfollow(user.username)} className="px-3 py-2 text-sm rounded-lg bg-red-500/80 hover:bg-red-500 transition-colors">Unfollow</button>

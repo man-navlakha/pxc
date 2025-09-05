@@ -1,238 +1,158 @@
-import React, { useState, useEffect } from "react";
-import Cookies from "js-cookie";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { Link, NavLink } from 'react-router-dom'; // Use Link/NavLink for routing
+import Cookies from 'js-cookie';
+import axios from 'axios';
+import { Home, MessageSquare, Search, User, Menu, X } from 'lucide-react'; // Using a consistent icon library
+import { AnimatePresence, motion } from 'framer-motion';
 
-const Navbar = () => {
-  const [open, setOpen] = useState(false);
-  const token = Cookies.get('access_token');
-  const [scrolled, setScrolled] = useState(false);
-  const USERNAME = Cookies.get("username");
-  const [alllist, setAlllist] = useState([]);
+// Custom Hook to abstract data fetching and clean up the Navbar component
+const useChatSummary = (USERNAME) => {
   const [unreadCount, setUnreadCount] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50); // adjust threshold as needed
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     if (!USERNAME) return;
 
     const fetchData = async () => {
+      // This logic remains inefficient and should ideally be a single backend API call.
       try {
         const [followingRes, followersRes] = await Promise.all([
-          axios.post("https://pixel-classes.onrender.com/api/Profile/following/", {
-            username: USERNAME,
-          }),
-          axios.post("https://pixel-classes.onrender.com/api/Profile/followers/", {
-            username: USERNAME,
-          }),
+          axios.post("https://pixel-classes.onrender.com/api/Profile/following/", { username: USERNAME }),
+          axios.post("https://pixel-classes.onrender.com/api/Profile/followers/", { username: USERNAME }),
         ]);
 
-        const combinedList = [
-          ...followersRes.data,
-          ...followingRes.data,
-        ];
-        const deduplicatedList = Array.from(
-          new Map(combinedList.map(user => [user.username, user])).values()
-        );
+        const combinedList = [...followersRes.data, ...followingRes.data];
+        const uniqueUsers = Array.from(new Map(combinedList.map(user => [user.username, user])).values());
 
-        const updatedList = await Promise.all(
-          deduplicatedList.map(async (user) => {
+        const messageChecks = await Promise.all(
+          uniqueUsers.map(async (user) => {
             try {
               const roomName = [USERNAME, user.username].sort().join("__");
-              const res = await fetch(
-                `https://pixel-classes.onrender.com/api/chatting/${roomName}/`
-              );
+              const res = await fetch(`https://pixel-classes.onrender.com/api/chatting/${roomName}/`);
               const messages = await res.json();
-
-              const lastMsg = messages.length ? messages[messages.length - 1] : null;
-
-              return {
-                ...user,
-                lastMessage: lastMsg ? lastMsg.content : "",
-                lastTime: lastMsg ? lastMsg.timestamp : null,
-                lastSender: lastMsg ? lastMsg.sender : null,
-                isSeen: lastMsg ? lastMsg.is_seen : true,
-              };
+              if (messages.length > 0) {
+                const lastMsg = messages[messages.length - 1];
+                return lastMsg.sender !== USERNAME && !lastMsg.is_seen;
+              }
+              return false;
             } catch {
-              return { ...user, lastMessage: "", lastTime: null, isSeen: true };
+              return false;
             }
           })
         );
-
-        setAlllist(updatedList);
-
-        // 🔵 Count unread messages (not seen + from others)
-        const count = updatedList.filter(
-          (u) => u.lastSender && u.lastSender !== USERNAME && u.isSeen === false
-        ).length;
-
+        
+        const count = messageChecks.filter(isUnread => isUnread).length;
         setUnreadCount(count);
-
       } catch (err) {
-        console.error("Failed to fetch data:", err);
+        console.error("Failed to fetch chat summary:", err);
       }
     };
 
     fetchData();
+    const interval = setInterval(fetchData, 30000); // Poll for new messages every 30 seconds
+    return () => clearInterval(interval);
+
   }, [USERNAME]);
 
-  const keroopen = () => {
-    if (open === true) {
-      setOpen(false);
-    } else {
-      setOpen(true);
-    }
-  };
+  return unreadCount;
+};
+
+
+export default function Navbar() {
+  const [isMenuOpen, setMenuOpen] = useState(false);
+  const [isScrolled, setScrolled] = useState(false);
+  const token = Cookies.get('access_token');
+  const USERNAME = Cookies.get("username");
+  const profilePic = Cookies.get("profile_pic");
+  const unreadCount = useChatSummary(USERNAME);
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const navClass = isScrolled
+    ? 'sticky top-0 shadow-lg border-b border-white/10 shadow-black/20'
+    : 'sticky top-4 mx-4  border border-white/10';
 
   return (
     <>
-      <div
-        className={`transition-all duration-500 ease-in-out ${!scrolled ? 'top-5 sticky rounded-xl' : 'top-0 mx-0 rounded-none sticky'
-          } z-40`}
-      >
-        <div
-          className={`transition-all duration-500 ease-in-out ${!scrolled
-            ? 'mx-5 top-5 sticky rounded-xl border border-gray-400/30'
-            : 'top-0 mx-0 rounded-none'
-            } flex-row z-40 border-b border-gray-400/30 bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100 flex justify-between items-center px-6 py-2`}
-        >
-          <a href="/">
+      {/* --- Top Navbar (Desktop & Mobile) --- */}
+      <nav className={`z-40 transition-all rounded-2xl duration-300 ${navClass}`}>
+        <div className="flex items-center rounded-2xl justify-between p-4 bg-black/30 backdrop-blur-xl">
+          <Link to="/" className='w-12 shrink-0'>
+            <img src="https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png?updatedAt=1735069173555" alt="Logo" />
+          </Link>
 
-            <div className='w-14'>
-              <img src="https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png?updatedAt=1735069173555" alt="" />
-            </div>
-          </a>
-          {token ?
+          {token ? (
             <>
-              <div className="flex  items-center justify-center gap-4"  >
-                <div >
-
-
-                  <label className="flex flex-col gap-2 w-8">
-                    <input className="peer hidden" type="checkbox" onClick={keroopen} />
-                    <div
-                      className="rounded-2xl h-[3px] w-1/2 bg-white duration-500 peer-checked:rotate-[225deg] origin-right peer-checked:-translate-x-[12px] peer-checked:-translate-y-[1px]"
-                    ></div>
-                    <div
-                      className="rounded-2xl h-[3px] w-full bg-white duration-500 peer-checked:-rotate-45"
-                    ></div>
-                    <div
-                      className="rounded-2xl h-[3px] w-1/2 bg-white duration-500 place-self-end peer-checked:rotate-[225deg] origin-left peer-checked:translate-x-[12px] peer-checked:translate-y-[1px]"
-                    ></div>
-                  </label>
-                </div>
-                <a href="/profile" className="flex flex-col items-center text-white hover:text-blue-400">
-                  <img className="w-12 h-12 rounded-full border-4 border-white/30 shadow-lg object-cover"
-                    src={Cookies.get("profile_pic")}
-                    alt="Profile"
-                  />
-                </a>
+              {/* Desktop Links */}
+              <div className="hidden lg:flex items-center gap-6 text-neutral-300 font-medium">
+                <NavLink to="/chat" className={({isActive}) => `transition hover:text-white ${isActive && 'text-white'}`}>Chat</NavLink>
+                <NavLink to="/search" className={({isActive}) => `transition hover:text-white ${isActive && 'text-white'}`}>Search</NavLink>
+                <NavLink to="/profile" className={({isActive}) => `transition hover:text-white ${isActive && 'text-white'}`}>Profile</NavLink>
+                <Link to="/logout" className="transition hover:text-red-400">Logout</Link>
               </div>
 
-              {/* <div className={`hidden md:hidden lg:block `} >
-
-                <div className="flex gap-4 items-center justify-center text-white font-medium ">
-                  <a href="/Chat">
-                    <span className="hover:text-red-600">Chat</span>
-                  </a>
-                  <a href="/search">
-                    <span className="hover:text-blue-400">Find a friend</span>
-                  </a>
-                  <a href="/profile">
-                    <span className="hover:text-gray-400">Profile</span>
-                  </a>
-                  <a href="/Logout">
-                    <span className="hover:text-red-600">Logout</span>
-                  </a>
-
-                </div>
-              </div> */}
-            </>
-
-            :
-            <div>
-              <a href=" /auth/login">
-
-                <button
-                  className="group/button relative inline-flex items-center justify-center overflow-hidden rounded-xl bg-gray-900 bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-10 backdrop-saturate-100 backdrop-contrast-100  px-6 py-2 text-base font-semibold text-white transition-all duration-300 ease-in-out hover:scale-110 border border-white/20" >
-                  <span className="text-md">Login</span>
-                  <div
-                    className="absolute inset-0 flex h-full w-full justify-center [transform:skew(-13deg)_translateX(-100%)] group-hover/button:duration-1000 group-hover/button:[transform:skew(-13deg)_translateX(100%)]"
-                  >
-                    <div className="relative h-full w-10 bg-white/20"></div>
-                  </div>
+              {/* Mobile Profile & Menu Button */}
+              <div className="flex items-center gap-4 lg:hidden">
+                <Link to="/profile">
+                  <img className="w-10 h-10 rounded-3xl border-2 border-white/20 object-cover" src={profilePic} alt="Profile" />
+                </Link>
+                <button onClick={() => setMenuOpen(!isMenuOpen)} className="text-white">
+                  {isMenuOpen ? <X /> : <Menu />}
                 </button>
-
-              </a>
-
-            </div>
-
-          }
-
+              </div>
+            </>
+          ) : (
+            <Link to="/auth/login">
+              <button className="px-4 py-2 text-sm font-semibold text-white bg-white/5 border border-white/10 rounded-lg transition hover:bg-white/10">
+                Login
+              </button>
+            </Link>
+          )}
         </div>
+        
+        {/* Mobile Dropdown Menu */}
+        <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div 
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden lg:hidden bg-black/20 backdrop-blur-xl"
+          >
+            <div className="flex flex-col p-4 text-neutral-300">
+              <Link to="/logout" className="py-2 transition hover:text-red-400">Logout</Link>
+            </div>
+          </motion.div>
+        )}
+        </AnimatePresence>
+      </nav>
 
-        <div className="">
-          <div className={`${open ? "block " : "hidden"} mx-5 my-2 mt-5 rounded-xl z-40 border border-gray-400/30 bg-gray-900/60 text-white backdrop-blur-[10px] px-6 py-2`}>
-            <ul className='list-none w-full text-center'>
-              <a href=" /chat">
-                <li className='py-2 text-left px-3 m-2 border-b w-full '>Chat</li>
-              </a>
-              <a href=" /search">
-                <li className='py-2 text-left px-3 m-2 border-b w-full '>Search</li>
-              </a>
-              <a href="/logout">
-                <li className='py-2 text-left px-3 m-2  w-full '>LogOut</li>
-              </a>
-            </ul>
+      {/* --- Bottom Navbar (Mobile Only) --- */}
+      {token && (
+        <div className="fixed bottom-0 left-0 right-0 z-30 lg:hidden">
+          <div className="flex justify-around items-center  bg-black/30 backdrop-blur-xl shadow-2xl shadow-black/30 py-2">
+            {[
+              { to: "/", icon: Home, label: "Home" },
+              { to: "/chat", icon: MessageSquare, label: "Chat", count: unreadCount },
+              { to: "/search", icon: Search, label: "Search" },
+              { to: "/profile", icon: User, label: "Profile" },
+            ].map(item => (
+              <NavLink key={item.to} to={item.to} className={({isActive}) => `relative flex flex-col items-center gap-1 w-16 transition ${isActive ? 'text-white' : 'text-neutral-400 hover:text-white'}`}>
+                <item.icon />
+                <span className="text-xs">{item.label}</span>
+                {item.count > 0 && (
+                  <span className="absolute top-[-4px] right-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                    {item.count}
+                  </span>
+                )}
+              </NavLink>
+            ))}
           </div>
         </div>
-      </div>
-      {/* Bottom Navbar */}
-      {token &&
-        <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-400/30 bg-gray-900
-    bg-clip-padding
-    backdrop-filter
-    backdrop-blur-2xl
-    bg-opacity-10
-    backdrop-saturate-100
-    backdrop-contrast-100 flex justify-around items-center py-2 lg:hidden">
-          <a href="/" className="flex flex-col items-center text-white hover:text-blue-400">
-            <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.1" d="M17.7218 8.08382L14.7218 5.29811C13.4309 4.09937 12.7854 3.5 12 3.5C11.2146 3.5 10.5691 4.09937 9.2782 5.29811L6.2782 8.08382C5.64836 8.66867 5.33345 8.96109 5.16672 9.34342C5 9.72575 5 10.1555 5 11.015V16.9999C5 18.8856 5 19.8284 5.58579 20.4142C6.17157 20.9999 7.11438 20.9999 9 20.9999H9.75V16.9999C9.75 15.7573 10.7574 14.7499 12 14.7499C13.2426 14.7499 14.25 15.7573 14.25 16.9999V20.9999H15C16.8856 20.9999 17.8284 20.9999 18.4142 20.4142C19 19.8284 19 18.8856 19 16.9999L19 11.015C19 10.1555 19 9.72575 18.8333 9.34342C18.6666 8.96109 18.3516 8.66866 17.7218 8.08382Z" fill="#fff"></path> <path d="M19 9L19 17C19 18.8856 19 19.8284 18.4142 20.4142C17.8284 21 16.8856 21 15 21L14 21L10 21L9 21C7.11438 21 6.17157 21 5.58579 20.4142C5 19.8284 5 18.8856 5 17L5 9" stroke="#fff" strokeWidth="2" strokeLinejoin="round"></path> <path d="M3 11L7.5 7L10.6713 4.18109C11.429 3.50752 12.571 3.50752 13.3287 4.18109L16.5 7L21 11" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> <path d="M10 21V17C10 15.8954 10.8954 15 12 15V15C13.1046 15 14 15.8954 14 17V21" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> </g></svg>
-            <span className="text-xs">Home</span>
-          </a>
-          <a href="/Chat" className="flex flex-col items-center text-white hover:text-blue-400">
-            <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.1" d="M21 13V7C21 5.11438 21 4.17157 20.4142 3.58579C19.8284 3 18.8856 3 17 3H7C5.11438 3 4.17157 3 3.58579 3.58579C3 4.17157 3 5.11438 3 7V13C3 14.8856 3 15.8284 3.58579 16.4142C4.17157 17 5.11438 17 7 17H7.5C7.77614 17 8 17.2239 8 17.5V20V20.1499C8 20.5037 8.40137 20.7081 8.6875 20.5L13.0956 17.2941C13.3584 17.103 13.675 17 14 17H17C18.8856 17 19.8284 17 20.4142 16.4142C21 15.8284 21 14.8856 21 13Z" fill="#fff"></path> <path d="M8 10H8.01" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> <path d="M12 10H12.01" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> <path d="M16 10H16.01" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> <path d="M21 13V7C21 5.11438 21 4.17157 20.4142 3.58579C19.8284 3 18.8856 3 17 3H7C5.11438 3 4.17157 3 3.58579 3.58579C3 4.17157 3 5.11438 3 7V13C3 14.8856 3 15.8284 3.58579 16.4142C4.17157 17 5.11438 17 7 17H7.5C7.77614 17 8 17.2239 8 17.5V20V20.1499C8 20.5037 8.40137 20.7081 8.6875 20.5L13.0956 17.2941C13.3584 17.103 13.675 17 14 17H17C18.8856 17 19.8284 17 20.4142 16.4142C21 15.8284 21 14.8856 21 13Z" stroke="#fff" strokeWidth="2" strokeLinejoin="round"></path> </g></svg>
-          
-            <span className="text-xs">Chat
-                {unreadCount > 0 && (
-          <span className="absolute top-[0.5rem] left-[9rem] bg-[#FF3B30] text-white text-md font-semibold rounded-full w-5 h-5 flex items-center justify-center leading-none select-none">
-            {unreadCount}
-          </span>
-        )}
-            </span>
-          </a>
-          
-          <a href="/search" className="flex flex-col items-center text-white hover:text-blue-400">
-            <svg width="32px" height="32px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" strokeWidth="0"></g><g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g><g id="SVGRepo_iconCarrier"> <path opacity="0.1" d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" fill="#fff"></path> <path d="M17 17L21 21" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path> <path d="M19 11C19 15.4183 15.4183 19 11 19C6.58172 19 3 15.4183 3 11C3 6.58172 6.58172 3 11 3C15.4183 3 19 6.58172 19 11Z" stroke="#fff" strokeWidth="2"></path> </g></svg>
-            <span className="text-xs">Search</span>
-          </a>
-          <a href="/profile" className="flex flex-col items-center text-white hover:text-blue-400">
-            <img className="w-12 h-12 rounded-full border-4 border-white/30 shadow-lg object-cover"
-              src={Cookies.get("profile_pic")}
-              alt="Profile"
-            />
-            <span className="text-xs">Profile</span>
-          </a>
-        </div>
-      }
+      )}
     </>
-  )
+  );
 }
-
-export default Navbar

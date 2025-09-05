@@ -192,9 +192,9 @@ const Semester = () => {
                                 <p className="mt-2 text-zinc-500">Your subjects will appear here.</p>
                             </div>
                         )}
+                   {/* <div className="absolute hidden lg:block md:hidden bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-black to-transparent pointer-events-none"></div> */}
                     </motion.div>
                 </AnimatePresence>
-                   <div className="absolute hidden lg:block md:hidden bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-black to-transparent pointer-events-none"></div>
             </div>
         </div>
     );
