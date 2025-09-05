@@ -146,7 +146,7 @@ const Profile = () => {
         <main className='flex flex-col items-center mt-10 justify-center px-4'>
           <div className="w-full max-w-6xl mx-auto mt-10">
             {loading ? (
-              <div className="glass-card rounded-3xl m-3 p-8 flex flex-col md:flex-row items-center gap-8 animate-pulse">
+              <div className="glass-card rounded-3xl m-3 p-8 flex flex-col md:flex-row items-center gap-8">
                 <div className="w-32 h-32 rounded-full bg-gray-700/50 flex-shrink-0"></div>
                 <div className="flex-1 flex flex-col items-center md:items-start w-full">
                   <div className="h-8 bg-gray-700/50 rounded-md w-2/3 md:w-1/3 mb-4"></div>
