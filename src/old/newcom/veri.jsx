@@ -74,8 +74,8 @@ const Veri = () => {
               console.log(data); // Log backend response for debugging
         
               if (data.message === "Login successful!") {
-                // Save access_token and username to cookies
-                Cookies.set('access_token', data.access_token, { expires: 7 }); // Expires in 7 days
+                // Save refresh_token and username to cookies
+                Cookies.set('refresh_token', data.refresh_token, { expires: 7 }); // Expires in 7 days
                 Cookies.set('username', username, { expires: 7 }); // Save username to cookies
         
                 // Redirect to the home page after successful login

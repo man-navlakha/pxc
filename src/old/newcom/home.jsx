@@ -46,9 +46,9 @@ const Home = () => {
   }, []);  
 
   const handleLogout = () => {
-    // Remove the username and access_token cookies to log the user out
+    // Remove the username and refresh_token cookies to log the user out
     Cookies.remove("username");
-    Cookies.remove("access_token");
+    Cookies.remove("refresh_token");
 
     setUserName("Guest"); // Reset the username to 'Guest'
     setIsLoggedIn(false); // Update the login state to logged out

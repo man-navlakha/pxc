@@ -7,7 +7,7 @@ const CTA7 = () => {
     const navigate = useNavigate(); // Initialize useNavigate
 
     useEffect(() => {
-        const accessToken = Cookies.get('access_token');
+        const accessToken = Cookies.get('refresh_token');
         setToken(accessToken);
 
         if (accessToken) {

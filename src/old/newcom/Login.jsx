@@ -25,7 +25,7 @@ const Login = () => {
   
       if (res.data.message === "Login successful!") {
         // ✅ Save tokens & username to cookies
-        Cookies.set("access_token", res.data.access_token, { expires: 7 });
+        Cookies.set("refresh_token", res.data.refresh_token, { expires: 7 });
         Cookies.set("username", res.data.username || "Guest", { expires: 7 });
   
         setUsername(res.data.username?.toLowerCase() || "");
@@ -46,7 +46,7 @@ const Login = () => {
 
   // ✅ Handle redirection if user is already logged in
   useEffect(() => {
-    const token = Cookies.get("access_token");
+    const token = Cookies.get("refresh_token");
     if (token) {
       setTimeout(() => {
         navigate(location?.state?.from || "/old", { replace: true });
@@ -81,7 +81,7 @@ const Login = () => {
 
       if (response.data.message === "Login successful!") {
         // ✅ Save tokens & username to cookies
-        Cookies.set("access_token", response.data.access_token, { expires: 7 });
+        Cookies.set("refresh_token", response.data.refresh_token, { expires: 7 });
         Cookies.set("username", e.target.username.value, { expires: 7 });
 
         setUsername(e.target.username.value.toLowerCase()); // ✅ Update username state

@@ -66,7 +66,7 @@ const Pdfs = () => {
   const getAccessTokenFromCookies = () => {
     const accessToken = document.cookie
       .split("; ")
-      .find((row) => row.startsWith("access_token="))
+      .find((row) => row.startsWith("refresh_token="))
       ?.split("=")[1];
     return accessToken || null; // Return null if not found
   };

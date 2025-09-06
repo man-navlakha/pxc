@@ -28,7 +28,7 @@ const Sign = () => {
   
       if (res.data.message === "Sign Up Complete") {
         // ✅ Save tokens & username to cookies
-        Cookies.set("access_token", res.data.access_token, { expires: 7 });
+        Cookies.set("refresh_token", res.data.refresh_token, { expires: 7 });
         Cookies.set("username", res.data.username || "Guest", { expires: 7 });
   
         setUsername(res.data.username?.toLowerCase() || "");

@@ -32,7 +32,7 @@ export default function Chat() {
 
   const { RECEIVER } = useParams();
   const USERNAME = Cookies.get("username");
-  const token = Cookies.get("access_token");
+  const token = Cookies.get("refresh_token");
   const navigate = useNavigate();
   const location = useLocation();
 
