@@ -26,7 +26,7 @@ const Login = () => {
 
     // ✅ Handle redirection if user is already logged in
     useEffect(() => {
-        const token = Cookies.get("access_token");
+        const token = Cookies.get("refresh_token");
         if (token) {
             setTimeout(() => {
                 navigate(location?.state?.from || redirectTo, { replace: true });
@@ -54,7 +54,7 @@ const Login = () => {
             });
 
             if (res.data.message === "Login successful!") {
-                Cookies.set("access_token", res.data.access_token, { expires: 7 });
+                Cookies.set("refresh_token", res.data.refresh_token, { expires: 7 });
                 Cookies.set("username", res.data.username, { expires: 7 });
                 setSuccess("Login successful");
                 Cookies.set("last", "Google");
@@ -80,7 +80,7 @@ const Login = () => {
             });
 
             if (ress.data.message === "Login successful!") {
-                Cookies.set("access_token", ress.data.access_token, { expires: 7 });
+                Cookies.set("refresh_token", ress.data.refresh_token, { expires: 7 });
                 Cookies.set("username", ress.data.username, { expires: 7 });
                 setSuccess("Login successful");
                 Cookies.set("last", "username");
