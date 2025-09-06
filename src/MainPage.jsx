@@ -7,7 +7,7 @@ import Hero from './componet/Hero';
 import Feature from './componet/feature';
 import Footer from './componet/Footer';
 import FloatingMessagesButon from './componet/FloatingMessagesButton';
-import View from './componet/View';
+
 import Faq from './componet/Faq';
 import Semester from './page/Sem';
 import Loading from './componet/Loading'; // ✅ Import the loading component

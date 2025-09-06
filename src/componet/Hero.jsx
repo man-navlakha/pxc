@@ -1,67 +1,96 @@
-import React from 'react'
-import { useNavigate, useLocation, Link } from "react-router-dom";
-import Top from './Top-H'
+import React from 'react';
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion"; // Import motion
+import { ArrowRight, Sparkles } from 'lucide-react'; // Import icons
 
 const Hero = () => {
-  
-      const navigate = useNavigate();
-      const handleflow = () =>{
+    const navigate = useNavigate();
+
+    const handleGetStarted = () => {
         navigate("/auth/login");
-      }
-  return (
-    <div className='mesh_hero p-4 flex flex-col text-center  content-center flex-nowrap jusify-center gap-3 items-center -mt-24 '>
-      <div className='mt-20'>
+    };
 
-      <Top />
-      <div className='mt-6'>
-        <span className='text-center m-3 text-3xl md:text-lg lg:text-5xl font-black bg-clip-text bg-gradient-to-br from-white to-zinc-500 text-transparent ccf '>Access Top-Quality PDF Notes Instantly!!</span>
-      </div>
-      <div className='mt-3 '>
-        <span className='text-center text-md lg:text-xl font-medium'>Experience premium notes! 🚀</span>
-      </div>
+    // Animation variants for a staggered effect
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.2,
+            },
+        },
+    };
 
-      </div>
-      <div className='flex gap-3 mt-5'>
+    const itemVariants = {
+        hidden: { opacity: 0, y: 20 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                type: 'spring',
+                stiffness: 100,
+            },
+        },
+    };
 
-        <div onClick={() => handleflow()}  className="flex items-center justify-center">
-          <div className="relative group">
-            <button
-              className="relative inline-block p-px font-semibold leading-6 text-zinc-400\80 bg-gray-800 shadow cursor-pointer shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95"
+    return (
+        <div className='mesh_hero w-full min-h-screen flex items-center justify-center p-4 -mt-20'>
+            <motion.div
+                className='text-center flex flex-col items-center gap-6'
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
             >
-              <span
-                className="absolute inset-0  bg-gradient-to-r from-teal-400 via-blue-500 to-purple-500 p-[2px] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-              ></span>
+                {/* Feature Ribbon */}
+                <motion.div
+                    variants={itemVariants}
+                    className='bg-gray-800/50 border border-white/10 flex items-center gap-2 px-3 py-1.5 rounded-full shadow-lg'
+                >
+                    <span className='bg-gradient-to-b from-teal-800 via-blue-800 to-purple-800 text-white font-bold px-2 py-0.5 text-xs rounded-full'>
+                        NEW
+                    </span>
+                    <span className='text-sm text-gray-300'>Pixel Class 2.0 is here</span>
+                    <Sparkles className="w-4 h-4 text-yellow-400" />
+                </motion.div>
 
-              <span className="relative z-0 block px-6 py-3  bg-gray-950">
-                <div className="relative z-10 flex items-center space-x-2">
-                  <span className="transition-all duration-500 group-hover:translate-x-1"
-                  >Let's get started</span>
-                  <svg
-                    className="w-6 h-6 transition-transform duration-500 group-hover:translate-x-1"
-                    data-slot="icon"
-                    aria-hidden="true"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      clipRule="evenodd"
-                      d="M8.22 5.22a.75.75 0 0 1 1.06 0l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 0 1 0-1.06Z"
-                      fillRule="evenodd"
-                    ></path>
-                  </svg>
-                </div>
-              </span>
-            </button>
-          </div>
+                {/* Main Headline */}
+                <motion.h1
+                    variants={itemVariants}
+                    className='text-4xl sm:text-5xl lg:text-7xl font-extrabold bg-clip-text bg-gradient-to-br from-white to-zinc-400 text-transparent ccf max-w-4xl'
+                >
+                    Access Top-Quality PDF Notes Instantly
+                </motion.h1>
+
+                {/* Subheading */}
+                <motion.p
+                    variants={itemVariants}
+                    className='text-lg lg:text-xl text-white/70 max-w-2xl'
+                >
+                    Unlock a world of curated study materials. Upload your notes, download what you need, and collaborate with peers—all in one place. 🚀
+                </motion.p>
+
+                {/* Call-to-Action Buttons */}
+                <motion.div
+                    variants={itemVariants}
+                    className='flex flex-col sm:flex-row items-center gap-4 mt-4'
+                >
+                    <button
+                        onClick={handleGetStarted}
+                        className="group relative inline-flex items-center justify-center px-8 py-3 text-lg font-bold text-white bg-blue-600/60 rounded-full shadow-lg transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
+                    >
+                        Let's Get Started
+                        <ArrowRight className="w-5 h-5 ml-2 transition-transform duration-300 group-hover:translate-x-1" />
+                    </button>
+                    <button
+                        onClick={() => navigate("/faq")} // Or any other secondary action
+                        className="px-8 py-3 text-lg font-semibold text-white/80 bg-white/5 border border-white/10 rounded-full hover:bg-white/10 transition-colors duration-300"
+                    >
+                        Learn More
+                    </button>
+                </motion.div>
+            </motion.div>
         </div>
+    );
+};
 
-
-      </div>
-      {/* <Search /> */}
-
-    </div>
-  )
-}
-
-export default Hero
+export default Hero;
