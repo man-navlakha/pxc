@@ -8,8 +8,8 @@ const Logout = () => {
   const [userName, setUserName] = useState(''); // To store username from cookie
 
   useEffect(() => {
-    // Remove the access_token from cookies
-    Cookies.remove('access_token');
+    // Remove the refresh_token from cookies
+    Cookies.remove('refresh_token');
     Cookies.remove('username');
         Cookies.remove('course');
         Cookies.remove('choose');

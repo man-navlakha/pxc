@@ -5,7 +5,7 @@ import axios from "axios";
 
 export default function FloatingMessagesButton() {
   const USERNAME = Cookies.get("username");
-  const token = Cookies.get("access_token");
+  const token = Cookies.get("refresh_token");
   const navigate = useNavigate();
 
   const [alllist, setAlllist] = useState([]);

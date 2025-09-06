@@ -60,7 +60,7 @@ const useChatSummary = (USERNAME) => {
 export default function Navbar() {
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setScrolled] = useState(false);
-  const token = Cookies.get('access_token');
+  const token = Cookies.get('refresh_token');
   const USERNAME = Cookies.get("username");
   const profilePic = Cookies.get("profile_pic");
   const unreadCount = useChatSummary(USERNAME);

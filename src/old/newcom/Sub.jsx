@@ -71,15 +71,15 @@ const Sub = () => {
     console.log("Selected Semester:", semester);
   };
 
-// Function to check authentication status based on access_token
+// Function to check authentication status based on refresh_token
 const getAccessTokenFromCookies = () => {
-  const accessToken = document.cookie
+  const refreshToken = document.cookie
     .split("; ")
-    .find((row) => row.startsWith("access_token="))
+    .find((row) => row.startsWith("refresh_token="))
     ?.split("=")[1];
 
-  console.log("Access Token:", accessToken);
-  return accessToken || null; // Return null if not found
+  console.log("Refresh Token:", refreshToken);
+  return refreshToken || null; // Return null if not found
 };
 
   // Handle subject click

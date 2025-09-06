@@ -25,7 +25,7 @@ const Profile = () => {
   const { nameFromUrl } = useParams();
   const [isFollowing, setIsFollowing] = useState(false);
   const usernamec = Cookies.get("username");
-  const token = Cookies.get('access_token');
+  const token = Cookies.get('refresh_token');
   const navigate = useNavigate();
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [suggestions, setSuggestions] = useState([]);

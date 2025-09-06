@@ -45,13 +45,13 @@ const Sub = () => {
             fetchCourseDetails();
         }
     }, [courseName]);
-    // Function to check authentication status based on access_token
-    const getAccessTokenFromCookies = () => {
-        const accessToken = document.cookie
+    // Function to check authentication status based on refresh_token
+    const getRefreshTokenFromCookies = () => {
+        const refreshToken = document.cookie
             .split("; ")
-            .find((row) => row.startsWith("access_token="))
+            .find((row) => row.startsWith("refresh_token="))
             ?.split("=")[1];
-        return accessToken || null; // Return null if not found
+        return refreshToken || null; // Return null if not found
     };
     const handleLinkClick = (event, item) => {
         navigate(`/old/choose?course=${selectedCourse.name}&sub=${item}`);

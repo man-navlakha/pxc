@@ -49,7 +49,7 @@ const Navbar = () => {
   useEffect(() => {
     // Retrieve the 'username' cookie value to check login status
     const storedUserName = Cookies.get('username');
-    const storedToken = Cookies.get('access_token');
+    const storedToken = Cookies.get('refresh_token');
 
     if (storedUserName && storedToken) {
       setUserName(storedUserName); // Set the username from cookie
@@ -61,9 +61,9 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    // Remove the username and access_token cookies to log the user out
+    // Remove the username and refresh_token cookies to log the user out
     Cookies.remove('username');
-    Cookies.remove('access_token');
+    Cookies.remove('refresh_token');
 
     // Set the login status to false and reset the username to 'Guest'
     setIsLoggedIn(false);

@@ -15,7 +15,7 @@ import Loading from './componet/Loading'; // ✅ Import the loading component
 import './new.css';
 
 const MainPage = () => {
-  const token = Cookies.get("access_token");
+  const token = Cookies.get("refresh_token");
   const username = Cookies.get("username");
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(false);
