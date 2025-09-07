@@ -247,7 +247,7 @@ const SubjectPage = () => {
                                                     <div className="flex items-center gap-2">
                                                         <div className="relative group">
                                                             <button
-                                                                onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)}
+                                                                onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id, subject)}
                                                                 className="p-3 rounded-full bg-white/5 text-white/70 hover:bg-blue-500/50 hover:text-white transition-colors duration-200"
                                                             >
                                                                 <span className="material-symbols-outlined">

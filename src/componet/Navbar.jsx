@@ -6,55 +6,51 @@ import { Home, MessageSquare, Search, User, Menu, X } from 'lucide-react'; // Us
 import { AnimatePresence, motion } from 'framer-motion';
 
 // Custom Hook to abstract data fetching and clean up the Navbar component
-const useChatSummary = (USERNAME) => {
+const useChatSummary = (USERNAME, token) => {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    if (!USERNAME) return;
+    if (!USERNAME || !token) return;
 
-    const fetchData = async () => {
-      // This logic remains inefficient and should ideally be a single backend API call.
+    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
+    const wsUrl = `${wsScheme}://pixel-classes.onrender.com/ws/notifications/?token=${token}`;
+    const socket = new WebSocket(wsUrl);
+
+    socket.onopen = () => {
+      console.log("[WS CONNECT] Connected to notifications WebSocket:", wsUrl);
+    };
+
+    socket.onmessage = (event) => {
       try {
-        const [followingRes, followersRes] = await Promise.all([
-          axios.post("https://pixel-classes.onrender.com/api/Profile/following/", { username: USERNAME }),
-          axios.post("https://pixel-classes.onrender.com/api/Profile/followers/", { username: USERNAME }),
-        ]);
+        const data = JSON.parse(event.data);
 
-        const combinedList = [...followersRes.data, ...followingRes.data];
-        const uniqueUsers = Array.from(new Map(combinedList.map(user => [user.username, user])).values());
-
-        const messageChecks = await Promise.all(
-          uniqueUsers.map(async (user) => {
-            try {
-              const roomName = [USERNAME, user.username].sort().join("__");
-              const res = await fetch(`https://pixel-classes.onrender.com/api/chatting/${roomName}/`);
-              const messages = await res.json();
-              if (messages.length > 0) {
-                const lastMsg = messages[messages.length - 1];
-                return lastMsg.sender !== USERNAME && !lastMsg.is_seen;
-              }
-              return false;
-            } catch {
-              return false;
-            }
-          })
-        );
-        
-        const count = messageChecks.filter(isUnread => isUnread).length;
-        setUnreadCount(count);
+        // Expected message format: { type: "total_unseen_count", total_unseen_count: number }
+        if (data.type === "total_unseen_count") {
+          setUnreadCount(data.total_unseen_count || 0);
+        }
       } catch (err) {
-        console.error("Failed to fetch chat summary:", err);
+        console.error("[WS ERROR] Failed to parse WebSocket message:", err);
       }
     };
 
-    fetchData();
-    const interval = setInterval(fetchData, 30000); // Poll for new messages every 30 seconds
-    return () => clearInterval(interval);
+    socket.onclose = () => {
+      console.log("[WS DISCONNECT] Notifications WebSocket closed");
+    };
 
-  }, [USERNAME]);
+    socket.onerror = (err) => {
+      console.error("[WS ERROR] WebSocket error:", err);
+    };
+
+    return () => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.close();
+      }
+    };
+  }, [USERNAME, token]);
 
   return unreadCount;
 };
+
 
 
 export default function Navbar() {

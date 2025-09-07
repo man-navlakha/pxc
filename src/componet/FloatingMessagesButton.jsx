@@ -21,6 +21,7 @@ export default function FloatingMessagesButton() {
 
     socket.onopen = () => {
       console.log("[WS CONNECT] Connected to notifications WebSocket");
+      console.log(wsUrl)
     };
 
     socket.onmessage = (event) => {
@@ -66,13 +67,7 @@ export default function FloatingMessagesButton() {
         )}
       </div>
       <span className="text-white font-semibold text-lg">Chat</span>
-      {/* <img
-        alt="Profile"
-        className="w-10 h-10 rounded-full object-cover"
-        height="40"
-        src="https://storage.googleapis.com/a1aa/image/4b2997b1-d196-4fb3-243f-dbf759085316.jpg"
-        width="40"
-      /> */}
+    
       </div>
     </button>
   );

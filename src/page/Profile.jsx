@@ -5,6 +5,11 @@ import Navbar from '../componet/Navbar';
 import Footer from '../componet/Footer';
 import axios from "axios";
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+
+import { DownloadCloud, History, Redo } from 'lucide-react'; // Import icons
+
+import { formatDistanceToNow } from 'date-fns';
+import { motion, AnimatePresence } from 'framer-motion';
 import FloatingMessagesButton from '../componet/FloatingMessagesButton';
 
 import { verifiedUsernames } from "../verifiedAccounts";
@@ -39,6 +44,47 @@ const Profile = () => {
       navigate(`/profile/${urlusername}`);
     }
   }, [urlusername, navigate]);
+
+
+
+
+
+
+
+
+  const [downloads, setDownloads] = useState([]);
+
+    // Animation variants for the list and items
+    const listVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1,
+            },
+        },
+    };
+
+    const itemVariants = {
+        hidden: { opacity: 0, x: -20 },
+        animate: { opacity: 1, x: 0 },
+        exit: { opacity: 0, x: 50 },
+    };
+
+  useEffect(() => {
+    const data = localStorage.getItem('downloadHistory');
+    if (data) {
+      try {
+        setDownloads(JSON.parse(data));
+      } catch (error) {
+        console.error('Invalid JSON in localStorage:', error);
+      }
+    }
+  }, []);
+
+
+
+
 
   // --- REVERTED: Data fetching effect now gets ALL posts at once ---
   useEffect(() => {
@@ -85,19 +131,6 @@ const Profile = () => {
     fetchFollowStatus();
   }, [nameFromUrl, usernamec]);
 
-  useEffect(() => {
-    const fetchSuggestions = async () => {
-      try {
-        const res = await axios.get("https://pixel-classes.onrender.com/api/users/suggested/", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setSuggestions(res.data.filter(user => user.username !== usernamec && user.username !== nameFromUrl).slice(0, 5));
-      } catch (err) {
-        console.error("Error fetching suggestions:", err);
-      }
-    };
-    if (token) fetchSuggestions();
-  }, [token, usernamec, nameFromUrl]);
 
   const follow = async (follow_username) => {
     try {
@@ -161,7 +194,7 @@ const Profile = () => {
             ) : (
               <div className="glass-card rounded-3xl m-3 border border-white/20 bg-white/10 backdrop-blur-xl p-8 flex flex-col md:flex-row items-center gap-8">
                 <div className="relative cursor-pointer" onClick={() => profile?.profile_pic && setIsPhotoModalOpen(true)}>
-                  <img className="w-32 h-32 rounded-full border-4 border-white/30 shadow-lg object-cover" src={profile?.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"} alt="Profile"/>
+                  <img className="w-32 h-32 rounded-full border-4 border-white/30 shadow-lg object-cover" src={profile?.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"} alt="Profile" />
                   <span className="absolute bottom-2 right-2 bg-green-500/90 text-white px-2 py-1 rounded-full text-xs font-bold shadow-md border border-white/20">Active</span>
                 </div>
                 <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
@@ -181,114 +214,114 @@ const Profile = () => {
                 </div>
               </div>
             )}
-            
+
             <Suspense fallback={<div className="flex justify-center items-center p-10"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div></div>}>
-              {page === "following" ? (<FollowingPage username={profile?.username || Username} />) : 
-               page === "followers" ? (<FollowersPage username={profile?.username || Username} />) : 
-               page === "edit" ? (
-                 <div className="glass-card m-3 p-6">
-    <button onClick={() => setPage(null)} className='flex items-center gap-2 w-full max-w-max px-4 py-2 rounded-lg mb-4 bg-white/10 hover:bg-white/20 transition'>
-      <span className="material-symbols-outlined">arrow_back</span> Back to Profile
-    </button>
-    <ProfileEditForm 
-      profile={profile} 
-      onUpdateSuccess={(updatedProfileData) => {
-        setProfile(updatedProfileData); // Update the profile state with new data from API
-        setPage(null); // Close the edit form
-      }}
-    />
-  </div>
-              ) : (
-                <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  <div className="lg:col-span-2">
-                    <h2 className="text-2xl font-bold text-white/90 mb-4 px-3 flex items-center gap-2"><span className="material-symbols-outlined">description</span> Notes</h2>
-                    <div className="space-y-4">
-                      {loading ? (
-                        Array.from({ length: 3 }).map((_, index) => (<div key={index} className="glass-info p-5 m-3 rounded-2xl border border-white/10 bg-white/10 animate-pulse"><div className="flex justify-between items-center"><div><div className="h-5 bg-gray-600 rounded w-48 mb-2"></div><div className="h-4 bg-gray-700 rounded w-64"></div></div><div className="h-8 bg-gray-600 rounded w-20"></div></div></div>))
-                      ) : posts.length === 0 ? (
-                        <div className="glass-info p-6 m-3 rounded-xl text-center text-white/70">
-                          This user hasn't posted any notes yet.
-                          {error && <div className="text-red-400 mt-4">{error}</div>}
-                        </div>
-                      ) : (
-                        // --- REVERTED: Simple map without refs ---
-                        posts.map(post => (
-                          <div key={post.id} className="glass-info p-5 m-3 rounded-2xl border border-white/10 bg-white/10 backdrop-blur-lg shadow-lg hover:bg-white/15 transition-all duration-300">
-                            <div className="flex justify-between items-start">
-                              <div className="flex items-start gap-4">
-                                <span className="material-symbols-outlined text-blue-400 mt-1">description</span>
-                                <div>
-                                  <h3 className="font-bold text-lg text-white">{post.contant}</h3>
-                                  <p className='font-medium text-sm text-gray-300 mt-1'>{post.choose} in {post.sub} for Semester {post.sem}</p>
+              {page === "following" ? (<FollowingPage username={profile?.username || Username} />) :
+                page === "followers" ? (<FollowersPage username={profile?.username || Username} />) :
+                  page === "edit" ? (
+                    <div className="glass-card m-3 p-6">
+                      <button onClick={() => setPage(null)} className='flex items-center gap-2 w-full max-w-max px-4 py-2 rounded-lg mb-4 bg-white/10 hover:bg-white/20 transition'>
+                        <span className="material-symbols-outlined">arrow_back</span> Back to Profile
+                      </button>
+                      <ProfileEditForm
+                        profile={profile}
+                        onUpdateSuccess={(updatedProfileData) => {
+                          setProfile(updatedProfileData); // Update the profile state with new data from API
+                          setPage(null); // Close the edit form
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                      <div className="lg:col-span-2">
+                        <h2 className="text-2xl font-bold text-white/90 mb-4 px-3 flex items-center gap-2"><span className="material-symbols-outlined">description</span> Notes</h2>
+                        <div className="space-y-4">
+                          {loading ? (
+                            Array.from({ length: 3 }).map((_, index) => (<div key={index} className="glass-info p-5 m-3 rounded-2xl border border-white/10 bg-white/10 animate-pulse"><div className="flex justify-between items-center"><div><div className="h-5 bg-gray-600 rounded w-48 mb-2"></div><div className="h-4 bg-gray-700 rounded w-64"></div></div><div className="h-8 bg-gray-600 rounded w-20"></div></div></div>))
+                          ) : posts.length === 0 ? (
+                            <div className="glass-info p-6 m-3 rounded-xl text-center text-white/70">
+                              This user hasn't posted any notes yet.
+                              {error && <div className="text-red-400 mt-4">{error}</div>}
+                            </div>
+                          ) : (
+                            // --- REVERTED: Simple map without refs ---
+                            posts.map(post => (
+                              <div key={post.id} className="glass-info p-5 m-3 rounded-2xl border border-white/10 bg-white/10 backdrop-blur-lg shadow-lg hover:bg-white/15 transition-all duration-300">
+                                <div className="flex justify-between items-start">
+                                  <div className="flex items-start gap-4">
+                                    <span className="material-symbols-outlined text-blue-400 mt-1">description</span>
+                                    <div>
+                                      <h3 className="font-bold text-lg text-white">{post.contant}</h3>
+                                      <p className='font-medium text-sm text-gray-300 mt-1'>{post.choose} in {post.sub} for Semester {post.sem}</p>
+                                    </div>
+                                  </div>
+                                  <div className="flex gap-2 mt-1">
+                                    <a href={post.pdf} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-lg bg-blue-600/80 hover:bg-blue-500/80 text-white font-semibold flex items-center gap-1 transition"><span className="material-symbols-outlined text-sm">download</span> PDF</a>
+                                    {!nameFromUrl && (<button onClick={() => handleDelete(post.pdf)} className="px-3 py-1.5 rounded-lg bg-red-500/80 hover:bg-red-600/80 text-white font-semibold flex items-center gap-1 transition"><span className="material-symbols-outlined text-sm">delete</span></button>)}
+                                  </div>
                                 </div>
                               </div>
-                              <div className="flex gap-2 mt-1">
-                                <a href={post.pdf} target="_blank" rel="noopener noreferrer" className="px-3 py-1.5 rounded-lg bg-blue-600/80 hover:bg-blue-500/80 text-white font-semibold flex items-center gap-1 transition"><span className="material-symbols-outlined text-sm">download</span> PDF</a>
-                                {!nameFromUrl && (<button onClick={() => handleDelete(post.pdf)} className="px-3 py-1.5 rounded-lg bg-red-500/80 hover:bg-red-600/80 text-white font-semibold flex items-center gap-1 transition"><span className="material-symbols-outlined text-sm">delete</span></button>)}
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-<aside className="lg:col-span-1">
-    <h2 className="text-2xl font-bold text-white/90 mb-4 px-3 flex items-center gap-2">
-        <span className="material-symbols-outlined">group_add</span> Suggested For You
-    </h2>
-    <div className="glass-info p-4 m-3 rounded-2xl border border-white/10 bg-white/10">
-        {loading ? (
-            <div className="space-y-4">
-                {Array.from({ length: 4 }).map((_, index) => (
-                    <div key={index} className="flex items-center justify-between animate-pulse">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-gray-700/50"></div>
-                            <div className="h-4 bg-gray-700/50 rounded-md w-24"></div>
+                            ))
+                          )}
                         </div>
-                        <div className="h-8 bg-gray-700/50 rounded-lg w-20"></div>
-                    </div>
-                ))}
-            </div>
-        ) : suggestions.length > 0 ? (
-            <ul className="space-y-2">
-                <AnimatePresence>
-                    {suggestions.map(user => (
-                        <motion.li
-                            key={user.username}
-                            layout
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 50, transition: { duration: 0.3 } }}
-                            className="flex items-center justify-between"
-                        >
-                            <div 
-                                onClick={() => navigate(`/profile/${user.username}`)} 
-                                className="flex items-center gap-3 cursor-pointer group"
+                      </div>
+                      <aside className="lg:col-span-1">
+                        <h2 className="text-2xl font-bold text-white/90 mb-4 px-3 flex items-center gap-2">
+                          <History size={24} /> Download History
+                        </h2>
+
+                        <div className="glass-info p-4 m-3 rounded-2xl border border-white/10 bg-white/10">
+                          {downloads.length > 0 ? (
+                            <motion.ul
+                              className="space-y-3"
+                              variants={listVariants}
+                              initial="hidden"
+                              animate="visible"
                             >
-                                <img 
-                                    src={user.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"} 
-                                    alt={user.username} 
-                                    className="w-10 h-10 rounded-full object-cover"
-                                />
-                                <span className="font-semibold text-white/90 group-hover:underline">{user.username}</span>
+                              <AnimatePresence>
+                                {downloads.map((item, index) => (
+                                  <motion.li
+                                    key={index}
+                                    layout
+                                    variants={itemVariants}
+                                    exit="exit"
+                                    className="flex items-center justify-between p-3 rounded-lg bg-black/20"
+                                  >
+                                    <div className="flex items-center gap-3 min-w-0">
+                                      <div className="flex-shrink-0">
+                                        <DownloadCloud size={20} className="text-blue-400" />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="font-semibold text-white/90 truncate">{item.pdfName} ({item.sub})</p>
+                                        <p className="text-xs text-white/50">
+                                          {formatDistanceToNow(new Date(item.downloadDate), { addSuffix: true })}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <a
+                                      href={item.pdfUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="p-2 rounded-full bg-white/5 text-white/70 hover:bg-blue-500/50 hover:text-white transition-colors"
+                                      title="Redownload"
+                                    >
+                                      <Redo size={18} />
+                                    </a>
+                                  </motion.li>
+                                ))}
+                              </AnimatePresence>
+                            </motion.ul>
+                          ) : (
+                            <div className="text-center text-white/60 text-sm py-8">
+                              <span className="material-symbols-outlined text-4xl text-white/20">downloading</span>
+                              <p className="mt-2 font-semibold">No Recent Downloads</p>
+                              <p className="text-xs text-white/40">Your downloaded files will appear here.</p>
                             </div>
-                            <button 
-                                onClick={() => onFollow(user.username)} // Use the new onFollow prop
-                                className="px-4 py-1.5 text-sm rounded-lg bg-blue-600 hover:bg-blue-500 font-semibold transition-colors"
-                            >
-                                Follow
-                            </button>
-                        </motion.li>
-                    ))}
-                </AnimatePresence>
-            </ul>
-        ) : (
-            <p className="text-center text-white/60 text-sm py-4">No suggestions right now.</p>
-        )}
-    </div>
-</aside>
-                </div>
-              )}
+                          )}
+                        </div>
+                      </aside>
+                    </div>
+                  )}
             </Suspense>
           </div>
         </main>
@@ -299,7 +332,7 @@ const Profile = () => {
 
       {isPhotoModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => setIsPhotoModalOpen(false)}>
-          <img src={profile?.profile_pic} alt="Profile full view" className="max-w-[90vw] max-h-[90vh] rounded-lg shadow-2xl object-contain" onClick={(e) => e.stopPropagation()}/>
+          <img src={profile?.profile_pic} alt="Profile full view" className="max-w-[90vw] max-h-[90vh] rounded-lg shadow-2xl object-contain" onClick={(e) => e.stopPropagation()} />
           <button className="absolute top-5 right-5 text-white text-3xl" onClick={() => setIsPhotoModalOpen(false)}>&times;</button>
         </div>
       )}

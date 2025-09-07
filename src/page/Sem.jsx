@@ -169,7 +169,7 @@ const Semester = () => {
                                             className="group relative p-6 rounded-2xl bg-zinc-800/50 border border-zinc-700/30 cursor-pointer transition-all duration-300 hover:border-green-500 hover:-translate-y-1 hover:bg-zinc-800"
                                         >
                                             <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-tr from-green-900/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                            <div className="relative z-10">
+                                            <div className="relative z-10 items-center justify-start flex flex-col">
                                                 <span className="material-symbols-outlined text-green-400 text-4xl">menu_book</span>
                                                 <h3 className="mt-4 text-2xl font-bold text-white">{subject.name}</h3>
                                                 <p className="mt-1 text-zinc-400">View Materials →</p>

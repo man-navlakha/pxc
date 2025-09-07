@@ -5,7 +5,7 @@ export default function useDownloadHandler() {
     const [downloadStates, setDownloadStates] = useState({});
     const [loadingStates, setLoadingStates] = useState({});
 
-    const handleDownload = async (pdfUrl, pdfName, pdfId) => {
+    const handleDownload = async (pdfUrl, pdfName, pdfId, sub) => {
         const getHistory = () => {
             try {
                 return JSON.parse(localStorage.getItem('downloadHistory')) || [];
@@ -37,7 +37,7 @@ export default function useDownloadHandler() {
 
             setDownloadStates(prev => ({ ...prev, [pdfId]: 'done' }));
             const history = getHistory();
-            history.unshift({ pdfName, pdfUrl, downloadDate: new Date().toISOString() });
+            history.unshift({ pdfName, pdfUrl, sub ,downloadDate: new Date().toISOString() });
             saveHistory(history);
         } catch (err) {
             console.error("Download failed:", err);
