@@ -171,8 +171,9 @@ const ResourcePage = () => {
     // --- Main Render ---
     return (
         <div className='mesh_select min-h-screen ccf overflow-y-scroll'>
+            <div className='min-h-screen'>
             <Navbar />
-            <main className='min-h-screen'>
+            <main>
                 {questionId ? (
                     <DetailView
                         question={selectedPdf}
@@ -193,7 +194,6 @@ const ResourcePage = () => {
                         onSelectQuestion={handleSelectQuestion}
                     />
                 )}
-            </main>
             <UploadModal
                 isOpen={isUploadModalOpen}
                 isUploading={isUploading}
@@ -203,6 +203,10 @@ const ResourcePage = () => {
                 onContentChange={(e) => setUploadContent(e.target.value)}
                 onFileChange={(e) => setUploadFiles(Array.from(e.target.files))}
             />
+            </main>
+            
+
+            </div>
             <Footer />
         </div>
     );
