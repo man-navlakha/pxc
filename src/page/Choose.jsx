@@ -52,32 +52,47 @@ const ErrorState = ({ error }) => (
 );
 
 const SubjectPage = () => {
-    const { subject, sem } = useParams();
-    const [activeOption, setActiveOption] = useState('all');
-    const [allPdfData, setAllPdfData] = useState([]);
-    const [pdfSizes, setPdfSizes] = useState({});
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [isUploadOpen, setIsUploadOpen] = useState(false);
-    // Add this inside your SubjectPage component
-const navigate = useNavigate();
+  const { subject, sem } = useParams();
+  const navigate = useNavigate();
 
-const handleopen = useCallback((pdfId, size, url, name, year) => {
-    console.log("Opening PDF with:", { pdfId, size, url, name, year });
-    Cookies.set("pdfid", pdfId);
-    Cookies.set("pdfSizes", size);
-    Cookies.set("pdfurl", url);
-    Cookies.set("pdfname", name);
-    Cookies.set("pdfyear", year);
-    navigate(`/select/${pdfId}`);
-}, [navigate]);
-    // State specifically for the upload form's select input
+  const [activeOption, setActiveOption] = useState('all');
+  const [allPdfData, setAllPdfData] = useState([]);
+  const [pdfSizes, setPdfSizes] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isUploadOpen, setIsUploadOpen] = useState(false);
+
     const [choose, setChoose] = useState('');
 
-    const { files, content, setContent, handleFileChange, handleSubmit, isUploading } = useFileUploadHandler();
+    const { files, content, setContent, setChoise,
+  setSub,
+  choise,
+  setSemester, handleFileChange, handleSubmit, isUploading } = useFileUploadHandler();
     const { handleDownload, downloadStates, loadingStates } = useDownloadHandler();
     const { shareModal, setShareModal, shareMessage, setShareMessage, getShareLink, generateQrCodeURL, openShareModal } = useShareHandler();
     const [showShareChatPopup, setShowShareChatPopup] = useState(false);
+
+
+
+
+  useEffect(() => {
+    setSub(subject);
+    setSemester(sem);
+  }, [subject, sem]);
+
+
+
+    const handleopen = useCallback((pdfId, size, url, name, year) => {
+        console.log("Opening PDF with:", { pdfId, size, url, name, year });
+        Cookies.set("pdfid", pdfId);
+        Cookies.set("pdfSizes", size);
+        Cookies.set("pdfurl", url);
+        Cookies.set("pdfname", name);
+        Cookies.set("pdfyear", year);
+        navigate(`/select/${pdfId}`);
+    }, [navigate]);
+    // State specifically for the upload form's select input
+
 
     const handleCopyLink = () => {
         const link = getShareLink(shareModal.pdf.pdf);
@@ -98,7 +113,7 @@ const handleopen = useCallback((pdfId, size, url, name, year) => {
                 if (!res.ok) throw new Error(`API request failed with status ${res.status}`);
                 const data = await res.json();
                 if (!Array.isArray(data)) throw new Error("API did not return an array of documents.");
-                
+
                 const dataWithIds = data.map((item, index) => ({ ...item, id: item.id || index }));
                 setAllPdfData(dataWithIds);
 
@@ -131,7 +146,7 @@ const handleopen = useCallback((pdfId, size, url, name, year) => {
             : allPdfData.filter(pdf => (pdf.Type || pdf.choose || '').trim().toLowerCase() === activeOption.trim().toLowerCase()),
         [allPdfData, activeOption]
     );
-    
+
     const getCategoryCounts = useMemo(() => {
         const counts = {};
         menuOptions.forEach(opt => counts[opt.key] = 0);
@@ -179,93 +194,93 @@ const handleopen = useCallback((pdfId, size, url, name, year) => {
                     </div>
                 </nav>
 
-               {/* MAIN CONTENT - REWRITTEN WITH CONDITIONAL LOGIC */}
-<main>
-    <AnimatePresence mode="wait">
-        <motion.div
-            key={activeOption}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-        >
-            {loading ? (
-                <motion.ul className="space-y-3" variants={containerVariants} initial="hidden" animate="visible">
-                    {Array.from({ length: 5 }).map((_, i) => <motion.li key={i} variants={itemVariants}><LoadingSkeleton /></motion.li>)}
-                </motion.ul>
-            ) : error ? (
-                <ErrorState error={error} />
-            ) : filteredPdfs.length > 0 ? (
-                <motion.ul className="space-y-3" variants={containerVariants} initial="hidden" animate="visible">
-                    {filteredPdfs.map((pdf) => (
-                        <motion.li key={pdf.id} variants={itemVariants}>
-                            {['assignment', 'imp'].includes((pdf.Type || pdf.choose || '').trim().toLowerCase()) ? (
-                                // --- Card Variant 1: For Assignments & IMP Q&A (Full card is a link) ---
-                                <div
-                                    onClick={() => handleopen(pdf.id, pdfSizes[pdf.pdf], pdf.pdf, pdf.name, pdf.year)}
-                                    className="group relative flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 transition-all duration-300 hover:bg-white/10 hover:border-white/20 cursor-pointer"
-                                >
-                                    <div className="flex-shrink-0 text-3xl">📄</div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-base sm:text-lg font-semibold truncate text-white" title={pdf.name}>{pdf.name || pdf.title}</p>
-                                        <p className="text-xs sm:text-sm text-white/50">
-                                            {pdfSizes[pdf.pdf] || "..."} • PDF • {pdf.year || 2025}
-                                            {pdf.choose && ` • ${pdf.choose}`}
-                                        </p>
-                                    </div>
-                                    <div className="p-2 rounded-full bg-white/5 text-white/70">
-                                        <span className="material-symbols-outlined">open_in_new</span>
-                                    </div>
-                                </div>
+                {/* MAIN CONTENT - REWRITTEN WITH CONDITIONAL LOGIC */}
+                <main>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={activeOption}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.2 }}
+                        >
+                            {loading ? (
+                                <motion.ul className="space-y-3" variants={containerVariants} initial="hidden" animate="visible">
+                                    {Array.from({ length: 5 }).map((_, i) => <motion.li key={i} variants={itemVariants}><LoadingSkeleton /></motion.li>)}
+                                </motion.ul>
+                            ) : error ? (
+                                <ErrorState error={error} />
+                            ) : filteredPdfs.length > 0 ? (
+                                <motion.ul className="space-y-3" variants={containerVariants} initial="hidden" animate="visible">
+                                    {filteredPdfs.map((pdf) => (
+                                        <motion.li key={pdf.id} variants={itemVariants}>
+                                            {['assignment', 'imp'].includes((pdf.Type || pdf.choose || '').trim().toLowerCase()) ? (
+                                                // --- Card Variant 1: For Assignments & IMP Q&A (Full card is a link) ---
+                                                <div
+                                                    onClick={() => handleopen(pdf.id, pdfSizes[pdf.pdf], pdf.pdf, pdf.name, pdf.year)}
+                                                    className="group relative flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 transition-all duration-300 hover:bg-white/10 hover:border-white/20 cursor-pointer"
+                                                >
+                                                    <div className="flex-shrink-0 text-3xl">📄</div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-base sm:text-lg font-semibold truncate text-white" title={pdf.name}>{pdf.name || pdf.title}</p>
+                                                        <p className="text-xs sm:text-sm text-white/50">
+                                                            {pdfSizes[pdf.pdf] || "..."} • PDF • {pdf.year || 2025}
+                                                            {pdf.choose && ` • ${pdf.choose}`}
+                                                        </p>
+                                                    </div>
+                                                    <div className="p-2 rounded-full bg-white/5 text-white/70">
+                                                        <span className="material-symbols-outlined">open_in_new</span>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                // --- Card Variant 2: For Notes, Papers, etc. (Separate actions) ---
+                                                <div className="group relative flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 transition-all duration-300 hover:bg-white/10 hover:border-white/20">
+                                                    <div className="flex-shrink-0 text-3xl">📄</div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-base sm:text-lg font-semibold truncate text-white" title={pdf.name}>{pdf.name || pdf.title}</p>
+                                                        <p className="text-xs sm:text-sm text-white/50">
+                                                            {pdfSizes[pdf.pdf] || "..."} • PDF • {pdf.year || 2025}
+                                                            {pdf.choose && ` • ${pdf.choose}`}
+                                                        </p>
+                                                    </div>
+                                                    {/* --- Redesigned Buttons with Tooltips --- */}
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="relative group">
+                                                            <button
+                                                                onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)}
+                                                                className="p-3 rounded-full bg-white/5 text-white/70 hover:bg-blue-500/50 hover:text-white transition-colors duration-200"
+                                                            >
+                                                                <span className="material-symbols-outlined">
+                                                                    {loadingStates[pdf.id] ? "progress_activity" : downloadStates[pdf.id] || "download"}
+                                                                </span>
+                                                            </button>
+                                                            <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 text-sm text-white bg-gray-900/80 border border-white/10 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                                                Download
+                                                            </span>
+                                                        </div>
+                                                        <div className="relative group">
+                                                            <button
+                                                                onClick={() => openShareModal(pdf)}
+                                                                className="p-3 rounded-full bg-white/5 text-white/70 hover:bg-green-500/50 hover:text-white transition-colors duration-200"
+                                                            >
+                                                                <span className="material-symbols-outlined">share</span>
+                                                            </button>
+                                                            <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 text-sm text-white bg-gray-900/80 border border-white/10 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                                                                Share
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </motion.li>
+                                    ))}
+                                </motion.ul>
                             ) : (
-                                // --- Card Variant 2: For Notes, Papers, etc. (Separate actions) ---
-                                <div className="group relative flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10 transition-all duration-300 hover:bg-white/10 hover:border-white/20">
-                                    <div className="flex-shrink-0 text-3xl">📄</div>
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-base sm:text-lg font-semibold truncate text-white" title={pdf.name}>{pdf.name || pdf.title}</p>
-                                        <p className="text-xs sm:text-sm text-white/50">
-                                            {pdfSizes[pdf.pdf] || "..."} • PDF • {pdf.year || 2025}
-                                            {pdf.choose && ` • ${pdf.choose}`}
-                                        </p>
-                                    </div>
-                                    {/* --- Redesigned Buttons with Tooltips --- */}
-                                    <div className="flex items-center gap-2">
-                                        <div className="relative group">
-                                            <button 
-                                                onClick={() => handleDownload(pdf.pdf, pdf.name, pdf.id)} 
-                                                className="p-3 rounded-full bg-white/5 text-white/70 hover:bg-blue-500/50 hover:text-white transition-colors duration-200"
-                                            > 
-                                                <span className="material-symbols-outlined"> 
-                                                    {loadingStates[pdf.id] ? "progress_activity" : downloadStates[pdf.id] || "download"} 
-                                                </span> 
-                                            </button>
-                                            <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 text-sm text-white bg-gray-900/80 border border-white/10 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                                                Download
-                                            </span>
-                                        </div>
-                                        <div className="relative group">
-                                            <button 
-                                                onClick={() => openShareModal(pdf)} 
-                                                className="p-3 rounded-full bg-white/5 text-white/70 hover:bg-green-500/50 hover:text-white transition-colors duration-200"
-                                            > 
-                                                <span className="material-symbols-outlined">share</span> 
-                                            </button> 
-                                            <span className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 text-sm text-white bg-gray-900/80 border border-white/10 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                                                Share
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
+                                <EmptyState category={activeOption} />
                             )}
-                        </motion.li>
-                    ))}
-                </motion.ul>
-            ) : (
-                <EmptyState category={activeOption} />
-            )}
-        </motion.div>
-    </AnimatePresence>
-</main>
+                        </motion.div>
+                    </AnimatePresence>
+                </main>
             </div>
 
             {/* --- FIXED: SHARE MODAL --- */}
@@ -285,31 +300,59 @@ const handleopen = useCallback((pdfId, size, url, name, year) => {
                     </motion.div>
                 )}
             </AnimatePresence>
-            
+
             {showShareChatPopup && (<SharePopup messageToShare={shareMessage} onClose={() => setShowShareChatPopup(false)} />)}
 
             {/* --- FIXED: UPLOAD MODAL --- */}
             <AnimatePresence>
-            {isUploadOpen && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/70 backdrop-blur-sm flex text-white items-center justify-center z-50 p-4">
-                    <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-gray-900/70 border border-white/20 p-6 rounded-2xl relative w-full max-w-md">
-                        <button onClick={() => setIsUploadOpen(false)} disabled={isUploading} className="absolute top-3 right-3 text-white/50 hover:text-white transition-colors">&times;</button>
-                        <h2 className="text-2xl font-bold">Upload Document</h2>
-                        <p className='text-white/50 mb-4'>for {subject} - Semester {sem}</p>
-                        <form onSubmit={(e) => { e.preventDefault(); handleSubmit(choose).then(() => setIsUploadOpen(false)); }}>
-                            <select value={choose} required onChange={(e) => setChoose(e.target.value)} className="w-full p-3 border border-white/20 text-white bg-white/5 rounded-lg mb-4 appearance-none">
-                                <option value="" className='text-white bg-black ' disabled>-- Select Category --</option>
-                                {uploadOptions.map(opt => (<option className='text-white bg-black ' key={opt.key} value={opt.key}>{opt.label}</option>))}
-                            </select>
-                            <textarea className="w-full p-3 border border-white/20 text-white bg-white/5 rounded-lg mb-4" rows="4" placeholder='Description or Title (e.g., Module 1 Notes)' value={content} onChange={(e) => setContent(e.target.value)} required />
-                            <input type="file" multiple onChange={handleFileChange} className="w-full p-2 border border-white/20 text-white bg-white/5 rounded-lg mb-4 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
-                            <button type="submit" disabled={isUploading} className="w-full py-3 px-6 rounded-lg bg-blue-600 hover:bg-blue-500 transition-colors disabled:bg-gray-500">
-                                {isUploading ? "Uploading..." : "Submit"}
-                            </button>
-                        </form>
+                {isUploadOpen && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/70 backdrop-blur-sm flex text-white items-center justify-center z-50 p-4">
+                        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }} className="bg-gray-900/70 border border-white/20 p-6 rounded-2xl relative w-full max-w-md">
+                            <button onClick={() => setIsUploadOpen(false)} disabled={isUploading} className="absolute top-3 right-3 text-white/50 hover:text-white transition-colors">&times;</button>
+                            <h2 className="text-2xl font-bold">Upload Document</h2>
+                            <p className='text-white/50 mb-4'>for {subject} - Semester {sem}</p>
+
+
+                            <form onSubmit={(e) => { e.preventDefault(); handleSubmit(choose).then(() => setIsUploadOpen(false)); }}>
+                                <input
+                                    type="text"
+                                    placeholder="Subject"
+                                    value={subject}
+                                    onChange={(e) => setSub(e.target.value)}
+                                    className="w-full p-3 border border-white/20 text-white bg-white/5 rounded-lg mb-4"
+                                />
+
+                                <input
+                                    type="text"
+                                    placeholder="Semester"
+                                    value={sem}
+                                    onChange={(e) => setSemester(e.target.value)}
+                                    className="w-full p-3 border border-white/20 text-white bg-white/5 rounded-lg mb-4"
+                                />
+
+
+
+
+                                <select value={choise} required onChange={(e) => setChoise(e.target.value)} className="w-full p-3 border border-white/20 text-white bg-white/5 rounded-lg mb-4 appearance-none">
+                                    <option value="" className='text-white bg-black ' disabled>-- Select Category --</option>
+                                    {uploadOptions.map(opt => (<option className='text-white bg-black ' key={opt.key} value={opt.key}>{opt.label}</option>))}
+                                </select>
+
+
+                                <textarea className="w-full p-3 border border-white/20 text-white bg-white/5 rounded-lg mb-4" rows="4" placeholder='Description or Title (e.g., Module 1 Notes)' value={content} onChange={(e) => setContent(e.target.value)} required />
+
+                                <input type="file" multiple onChange={handleFileChange} className="w-full p-2 border border-white/20 text-white bg-white/5 rounded-lg mb-4 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+
+
+                                <button type="submit" disabled={isUploading} className="w-full py-3 px-6 rounded-lg bg-blue-600 hover:bg-blue-500 transition-colors disabled:bg-gray-500">
+                                    {isUploading ? "Uploading..." : "Submit"}
+                                </button>
+
+
+                            </form>
+                        </motion.div>
                     </motion.div>
-                </motion.div>
-            )}
+                )}
             </AnimatePresence>
 
             {/* UPLOAD FAB */}
@@ -323,7 +366,7 @@ const handleopen = useCallback((pdfId, size, url, name, year) => {
                     </motion.button>
                 )}
             </AnimatePresence>
-            
+
             <Footer />
         </div>
     );

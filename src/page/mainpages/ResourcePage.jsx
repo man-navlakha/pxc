@@ -42,9 +42,9 @@ const DetailView = ({ question, answers, sizes, choose, loadingStates, downloadS
     }
     return (
         <>
-            <div className='py-16 text-center'><h1 className='text-3xl lg:text-3xl font-black bg-clip-text bg-gradient-to-tr from-slate-100 to-stone-500 text-transparent'>{question.name}</h1></div>
+            <div className='py-16 text-center '><h1 className='text-3xl lg:text-3xl font-black bg-clip-text bg-gradient-to-tr from-slate-100 to-stone-500 text-transparent'>{question.name}</h1></div>
             <div className='mx-6'>
-                <div onClick={() => onDownload(question.pdf, question.name, question.id)} className="flex gap-2 text-white items-center px-6 p-4 justify-between rounded-2xl border border-gray-200/50 bg-gray-600/30 hover:bg-blue-500/20 cursor-pointer">
+                <div onClick={() => onDownload(question.pdf, question.name, question.id)} className="flex gap-2 text-white items-center px-6 p-4 justify-center rounded-2xl border border-gray-200/50 bg-gray-600/30 hover:bg-blue-500/20 cursor-pointer">
                     <img src="https://www.freeiconspng.com/uploads/pdf-icon-9.png" alt="PDF Icon" className="w-12 h-12" />
                     <div className='flex-1 ml-2'>
                         <p className='text-lg mb-2'>{question.name}</p>
@@ -172,7 +172,7 @@ const ResourcePage = () => {
     return (
         <div className='mesh_select min-h-screen ccf overflow-y-scroll'>
             <Navbar />
-            <main>
+            <main className='min-h-screen'>
                 {questionId ? (
                     <DetailView
                         question={selectedPdf}

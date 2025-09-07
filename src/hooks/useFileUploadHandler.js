@@ -5,10 +5,10 @@ import Cookies from 'js-cookie';
 export default function useFileUploadHandler() {
     const [files, setFiles] = useState([]);
     const [content, setContent] = useState('');
-    const [subject, setSubject] = useState('');
+    const [sub, setSub] = useState('');
     const [cource, setCource] = useState('' || "1");
-    const [sem, setSem] = useState('');
-    const [choose, setChoose] = useState('');
+    const [semester, setSemester] = useState('');
+    const [choise, setChoise] = useState('');
     const [isUploading, setUploading] = useState(false);
 
     const handleFileChange = (e) => {
@@ -33,15 +33,47 @@ export default function useFileUploadHandler() {
         formData.append("name", content);
         formData.append("username", Cookies.get("username"));
         formData.append("course_id", 1);
-        formData.append("sem", sem);
-        formData.append("choose", choose);
-        formData.append("sub", subject);
+        formData.append("sem", semester || 5);
+        formData.append("choose", choise);
+        formData.append("sub", sub);
         files.forEach(file => formData.append("pdf", file));  // multiple pdf files
 
 
         for (let [key, value] of formData.entries()) {
-            console.log(`${key}:`, value);
+            if (value instanceof File) {
+                console.log(`${key}:`, value.name);
+            } else {
+                console.log(`${key}:`, value);
+            }
         }
+
+        if (!content.trim()) {
+            alert("Please enter a description or title for the upload.");
+            return;
+        }
+
+        if (!sub.trim()) {
+            alert("Please enter the subject name.");
+            return;
+        }
+
+        if (!semester.trim()) {
+            alert("Please select or enter the semester.");
+            return;
+        }
+
+        if (!choise.trim()) {
+            alert("Please select a category from the dropdown.");
+            return;
+        }
+
+        if (files.length === 0) {
+            alert("Please select at least one PDF file to upload.");
+            return;
+        }
+
+
+
 
         try {
             setUploading(true);
@@ -72,10 +104,11 @@ export default function useFileUploadHandler() {
         files,
         content,
         setContent,
-        setChoose,
-        setSem, setCource, setSubject,
+        setChoise,
+        setSemester, setCource, setSub,
         handleFileChange,
         handleSubmit,
-        isUploading
+        isUploading,
+        choise
     };
 }
