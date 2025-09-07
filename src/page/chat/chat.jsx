@@ -11,14 +11,220 @@ import { Clipboard } from "lucide-react"; // Assuming you use lucide-react
 import { verifiedUsernames } from "../../verifiedAccounts";
 import VerifiedBadge from "../../componet/VerifiedBadge";
 
+
+
+
+
+
+const LinkPreview = ({ url, meta }) => {
+  // meta from link-preview-js: { title, description, images: [...] }
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block rounded-xl overflow-hidden border border-gray-700 bg-gray-800 hover:bg-gray-700 transition max-w-[320px]"
+    >
+      {meta?.images?.[0] && (
+        <img src={meta.images[0]} alt={meta.title || "preview"} className="w-full h-40 object-cover" />
+      )}
+
+      <div className="p-2">
+        <p className="text-sm font-semibold text-white truncate">{meta?.title || url}</p>
+        {meta?.description && <p className="text-xs text-gray-400 line-clamp-2">{meta.description}</p>}
+        <p className="text-xs text-emerald-400 mt-1">{new URL(url).hostname}</p>
+      </div>
+    </a>
+  );
+};
+
+
+
+
+
+
+
+
+
+// helper ext detection
+const IMAGE_EXT = ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg", "avif"];
+const VIDEO_EXT = ["mp4", "webm", "ogg", "mov", "m4v"];
+const AUDIO_EXT = ["mp3", "wav", "ogg", "m4a", "aac", "flac"];
+const DOC_EXT = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "csv", "md"];
+
+const getExtFromUrl = (raw) => {
+  try {
+    const u = new URL(raw);
+    const p = u.pathname.split("?")[0].split("#")[0];
+    const dot = p.lastIndexOf(".");
+    return dot > -1 ? p.slice(dot + 1).toLowerCase() : "";
+  } catch {
+    const q = raw.split("?")[0].split("#")[0];
+    const dot = q.lastIndexOf(".");
+    return dot > -1 ? q.slice(dot + 1).toLowerCase() : "";
+  }
+};
+
+const isYouTube = (url) => {
+  try {
+    const u = new URL(url);
+    const host = u.hostname.replace(/^www\./, "");
+    if (host === "youtube.com" || host === "m.youtube.com") {
+      const v = u.searchParams.get("v");
+      return v ? `https://www.youtube.com/embed/${v}` : null;
+    }
+    if (host === "youtu.be") {
+      const id = u.pathname.split("/").filter(Boolean)[0];
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+    return null;
+  } catch { return null; }
+};
+
+// main renderer (raw: message text; linkMeta: { url: meta }; openLightbox: (url,type) => void)
+const renderMedia = (raw, linkMeta = {}, openLightbox) => {
+  if (!raw) return null;
+
+  const bubbleMediaWrapper =
+    "w-40 h-40 md:w-56 md:h-56 rounded-lg overflow-hidden cursor-pointer";
+
+  try {
+    const maybeUrl = new URL(raw);
+    const ext = getExtFromUrl(raw);
+
+    // 📷 Image bubble (cropped)
+       if (IMAGE_EXT.includes(ext)) {
+      return (
+        <img
+          src={raw}
+          alt="image"
+          onClick={() => openLightbox({ url: raw, type: "image" })}
+          className={`${bubbleMediaWrapper} object-cover hover:opacity-90`}
+        />
+      );
+    }
+
+    if (VIDEO_EXT.includes(ext)) {
+      return (
+        <video
+          controls
+          onClick={() => openLightbox({ url: raw, type: "video" })}
+          className={`${bubbleMediaWrapper} object-cover hover:opacity-90`}
+        >
+          <source src={raw} />
+        </video>
+      );
+    }
+
+    // 🎵 Audio
+    if (AUDIO_EXT.includes(ext)) {
+      return (
+        <audio controls className="w-56">
+          <source src={raw} />
+        </audio>
+      );
+    }
+
+    // 📄 Document
+    if (DOC_EXT.includes(ext)) {
+      return (
+        <a
+          href={raw}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700"
+        >
+          📄 Open Document
+        </a>
+      );
+    }
+
+    // 🔗 Links (rich preview or fallback)
+    const meta = linkMeta[maybeUrl.href];
+    if (meta) {
+      return <LinkPreview url={maybeUrl.href} meta={meta} />;
+    }
+
+    return (
+      <a
+        href={raw}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline text-blue-400 break-words break-all"
+      >
+        {maybeUrl.href}
+      </a>
+    );
+  } catch {
+    return <p>{raw}</p>;
+  }
+};
+
+
+
+
+
+function LightboxModal({ openData, onClose }) {
+  return (
+    <AnimatePresence>
+      {openData?.url && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="absolute inset-0 bg-black/70"
+            onClick={onClose}
+          />
+          <motion.div
+            initial={{ scale: 0.95, y: 20 }}
+            animate={{ scale: 1, y: 0 }}
+            exit={{ scale: 0.95, y: 20 }}
+            className="relative z-10 max-w-[90vw] max-h-[90vh]"
+          >
+            <div className="rounded-lg overflow-hidden bg-black">
+              {openData.type === "image" && (
+                <img
+                  src={openData.url}
+                  alt="preview"
+                  className="max-w-[90vw] max-h-[90vh] object-contain"
+                />
+              )}
+              {openData.type === "video" && (
+                <video controls className="max-w-[90vw] max-h-[90vh]">
+                  <source src={openData.url} />
+                </video>
+              )}
+            </div>
+            <button
+              className="absolute top-2 right-2 rounded-full bg-black/50 p-2 text-white"
+              onClick={onClose}
+            >
+              ✕
+            </button>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+
+
 export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [profile, setProfile] = useState(null);
+  const [linkMeta, setLinkMeta] = useState({});
+  const loadingRef = useRef(new Set()); // track which urls are being fetched
+  const [lightbox, setLightbox] = useState({ url: null, type: null });
 
   // popup for image/url
   const [showImagePopup, setShowImagePopup] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+
+
+  const [lightboxData, setLightboxData] = useState(null);
 
   // typing
   const [isTyping, setIsTyping] = useState(false);
@@ -210,8 +416,25 @@ export default function Chat() {
     }
   };
 
-
-
+  useEffect(() => {
+    messages.forEach((m) => {
+      try {
+        const u = new URL(m.message);
+        const href = u.href;
+        if (!linkMeta[href] && !loadingRef.current.has(href)) {
+          loadingRef.current.add(href);
+          axios.get(`/api/preview?url=${encodeURIComponent(href)}`)
+            .then(res => setLinkMeta(prev => ({ ...prev, [href]: res.data })))
+            .catch(err => setLinkMeta(prev => ({ ...prev, [href]: null })))
+            .finally(() => {
+              loadingRef.current.delete(href);
+            });
+        }
+      } catch (err) { /* not a URL, ignore */ }
+    });
+  }, [messages]);
+const openLightbox = (data) => setLightboxData(data); // data = { url, type }
+const closeLightbox = () => setLightboxData(null);
 
 
 
@@ -291,137 +514,6 @@ export default function Chat() {
       .catch(() => console.error("Failed to load profile"));
   }, [RECEIVER, token, navigate]);
 
-  // ---------- Renderers ----------
-  const renderMedia = (raw) => {
-    if (!raw) return null;
-
-    // data-url image
-    if (raw.startsWith("data:image")) {
-      return <img src={raw} alt="sent" className="rounded-lg max-w-xs" />;
-    }
-
-    // Markdown ![](url)
-    if (raw.startsWith("![")) {
-      const url = raw.slice(raw.indexOf("(") + 1, raw.lastIndexOf(")"));
-      const yt = isYouTube(url);
-      if (yt) {
-        return (
-          <div className="w-full max-w-xs aspect-video">
-            <iframe
-              className="w-full h-full rounded-lg"
-              src={yt}
-              title="YouTube"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        );
-      }
-      const ext = getExtFromUrl(url);
-      if (IMAGE_EXT.includes(ext)) {
-        return (
-          <div className="max-w-full overflow-hidden">
-            <img src={url} alt="image" className="rounded-lg w-full h-auto" />
-          </div>
-        );
-
-      }
-      if (VIDEO_EXT.includes(ext)) {
-        return (
-          <video controls className="rounded-lg max-w-xs">
-            <source src={url} />
-          </video>
-        );
-      }
-      if (AUDIO_EXT.includes(ext)) {
-        return (
-          <audio controls className="w-full max-w-xs">
-            <source src={url} />
-          </audio>
-        );
-      }
-      if (DOC_EXT.includes(ext)) {
-        return (
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700"
-          >
-            📄 Open Document
-          </a>
-        );
-      }
-      // unknown -> show clickable link
-      return (
-        <a href={url} target="_blank" rel="noopener noreferrer" className="underline text-blue-400">
-          {url}
-        </a>
-      );
-    }
-
-    // Plain link (auto detect)
-    try {
-      const maybeUrl = new URL(raw); // will throw if not url
-      const yt = isYouTube(raw);
-      if (yt) {
-        return (
-          <div className="w-full max-w-min overflow-hidden">
-            <iframe
-              className="w-full h-full rounded-lg"
-              src={yt}
-              title="YouTube"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        );
-      }
-      const ext = getExtFromUrl(raw);
-      if (IMAGE_EXT.includes(ext)) {
-        return <img src={raw} alt="image" className="rounded-lg max-w-xs" />;
-      }
-      if (VIDEO_EXT.includes(ext)) {
-        return (
-          <video controls className="rounded-lg max-w-xs">
-            <source src={raw} />
-          </video>
-        );
-      }
-      if (AUDIO_EXT.includes(ext)) {
-        return (
-          <audio controls className="w-full max-w-xs">
-            <source src={raw} />
-          </audio>
-        );
-      }
-      if (DOC_EXT.includes(ext)) {
-        return (
-          <a
-            href={raw}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700"
-          >
-            📄 Open Document
-          </a>
-        );
-      }
-      // generic link
-      return (
-        <a href={raw} target="_blank" rel="noopener noreferrer" className="underline text-blue-400">
-          {maybeUrl.href}
-        </a>
-      );
-    } catch {
-      // not a URL → plain text
-      return <p>{raw}</p>;
-    }
-  };
-
-
 
 
 
@@ -460,7 +552,7 @@ export default function Chat() {
             className="w-8 h-8 rounded-full"
           />
           <div onClick={() => navigate(`/profile/${profile?.username}`)} className="flex flex-col">
-            <span className="font-semibold flex justify-center items-center gap-1">{profile?.username} {verifiedUsernames.has(profile?.username) && <VerifiedBadge size={24}  />}</span>
+            <span className="font-semibold flex justify-center items-center gap-1">{profile?.username} {verifiedUsernames.has(profile?.username) && <VerifiedBadge size={24} />}</span>
             <span className="text-xs text-gray-400">last seen</span>
           </div>
         </div>
@@ -497,8 +589,38 @@ export default function Chat() {
                 >
 
 
-                  {renderMedia(msg.message)}
+                  {renderMedia(msg.message, linkMeta, openLightbox)}
                 </div>
+
+                {/* Lightbox modal */}
+{lightboxData && (
+  <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
+    <button
+      onClick={() => setLightboxData(null)}
+      className="absolute top-4 right-4 text-white text-2xl"
+    >
+      ✕
+    </button>
+
+    {lightboxData.type === "image" && (
+      <img
+        src={lightboxData.url}
+        alt="preview"
+        className="max-w-[90vw] max-h-[90vh] object-contain"
+      />
+    )}
+
+    {lightboxData.type === "video" && (
+      <video
+        controls
+        className="max-w-[90vw] max-h-[90vh] object-contain"
+      >
+        <source src={lightboxData.url} />
+      </video>
+    )}
+  </div>
+)}
+
 
                 {!isOwn && isLastOfGroup && (
                   <div className="flex items-center gap-1 mt-1">
@@ -606,6 +728,8 @@ export default function Chat() {
         </AnimatePresence>
 
 
+
+        <LightboxModal openData={lightboxData} onClose={closeLightbox} />
 
 
 
