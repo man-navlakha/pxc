@@ -8,17 +8,17 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const [passwordVisible, setPasswordVisible] = useState(false); // ✅ added
+  const [passwordVisible, setPasswordVisible] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const last = "username";
   const redirectTo = new URLSearchParams(location.search).get("redirect") || "/";
 
-  const togglePasswordVisibility = () => { // ✅ added
+  const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
 
-  // ✅ Check if already logged in
+  // Check if already logged in
   useEffect(() => {
     const checkLogin = async () => {
       try {
@@ -31,9 +31,9 @@ const Login = () => {
       }
     };
     checkLogin();
-  }, []);
+  }, [navigate, redirectTo]);
 
-  // ✅ Username/password login
+  // Username/password login
   const logmein = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -58,7 +58,7 @@ const Login = () => {
     }
   };
 
-  // ✅ Google login
+  // Google login
   const googleLogin = async (credentialResponse) => {
     if (!credentialResponse?.credential) return setError("Google credential missing");
     setLoading(true);
@@ -155,7 +155,7 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                                                     onChange={(e) => e.target.value = e.target.value}
                                                      name="username"
                                                       id="username"
-                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-3000 border-gray-200 bg-white text-gray-900 hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   " 
+                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-3000 border-gray-200 bg-white text-gray-900 hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   "
                                                     placeholder="Enter Username" />
                                             </div>
 
@@ -166,14 +166,14 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                                                 <label htmlFor="password" className='text-sm font-semibold text-gray-900'>Password</label>
                                             </div>
                                             <div className="relative">
-                                                <input 
-                                                type={passwordVisible ? "text" : "password"} 
-                                                className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-3000 border-gray-200 bg-white text-gray-900 hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   " 
+                                                <input
+                                                type={passwordVisible ? "text" : "password"}
+                                                className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-3000 border-gray-200 bg-white text-gray-900 hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   "
                                                 id="password"
                                                 name="password"
-                                                placeholder="At least 8 characters." 
-                                                autoComplete="off" 
-                                                aria-autocomplete="list" 
+                                                placeholder="At least 8 characters."
+                                                autoComplete="off"
+                                                aria-autocomplete="list"
                                                 data-rr-is-password="true" />
                                                 <button onClick={togglePasswordVisibility} type="button" aria-label="view-password" className="absolute right-0 p-2 text-gray-500 cursor-pointer hover:text-gray-900">
                                                     {passwordVisible ?
