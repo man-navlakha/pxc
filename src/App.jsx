@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Routes, Route } from "react-router-dom";
 import './App.css';
 import './index.css';
 
 // --- Page & Component Imports ---
-
-// Core Pages
 import MainPage from "./MainPage";
 import NotFound from './NotFound';
 import Sem from './page/Sem';
@@ -15,35 +12,20 @@ import Search_user from './page/user_search';
 import Page from './page/Choose';
 import FollowingPage from "./page/FollowingPage";
 import FollowersPage from "./page/FollowersPage";
-
-// Chat Components
 import Chat from './page/chat/chat';
 import Chatlist from './page/chat/Listuser';
-
-// Authentication Components
 import Password from './auth/password';
 import Verification from './auth/verification';
 import Signup from './auth/signup';
 import Blogin from './auth/Login';
 import Forgetpassword from "./auth/Forgetpassword";
-
-// Resource Pages
 import Ns from "./page/mainpages/Ns";
 import Nss from "./page/mainpages/Nss";
 import Select from "./page/mainpages/Select";
 import ResourcePage from "./page/mainpages/ResourcePage";
-
-// Protection Wrapper
 import Protected from "./ProtectedRoute_new";
 
-function AppWrapper() {
-    // The useNavigate hook must be used within a component that is a descendant of <Router>
-    // So we wrap the App component with this simple component to provide it.
-    const navigate = useNavigate();
-    return <App navigate={navigate} />;
-}
-
-function App({ navigate }) {
+function App() {
     const [isOnline, setIsOnline] = useState(navigator.onLine);
 
     // Effect for handling online/offline status
@@ -104,13 +86,4 @@ function App({ navigate }) {
     );
 }
 
-// It's good practice to have a root component that includes the Router
-function AppRoot() {
-    return (
-        <Router>
-            <AppWrapper />
-        </Router>
-    );
-}
-
-export default AppRoot;
+export default App;
