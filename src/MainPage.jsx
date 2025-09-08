@@ -15,25 +15,41 @@ import api from './utils/api'; // centralized axios instance with withCredential
 import './new.css';
 
 const MainPage = () => {
+  const token = Cookies.get("refresh_token");
+  const username = Cookies.get("username");
+
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch user profile or courses
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchData = async () => {
+      setLoading(true);
       try {
-        const res = await api.get('/me/');
-        setProfile(res.data);
+        if (token && username) {
+          // Clear old cookies
+          ['sub', 'pdfname', 'pdfid', 'pdfyear', 'pdfurl', 'pdfSizes', 'choose'].forEach(Cookies.remove);
+
+          // Use centralized axios instance (withCredentials already set)
+          const res = await api.post('/Profile/details/', { username });
+          setProfile(res.data);
+        } else {
+          const res = await api.get('/home/courses'); // cookies sent automatically
+          setProfile(res.data);
+        }
       } catch (err) {
-        console.error("Profile fetch error:", err);
-        setProfile(null);
+        console.error("Error fetching data:", err);
+        setError("Failed to load details");
       } finally {
         setLoading(false);
       }
     };
-    fetchProfile();
-  }, []);
 
+    fetchData();
+  }, [token, username]);
+
+  // Update profile_pic cookie
   useEffect(() => {
     if (profile?.profile_pic) {
       Cookies.set("profile_pic", profile.profile_pic);
@@ -53,12 +69,14 @@ const MainPage = () => {
           <a href="/"><br /><button className='border px-6 py-3 m-2 rounded bg-red-600/20 border-red-600'>Reload</button></a>
         </div>
       )}
+
       <div className="bg-pattern transition-all duration-500 ease-in-out"></div>
+
       <div className='ccf text-white flex flex-col text-center pb-14 lg:pb-0 md:pb-14 content-center flex-nowrap'>
         <Navbar />
 
-        {profile ? (
-          <Semester /> // logged-in view
+        {token ? (
+          <Semester /> // Logged-in view
         ) : (
           <>
             <Hero />
