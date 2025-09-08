@@ -33,13 +33,5 @@ dist-ssr
 *.sln
 *.sw?
 
-
-
-src/ProtectedRoute.jsx
-
 # Local Netlify folder
 .netlify
-
-src/old
-src/old/*
-src/ProtectedRoute.jsx
