@@ -26,8 +26,8 @@ useEffect(() => {
       const res = await api.get("/me/");
       setProfile(res.data);
     } catch (err) {
-      console.warn("Not logged in → showing guest view");
-      setProfile(null); // guest
+      console.warn("Not logged in → guest mode");
+      setProfile(null); // show guest content instead of redirecting
     } finally {
       setLoading(false);
     }

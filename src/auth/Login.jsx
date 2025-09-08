@@ -1,40 +1,46 @@
 import React, { useState, useEffect } from "react";
 import { GoogleLogin } from "@react-oauth/google";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import api from "../utils/api";
 import "../new.css";
 
 const Login = () => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // start loading until we probe
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const location = useLocation();
+  const navigate = useNavigate();
   const redirectTo = new URLSearchParams(location.search).get("redirect") || "/";
 
   const togglePasswordVisibility = () => setPasswordVisible(!passwordVisible);
 
-  // ✅ If already logged in, redirect immediately
+  // --- Probe /me/ to check if already logged in ---
   useEffect(() => {
     const checkLogin = async () => {
       try {
-        const res = await api.get("/me/");
+        const res = await api.get("/me/"); // allow refresh in interceptor
         if (res.data?.username) {
-          window.location.href = redirectTo;
+          console.info("[Login] already logged in -> redirecting to", redirectTo);
+          navigate(redirectTo, { replace: true });
+          return;
         }
-      } catch {
-        // not logged in → stay here
+      } catch (err) {
+        console.log("[Login] User not logged in (probe 401). Stay on login page.");
+      } finally {
+        setLoading(false);
       }
     };
     checkLogin();
-  }, [redirectTo]);
+  }, [navigate, redirectTo]);
 
-  // ✅ Username/password login
+  // --- Handle username/password login ---
   const logmein = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
     try {
       const { username, password } = e.target;
       const res = await api.post("/user/login/", {
@@ -44,20 +50,21 @@ const Login = () => {
 
       if (res.data?.message === "Login successful!") {
         setSuccess("Login successful! Redirecting...");
-        setTimeout(() => {
-          window.location.href = redirectTo; // full reload → ensures cookies apply
-        }, 1000);
+        // Check /me/ again so we know user context is valid
+        await api.get("/me/");
+        navigate(redirectTo, { replace: true });
       } else {
         setError("Invalid credentials");
       }
     } catch (err) {
+      console.error("[Login] error:", err);
       setError(err?.response?.data?.error || "Login failed");
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ Google login
+  // --- Handle Google login ---
   const googleLogin = async (credentialResponse) => {
     if (!credentialResponse?.credential) {
       return setError("Google credential missing");
@@ -71,9 +78,8 @@ const Login = () => {
 
       if (res.data?.message === "Login successful!") {
         setSuccess("Login successful! Redirecting...");
-        setTimeout(() => {
-          window.location.href = redirectTo;
-        }, 1000);
+        await api.get("/me/");
+        navigate(redirectTo, { replace: true });
       } else {
         setError("Google login failed");
       }
@@ -83,6 +89,14 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen text-gray-400">
+        Checking session...
+      </div>
+    );
+  }
 
   return (
     <>
