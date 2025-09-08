@@ -18,6 +18,8 @@ import {
 }
 from "framer-motion";
 
+import api from "../utils/api";
+
 const Semester = () => {
     const [selectedSem, setSelectedSem] = useState(Cookies.get("latest_sem") || null);
     const [apiResponse, setApiResponse] = useState(null);
@@ -26,28 +28,29 @@ const Semester = () => {
     const nav = useNavigate();
     const Semesters = ["3", "4", "5", "6"];
 
-    useEffect(() => {
-        const fetchSubjects = async () => {
-            if (selectedSem) {
-                setLoading(true);
-                setError(null);
-                try {
-                    const response = await axios.post('https://pixel-classes.onrender.com/api/home/QuePdf/Get_Subjact', {
-                        sem: selectedSem,
-                        course_name: "B.C.A",
-                    });
-                    setApiResponse(response.data);
-                } catch (err) {
-                    setError(`Failed to load subjects. Please try again.`);
-                    setApiResponse(null);
-                } finally {
-                    setLoading(false);
-                }
-            }
-        };
+   useEffect(() => {
+  const fetchSubjects = async () => {
+    if (!selectedSem) return;
 
-        fetchSubjects();
-    }, [selectedSem]);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await api.post("home/QuePdf/Get_Subjact", {
+        sem: selectedSem,
+        course_name: "B.C.A",
+      });
+      setApiResponse(response.data);
+    } catch (err) {
+      setError("Failed to load subjects. Please try again.");
+      setApiResponse(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchSubjects();
+}, [selectedSem]);
 
 
     const handleSemClick = (sem) => {

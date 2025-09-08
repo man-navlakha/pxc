@@ -1,105 +1,85 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { GoogleLogin } from '@react-oauth/google';
-import Cookies from "js-cookie";
 import { useNavigate, useLocation, Link } from "react-router-dom";
+import api from "../utils/api"; // centralized axios with withCredentials:true
 import '../new.css'
 
-
-
-
-
 const Login = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [passwordVisible, setPasswordVisible] = useState(false); // ✅ added
+  const navigate = useNavigate();
+  const location = useLocation();
+  const last = "username";
+  const redirectTo = new URLSearchParams(location.search).get("redirect") || "/";
 
+  const togglePasswordVisibility = () => { // ✅ added
+    setPasswordVisible(!passwordVisible);
+  };
 
-    const [loading, setLoading] = useState(false);
-    const [passwordVisible, setPasswordVisible] = useState(false);
-    const [error, setError] = useState(null);
-    const [last, setLast] = useState(Cookies.get("last") || null);
-    const [success, setSuccess] = useState(null);
-    const navigate = useNavigate();
-    const location = useLocation();
-    const queryParams = new URLSearchParams(location.search);
-    const redirectTo = queryParams.get("redirect") || "/";
-
-
-
-    // ✅ Handle redirection if user is already logged in
-    useEffect(() => {
-        const token = Cookies.get("refresh_token");
-        if (token) {
-            setTimeout(() => {
-                navigate(location?.state?.from || redirectTo, { replace: true });
-            }, 100);
+  // ✅ Check if already logged in
+  useEffect(() => {
+    const checkLogin = async () => {
+      try {
+        const res = await api.get("/me/");
+        if (res.data.user) {
+          navigate(redirectTo, { replace: true });
         }
-    }, [navigate, location]);
-
-    // ✅ Toggle password visibility
-    const togglePasswordVisibility = () => {
-        setPasswordVisible(!passwordVisible);
+      } catch (err) {
+        console.log("Not logged in");
+      }
     };
+    checkLogin();
+  }, []);
 
+  // ✅ Username/password login
+  const logmein = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      const { username, password } = e.target;
+      const res = await api.post("/user/login/", {
+        username: username.value,
+        password: password.value
+      });
 
+      if (res.data.message === "Login successful!") {
+        setSuccess("Login successful!");
+        setTimeout(() => navigate(redirectTo, { replace: true }), 3000);
+      } else {
+        setError("Invalid credentials");
+      }
+    } catch (err) {
+      setError(err?.response?.data?.error || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // ✅ Google login
+  const googleLogin = async (credentialResponse) => {
+    if (!credentialResponse?.credential) return setError("Google credential missing");
+    setLoading(true);
+    try {
+      const res = await api.post("/user/google-login/", {
+        token: credentialResponse.credential
+      });
+      if (res.data.message === "Login successful!") {
+        setSuccess("Login successful!");
+        setTimeout(() => navigate(redirectTo, { replace: true }), 3000);
+      } else {
+        setError("Google login failed");
+      }
+    } catch (err) {
+      setError(err?.response?.data?.error || "Google login error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // Typo fixed and validation before accessing credential
-    const googlelogin = async (credentialResponse) => {
-        if (!credentialResponse?.credential) {
-            setError("Google credential is missing.");
-            return;
-        }
-        try {
-            const res = await axios.post('https://pixel-classes.onrender.com/api/user/google-login/', {
-                token: credentialResponse.credential,
-            });
-
-            if (res.data.message === "Login successful!") {
-                Cookies.set("refresh_token", res.data.refresh_token, { expires: 7 });
-                Cookies.set("username", res.data.username, { expires: 7 });
-                setSuccess("Login successful");
-                Cookies.set("last", "Google");
-                setTimeout(() => navigate(redirectTo, { replace: true }), 100);
-            } else {
-                setError("Invalid login credentials.");
-            }
-        } catch (e) {
-            console.error("Login error:", e);
-            setError(e?.response?.data?.error || "An error occurred");
-        }
-    };
-
-    const logmein = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError("");
-        try {
-            const { username, password } = e.target;
-            const ress = await axios.post('https://pixel-classes.onrender.com/api/user/login/', {
-                username: username.value,
-                password: password.value,
-            });
-
-            if (ress.data.message === "Login successful!") {
-                Cookies.set("refresh_token", ress.data.refresh_token, { expires: 7 });
-                Cookies.set("username", ress.data.username, { expires: 7 });
-                setSuccess("Login successful");
-                Cookies.set("last", "username");
-                setTimeout(() => navigate(location?.state?.from || redirectTo, { replace: true }), 100);
-            } else {
-                setError("Invalid login credentials.");
-            }
-        } catch (e) {
-            console.error("Login error:", e);
-            setError(e?.response?.data?.error || "An error occurred");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-
-    console.error(last)
-
-    return (
+  return (
         <>
             <div className="bg-pattern "></div>
 
@@ -140,7 +120,7 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
 
                                     {typeof window !== "undefined" && (
                                         <GoogleLogin
-                                            onSuccess={googlelogin}
+                                            onSuccess={googleLogin}
                                             onError={() => console.log('Login Failed')}
                                             auto_select
                                             context="signin"
@@ -175,7 +155,7 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                                                     onChange={(e) => e.target.value = e.target.value}
                                                      name="username"
                                                       id="username"
-                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-100 border-gray-200 bg-white text-gray-900 hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   " 
+                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-3000 border-gray-200 bg-white text-gray-900 hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   " 
                                                     placeholder="Enter Username" />
                                             </div>
 
@@ -188,7 +168,7 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                                             <div className="relative">
                                                 <input 
                                                 type={passwordVisible ? "text" : "password"} 
-                                                className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-100 border-gray-200 bg-white text-gray-900 hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   " 
+                                                className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-3000 border-gray-200 bg-white text-gray-900 hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   " 
                                                 id="password"
                                                 name="password"
                                                 placeholder="At least 8 characters." 

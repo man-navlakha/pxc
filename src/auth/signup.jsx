@@ -19,7 +19,7 @@ const signup = () => {
 
     // ✅ Handle redirection if user is already logged in
     useEffect(() => {
-        const token = Cookies.get("refresh_token");
+        const token = Cookies.get("refresh"); 
         if (token) {
             setTimeout(() => {
                 navigate(location?.state?.from || " ", { replace: true });
