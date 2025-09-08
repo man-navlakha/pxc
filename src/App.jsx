@@ -18,6 +18,7 @@ import Password from './auth/password';
 import Verification from './auth/verification';
 import Signup from './auth/signup';
 import Blogin from './auth/Login';
+import Logout from './auth/Logout';
 import Forgetpassword from "./auth/Forgetpassword";
 import Ns from "./page/mainpages/Ns";
 import Nss from "./page/mainpages/Nss";
@@ -59,6 +60,7 @@ function App() {
                     <Route path="/auth/verification" element={<Verification />} />
                     <Route path="/auth/forgetpassword" element={<Forgetpassword />} />
                     <Route path="/auth/password/:token" element={<Password />} />
+                    <Route path="/logout" element={<Logout />} />
 
                     {/* --- Protected Routes --- */}
                     <Route path="/sem" element={<Protected><Sem /></Protected>} />
