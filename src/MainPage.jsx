@@ -22,16 +22,13 @@ const MainPage = () => {
   // Fetch profile (if logged in) or guest courses
 useEffect(() => {
   const fetchProfile = async () => {
-    try {
-      const res = await api.get("/me/");
-      setProfile(res.data);
-    } catch (err) {
-      console.warn("Not logged in → guest mode");
-      setProfile(null); // show guest content instead of redirecting
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const res = await api.get("/me/");
+    console.log(res.data);
+  } catch (err) {
+    console.error("Not logged in or token expired", err);
+  }
+};
   fetchProfile();
 }, []);
 
