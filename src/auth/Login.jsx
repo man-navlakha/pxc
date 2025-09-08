@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { GoogleLogin } from '@react-oauth/google';
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom"; // useNavigate is no longer needed
 import api from "../utils/api"; // centralized axios with withCredentials:true
 import '../new.css'
 
@@ -9,7 +9,6 @@ const Login = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const navigate = useNavigate();
   const location = useLocation();
   const last = "username";
   const redirectTo = new URLSearchParams(location.search).get("redirect") || "/";
@@ -18,20 +17,21 @@ const Login = () => {
     setPasswordVisible(!passwordVisible);
   };
 
-  // Check if already logged in
+  // Check if already logged in (no changes here, but important for context)
   useEffect(() => {
     const checkLogin = async () => {
       try {
         const res = await api.get("/me/");
-        if (res.data.user) {
-          navigate(redirectTo, { replace: true });
+        if (res.data.username) {
+          // If already authenticated, redirect immediately
+          window.location.href = redirectTo;
         }
       } catch (err) {
         console.log("Not logged in");
       }
     };
     checkLogin();
-  }, [navigate, redirectTo]);
+  }, [redirectTo]);
 
   // Username/password login
   const logmein = async (e) => {
@@ -46,8 +46,11 @@ const Login = () => {
       });
 
       if (res.data.message === "Login successful!") {
-        setSuccess("Login successful!");
-        setTimeout(() => navigate(redirectTo, { replace: true }), 3000);
+        setSuccess("Login successful! Redirecting...");
+        // ** FIX: Use window.location.href for a full page reload **
+        setTimeout(() => {
+            window.location.href = redirectTo;
+        }, 1500); // A short delay to show the success message
       } else {
         setError("Invalid credentials");
       }
@@ -67,8 +70,11 @@ const Login = () => {
         token: credentialResponse.credential
       });
       if (res.data.message === "Login successful!") {
-        setSuccess("Login successful!");
-        setTimeout(() => navigate(redirectTo, { replace: true }), 3000);
+        setSuccess("Login successful! Redirecting...");
+         // ** FIX: Use window.location.href for a full page reload **
+        setTimeout(() => {
+            window.location.href = redirectTo;
+        }, 1500);
       } else {
         setError("Google login failed");
       }
@@ -114,7 +120,7 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
 
 
                             <>
-                                <div className={`flex flex-col ${last === "Google" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading ? 'hidden' : ''}`}>
+                                <div className={`flex flex-col ${last === "Google" ? 'border border-green-500 p-2 rounded' : ''} gap-3 ${loading || success ? 'hidden' : ''}`}>
 
                                     <span className={`${last === "Google" ? "py-[2px] px-[5px] w-full text-green-600 max-w-max" : "hidden"} bg-green-300/30 text-[10px] border border-green-300 rounded`}>Last time used</span>
 
@@ -131,7 +137,7 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
 
 
 
-                                <div className='flex my-4 items-center gap-2 text-center text-gray-500 '>
+                                <div className={`flex my-4 items-center gap-2 text-center text-gray-500 ${loading || success ? 'hidden' : ''}`}>
                                     <span className='border-b-2 border-gray-200 flex-1'></span>
                                     <div className='text-xs'>Or use username</div>
                                     <span className='border-b-2 border-gray-200 flex-1'></span>
@@ -139,10 +145,9 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
 
 
 
-                                <div>
+                                <div className={`${loading || success ? 'hidden' : ''}`}>
 
-                                    <form onSubmit={logmein} className={`flex flex-col ${last === "username" ? 'border border-green-500 p-2 rounded' : ''} gap-1 ${loading ? 'hidden' : ''}`}>
-                                        {/* {last === "username" ? "Last Used" : ""} */}
+                                    <form onSubmit={logmein} className={`flex flex-col ${last === "username" ? 'border border-green-500 p-2 rounded' : ''} gap-1`}>
                                         <span className={`${last === "username" ? "py-[2px] px-[5px] w-full text-green-600 max-w-max" : "hidden"} bg-green-300/30 text-[10px] border border-green-300 rounded`}>Last time used</span>
                                         <div className='flex flex-col gap-1'>
                                             <div>
@@ -185,7 +190,6 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
 
                                         </div>
                                         <div className="flex items-center justify-end">
-                                            {/* <span className="mx-1 text-blue-500 hover:text-blue-800 hover:font-bold">d</span> */}
                                             <span className="mx-1 text-blue-500 hover:text-blue-800 hover:font-bold"><a href=" /auth/forgetpassword">Forget Password</a></span>
                                         </div>
 
@@ -196,13 +200,11 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                             </>
                         }
                     </div>
-
-                    <p className="mt-4 text-gray-400 dark:text-gray-900 font-normal text-sm text-center">Don't have a profile? <a className="text-gray-300 hover:text-gray-900 hover:underline font-semibold transition-all ease-in-out" href=" /auth/signup">Sign Up</a></p>
+                    
+                    {!success && (
+                        <p className="mt-4 text-gray-400 dark:text-gray-900 font-normal text-sm text-center">Don't have a profile? <a className="text-gray-300 hover:text-gray-900 hover:underline font-semibold transition-all ease-in-out" href=" /auth/signup">Sign Up</a></p>
+                    )}
                 </div>
-
-
-
-
             </div>
         </>
     )
