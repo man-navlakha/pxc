@@ -4,19 +4,19 @@ import React,
     useEffect,
     useRef
 }
-from "react";
+    from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import '../new.css';
 import {
     useNavigate
 }
-from "react-router-dom";
+    from "react-router-dom";
 import {
     motion,
     AnimatePresence
 }
-from "framer-motion";
+    from "framer-motion";
 
 import api from "../utils/api";
 
@@ -28,29 +28,26 @@ const Semester = () => {
     const nav = useNavigate();
     const Semesters = ["3", "4", "5", "6"];
 
-   useEffect(() => {
-  const fetchSubjects = async () => {
-    if (!selectedSem) return;
+        useEffect(() => {
+            const fetchSubjects = async () => {
+                if (!selectedSem) return;
 
-    setLoading(true);
-    setError(null);
+                setLoading(true);
+                setError(null);
 
-    try {
-      const response = await api.post("home/QuePdf/Get_Subjact", {
-        sem: selectedSem,
-        course_name: "B.C.A",
-      });
-      setApiResponse(response.data);
-    } catch (err) {
-      setError("Failed to load subjects. Please try again.");
-      setApiResponse(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+                try {
+                    const response = await api.post("/home/QuePdf/Get_Subjact", { sem: selectedSem, course_name: "B.C.A" });
+                    setApiResponse(response.data);
+                } catch (err) {
+                    setError("Failed to load subjects. Please try again.");
+                    setApiResponse(null);
+                } finally {
+                    setLoading(false);
+                }
+            };
 
-  fetchSubjects();
-}, [selectedSem]);
+            fetchSubjects();
+        }, [selectedSem]);
 
 
     const handleSemClick = (sem) => {
@@ -110,16 +107,15 @@ const Semester = () => {
             </div>
 
             <div className="w-full max-w-5xl mx-auto p-4 md:p-8 rounded-t-3xl bg-zinc-900/50 border-t border-x border-zinc-700/30">
-                
+
                 {/* --- RESPONSIVE FIX: Changed flex-row to flex-col and added md:flex-row --- */}
                 <div className="flex flex-col md:flex-row justify-center p-2 rounded-xl bg-zinc-800/80 border border-zinc-700/30 mb-8 gap-2 md:gap-0">
                     {Semesters.map((sem) => (
                         <button
                             key={sem}
                             onClick={() => handleSemClick(sem)}
-                            className={`relative w-full px-4 py-3 text-lg font-semibold rounded-lg transition-colors duration-300 ${
-                                selectedSem === sem ? "text-white" : "text-zinc-400 hover:text-white"
-                            }`}
+                            className={`relative w-full px-4 py-3 text-lg font-semibold rounded-lg transition-colors duration-300 ${selectedSem === sem ? "text-white" : "text-zinc-400 hover:text-white"
+                                }`}
                         >
                             {selectedSem === sem && (
                                 <motion.div
@@ -195,7 +191,7 @@ const Semester = () => {
                                 <p className="mt-2 text-zinc-500">Your subjects will appear here.</p>
                             </div>
                         )}
-                   {/* <div className="absolute hidden lg:block md:hidden bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-black to-transparent pointer-events-none"></div> */}
+                        {/* <div className="absolute hidden lg:block md:hidden bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-black to-transparent pointer-events-none"></div> */}
                     </motion.div>
                 </AnimatePresence>
             </div>
