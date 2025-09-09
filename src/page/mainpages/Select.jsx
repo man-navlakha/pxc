@@ -4,6 +4,8 @@ import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'react-toastify';
 
+import api from '../../utils/api'
+
 import Navbar from '../../componet/Navbar';
 import Footer from '../../componet/Footer';
 
@@ -59,52 +61,46 @@ const Select = () => {
     };
 
     // --- FIX: Fetch only the "Answers" from your existing API ---
-    useEffect(() => {
-        if (!pdfID) {
-            toast.error("No document ID found.");
-            setLoading(false);
-            return;
-        }
+   useEffect(() => {
+    if (!pdfID) {
+        toast.error("No document ID found.");
+        setLoading(false);
+        return;
+    }
 
-        const fetchAnswers = async () => {
-            setLoading(true);
-            try {
-                const response = await fetch('https://pixel-classes.onrender.com/api/home/AnsPdf/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: pdfID })
-                });
+    const fetchAnswers = async () => {
+        setLoading(true);
+        try {
+            const response = await api.post('/home/AnsPdf/', { id: pdfID });
+            const data = response.data;
+            setAnswerPdfs(data || []);
 
-                if (!response.ok) throw new Error("Failed to fetch answers.");
-                
-                const data = await response.json();
-                setAnswerPdfs(data || []);
-
-                // Fetch sizes for each answer PDF (re-instated logic)
-                const sizes = {};
-                await Promise.all((data || []).map(async (pdf) => {
-                    if (pdf.pdf) {
-                        try {
-                            const res = await fetch(pdf.pdf, { method: 'HEAD' });
-                            const size = res.headers.get('Content-Length');
-                            sizes[pdf.pdf] = size ? (parseInt(size) / 1024 / 1024).toFixed(2) + ' MB' : 'N/A';
-                        } catch {
-                            sizes[pdf.pdf] = 'N/A';
-                        }
+            // Fetch PDF sizes
+            const sizes = {};
+            await Promise.all((data || []).map(async (pdf) => {
+                if (pdf.pdf) {
+                    try {
+                        const res = await fetch(pdf.pdf, { method: 'HEAD' });
+                        const size = res.headers.get('Content-Length');
+                        sizes[pdf.pdf] = size ? (parseInt(size) / 1024 / 1024).toFixed(2) + ' MB' : 'N/A';
+                    } catch {
+                        sizes[pdf.pdf] = 'N/A';
                     }
-                }));
-                setPdfSizes(sizes);
+                }
+            }));
+            setPdfSizes(sizes);
 
-            } catch (error) {
-                console.error("Error fetching answers:", error);
-                toast.error(error.message);
-            } finally {
-                setLoading(false);
-            }
-        };
+        } catch (error) {
+            console.error("Error fetching answers:", error);
+            toast.error(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        fetchAnswers();
-    }, [pdfID]);
+    fetchAnswers();
+}, [pdfID]);
+
 
     const handleFileChange = (e) => setFiles(Array.from(e.target.files));
 
