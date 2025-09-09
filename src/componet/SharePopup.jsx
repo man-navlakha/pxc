@@ -1,8 +1,8 @@
 // components/SharePopup.jsx
 import { useEffect, useState } from "react";
-import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
+import api from "../utils/api"; // <- use api instance
 
 export default function SharePopup({ messageToShare, onClose }) {
   const [users, setUsers] = useState([]);
@@ -13,14 +13,13 @@ export default function SharePopup({ messageToShare, onClose }) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
+        // Fetch followers and following using api instance
         const [followingRes, followersRes] = await Promise.all([
-          axios.post("https://pixel-classes.onrender.com/api/Profile/following/", {
-            username: USERNAME,
-          }),
-          axios.post("https://pixel-classes.onrender.com/api/Profile/followers/", {
-            username: USERNAME,
-          }),
+          api.post("/Profile/following/", { username: USERNAME }),
+          api.post("/Profile/followers/", { username: USERNAME }),
         ]);
+
+        // Merge and deduplicate users
         const combined = [...followersRes.data, ...followingRes.data];
         const uniqueUsers = Array.from(new Map(combined.map(u => [u.username, u])).values());
         setUsers(uniqueUsers.filter(u => u.username !== USERNAME));
@@ -30,6 +29,7 @@ export default function SharePopup({ messageToShare, onClose }) {
         setLoading(false);
       }
     };
+
     fetchUsers();
   }, [USERNAME]);
 
