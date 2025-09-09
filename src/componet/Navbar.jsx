@@ -51,15 +51,22 @@ export default function Navbar() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
+        // Step 1: Check if authenticated
         const res = await api.get('/me/'); // proxy-ready
         if (res.data?.username) {
           try {
-            api.post(`https://pixel-classes.onrender.com/api/Profile/details/`, { username: res.data?.username });
-            setProfile(res.data);
-          } catch (error) {
-            console.log(error)
-          }
+            // Step 2: Fetch profile details (GET, not POST)
+            const details = await api.get(`/Profile/details/?username=${res.data.username}`);
 
+            // Merge backend data into one object
+            setProfile({
+              ...res.data,
+              ...details.data,
+            });
+          } catch (error) {
+            console.error("[PROFILE DETAILS ERROR]", error);
+            setProfile(res.data); // fallback to /me/ response
+          }
         } else {
           setProfile(null);
         }
@@ -69,8 +76,10 @@ export default function Navbar() {
         setLoading(false);
       }
     };
+
     fetchProfile();
   }, []);
+
 
   const navClass = isScrolled
     ? 'sticky top-0 shadow-lg border-b border-white/10 shadow-black/20'
