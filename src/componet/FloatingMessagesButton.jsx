@@ -12,14 +12,12 @@ export default function FloatingMessagesButton() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    if (!USERNAME || !token) return;
+    // if (!USERNAME || !token) return;
 
     // Connect to Notification WebSocket
     const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${wsScheme}://${window.location.host}/ws/notifications/?token=${token}`;
+    const wsUrl = `${wsScheme}://${window.location.host}/ws/notifications/`;
     const socket = new WebSocket(wsUrl);
-
-
     socket.onopen = () => {
       console.log("[WS CONNECT] Connected to notifications WebSocket");
       console.log(wsUrl)
