@@ -16,7 +16,7 @@ export default function FloatingMessagesButton() {
 
     // Connect to Notification WebSocket
     const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
-const socket = new WebSocket(`${wsScheme}://pixel-classes.onrender.com/ws/notifications/`);
+const socket = new WebSocket(`${wsScheme}://${window.location.host}/ws/notifications/`);
 
 
     socket.onopen = () => {
