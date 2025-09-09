@@ -22,6 +22,9 @@ const Login = () => {
   useEffect(() => {
     const checkLogin = async () => {
       try {
+        // Only check login if not on login page
+        if (!window.location.pathname.includes("/auth/login")) return;
+
         const res = await api.get("/me/"); // proxy-ready
         if (res.data.username) {
           window.location.href = redirectTo;
@@ -40,7 +43,7 @@ const Login = () => {
     setError(null);
     try {
       const { username, password } = e.target;
-      const res = await api.post("/api/user/login/", { // proxy-ready
+      const res = await api.post("/user/login/", { // proxy-ready
         username: username.value,
         password: password.value
       });
@@ -65,7 +68,7 @@ const Login = () => {
     if (!credentialResponse?.credential) return setError("Google credential missing");
     setLoading(true);
     try {
-      const res = await api.post("/api/user/google-login/", { token: credentialResponse.credential }); // proxy-ready
+      const res = await api.post("/user/google-login/", { token: credentialResponse.credential }); // proxy-ready
       if (res.data.message === "Login successful!") {
         setSuccess("Login successful! Redirecting...");
         setTimeout(() => {
@@ -160,4 +163,3 @@ const Login = () => {
 };
 
 export default Login;
-

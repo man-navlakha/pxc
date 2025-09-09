@@ -7,13 +7,18 @@ const api = axios.create({
   xsrfHeaderName: "X-CSRFToken",
 });
 
-// Flag to avoid infinite loops
+// Flags to avoid loops
 let isRefreshing = false;
 let refreshSubscribers = [];
 
+// Retry queued requests after refresh
 function onRefreshed() {
   refreshSubscribers.forEach((cb) => cb());
   refreshSubscribers = [];
+}
+
+function subscribeTokenRefresh(cb) {
+  refreshSubscribers.push(cb);
 }
 
 api.interceptors.response.use(
@@ -21,10 +26,17 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Prevent infinite loop if refresh request itself fails
+    const isRefreshRequest = originalRequest.url.includes("/token/refresh/");
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !isRefreshRequest
+    ) {
       if (isRefreshing) {
         return new Promise((resolve) => {
-          refreshSubscribers.push(() => resolve(api(originalRequest)));
+          subscribeTokenRefresh(() => resolve(api(originalRequest)));
         });
       }
 
@@ -40,7 +52,12 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         isRefreshing = false;
-        window.location.href = "/auth/login";
+
+        // Redirect only if not already on login page
+        if (!window.location.pathname.includes("/auth/login")) {
+          window.location.href = "/auth/login";
+        }
+
         return Promise.reject(refreshError);
       }
     }
