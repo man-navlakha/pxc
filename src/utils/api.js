@@ -44,7 +44,7 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await axios.post("https://pixel-classes.onrender.com/api/token/refresh/", {}, { withCredentials: true });
+        await api.post("/token/refresh/");
 
         isRefreshing = false;
         onRefreshed();
