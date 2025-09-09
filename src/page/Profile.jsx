@@ -1,23 +1,23 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
-import '../new.css';
+import React, { useState, useEffect, Suspense, lazy } from "react";
+import "../new.css";
 import Cookies from "js-cookie";
-import Navbar from '../componet/Navbar';
-import Footer from '../componet/Footer';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import FloatingMessagesButton from '../componet/FloatingMessagesButton';
-import DownloadHistory from '../componet/DownloadHistory';
+import Navbar from "../componet/Navbar";
+import Footer from "../componet/Footer";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import FloatingMessagesButton from "../componet/FloatingMessagesButton";
+import DownloadHistory from "../componet/DownloadHistory";
 import api from "../utils/api";
 import { verifiedUsernames } from "../verifiedAccounts";
 import VerifiedBadge from "../componet/VerifiedBadge";
 
 // Lazy load heavy sub-pages
-const FollowingPage = lazy(() => import('./FollowingPage'));
-const FollowersPage = lazy(() => import('./FollowersPage'));
-const ProfileEditForm = lazy(() => import('./ProfileEditForm'));
+const FollowingPage = lazy(() => import("./FollowingPage"));
+const FollowersPage = lazy(() => import("./FollowersPage"));
+const ProfileEditForm = lazy(() => import("./ProfileEditForm"));
 
 const Profile = () => {
   const Username = Cookies.get("username");
-  const accessToken = Cookies.get("access"); // ✅ use access token
+  const accessToken = Cookies.get("access");
   const { nameFromUrl } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -30,55 +30,79 @@ const Profile = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
 
-  // Allow ?username= query param redirect
+  // Redirect if query param ?username= is present
   const urlParams = new URLSearchParams(location.search);
-  const urlusername = urlParams.get('username');
+  const urlusername = urlParams.get("username");
   useEffect(() => {
     if (urlusername) {
       navigate(`/profile/${urlusername}`);
     }
   }, [urlusername, navigate]);
 
+  // Redirect if viewing own profile via /profile/:username
   // --- Fetch profile + posts ---
   useEffect(() => {
-    if (!accessToken) {
-      navigate("/");
-      return;
-    }
+    const fetchProfile = async () => {
+      setLoading(true);
+      setError(null);
 
-    const userToFetch = nameFromUrl || Username;
-    if (!userToFetch) return;
-
-    setLoading(true);
-    setError(null);
-
-    const fetchData = async () => {
       try {
-        const [profileRes, postsRes] = await Promise.all([
-          api.post("/Profile/details/", { username: userToFetch }),
-          api.post("/Profile/posts/", { username: userToFetch }),
-        ]);
-        setProfile(profileRes.data);
-        setPosts(postsRes.data.posts || []);
+        // Step 1: check authentication
+        const res = await api.get("/me/");
+
+        if (res.data?.username) {
+          const userToFetch = nameFromUrl || res.data.username;
+
+          try {
+            // Step 2: fetch profile details (GET not POST)
+            const details = await api.get(
+              `/Profile/details/?username=${userToFetch}`
+            );
+
+            // Step 3: fetch posts
+            const postsRes = await api.get(
+              `/Profile/posts/?username=${userToFetch}`
+            );
+
+            // Merge backend data
+            setProfile({
+              ...res.data,
+              ...details.data,
+            });
+            setPosts(postsRes.data.posts || []);
+          } catch (err) {
+            console.error("[PROFILE DATA ERROR]", err);
+            // fallback only with /me/
+            setProfile(res.data);
+            setPosts([]);
+          }
+        } else {
+          setProfile(null);
+        }
       } catch (err) {
-        console.error("Failed to load profile data:", err);
-        setError("Could not load profile. The user may not exist.");
+        console.error("[AUTH ERROR]", err);
+        setProfile(null);
+        if (err.response?.status === 401) {
+          navigate("/auth/login");
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, [nameFromUrl, Username, accessToken, navigate]);
+    fetchProfile();
+  }, [nameFromUrl, navigate]);
 
-  // --- Follow status ---
+
+
+  // --- Fetch follow status ---
   useEffect(() => {
     if (!nameFromUrl || !Username || nameFromUrl === Username) return;
 
     const fetchFollowStatus = async () => {
       try {
         const res = await api.post("/Profile/following/", { username: Username });
-        const isUserFollowing = res.data.some(u => u.username === nameFromUrl);
+        const isUserFollowing = res.data.some((u) => u.username === nameFromUrl);
         setIsFollowing(isUserFollowing);
       } catch (err) {
         console.error("Error checking follow status:", err);
@@ -88,12 +112,16 @@ const Profile = () => {
     fetchFollowStatus();
   }, [nameFromUrl, Username]);
 
-  // --- Follow/unfollow ---
+
+
+  // --- Follow / Unfollow ---
   const follow = async (follow_username) => {
     try {
       await api.post("/Profile/follow/", { username: Username, follow_username });
       setIsFollowing(true);
-      setProfile(p => ({ ...p, follower_count: (p?.follower_count || 0) + 1 }));
+      setProfile((p) =>
+        p ? { ...p, follower_count: (p.follower_count || 0) + 1 } : p
+      );
     } catch (error) {
       console.error("Error following user:", error);
     }
@@ -103,7 +131,9 @@ const Profile = () => {
     try {
       await api.post("/Profile/unfollow/", { username: Username, unfollow_username });
       setIsFollowing(false);
-      setProfile(p => ({ ...p, follower_count: (p?.follower_count || 1) - 1 }));
+      setProfile((p) =>
+        p ? { ...p, follower_count: (p.follower_count || 1) - 1 } : p
+      );
     } catch (error) {
       console.error("Error unfollowing user:", error);
     }
@@ -116,19 +146,13 @@ const Profile = () => {
         await api.delete("/Profile/deletePost/", {
           data: { pdf_url: String(pdf_url), username: Username },
         });
-        setPosts(posts.filter(p => p.pdf !== pdf_url));
+        setPosts(posts.filter((p) => p.pdf !== pdf_url));
       } catch (err) {
         console.error("Delete error:", err.response?.data || err.message);
         alert("Failed to delete repository.");
       }
     }
   };
-
-  // Redirect self-profile cleanly
-  if (nameFromUrl === Username) {
-    navigate("/profile", { replace: true });
-    return null;
-  }
 
   return (
     <>
@@ -137,8 +161,8 @@ const Profile = () => {
         <Navbar />
         <main className="flex flex-col items-center mt-10 justify-center px-4">
           <div className="w-full max-w-6xl mx-auto mt-10">
-            {loading ? (
-              // Skeleton loader
+            {/* Loading */}
+            {loading && (
               <div className="glass-card rounded-3xl m-3 p-8 flex flex-col md:flex-row items-center gap-8">
                 <div className="w-32 h-32 rounded-full bg-gray-700/50 flex-shrink-0"></div>
                 <div className="flex-1 flex flex-col items-center md:items-start w-full">
@@ -157,8 +181,17 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
-            ) : (
-              // Profile card
+            )}
+
+            {/* Error */}
+            {!loading && error && (
+              <div className="glass-card p-6 m-3 rounded-xl text-center text-red-400 font-bold">
+                {error}
+              </div>
+            )}
+
+            {/* Profile card */}
+            {!loading && !error && profile && (
               <div className="glass-card rounded-3xl m-3 border border-white/20 bg-white/10 backdrop-blur-xl p-8 flex flex-col md:flex-row items-center gap-8">
                 <div
                   className="relative cursor-pointer"
@@ -166,7 +199,10 @@ const Profile = () => {
                 >
                   <img
                     className="w-32 h-32 rounded-full border-4 border-white/30 shadow-lg object-cover"
-                    src={profile?.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"}
+                    src={
+                      profile?.profile_pic ||
+                      "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"
+                    }
                     alt="Profile"
                   />
                   <span className="absolute bottom-2 right-2 bg-green-500/90 text-white px-2 py-1 rounded-full text-xs font-bold shadow-md border border-white/20">
@@ -176,25 +212,33 @@ const Profile = () => {
                 <div className="flex-1 flex flex-col items-center md:items-start text-center md:text-left">
                   <h1 className="mb-2 text-4xl font-extrabold flex justify-center items-center gap-1 bg-gradient-to-tr from-blue-300 to-green-500 text-transparent bg-clip-text">
                     {profile?.username || "..."}
-                    {verifiedUsernames.has(profile?.username) && <VerifiedBadge size={30} />}
+                    {verifiedUsernames.has(profile?.username) && (
+                      <VerifiedBadge size={30} />
+                    )}
                   </h1>
                   <div className="flex items-center justify-center gap-6 mt-2">
                     <div className="flex flex-col items-center text-center">
-                      <p className="font-bold text-xl">{profile?.post_count || posts.length}</p>
+                      <p className="font-bold text-xl">
+                        {profile?.post_count || posts.length}
+                      </p>
                       <p className="text-sm text-gray-300">Posts</p>
                     </div>
                     <div
                       onClick={() => setPage("followers")}
                       className="flex flex-col items-center cursor-pointer text-center"
                     >
-                      <p className="font-bold text-xl">{profile?.follower_count || 0}</p>
+                      <p className="font-bold text-xl">
+                        {profile?.follower_count || 0}
+                      </p>
                       <p className="text-sm text-gray-300">Followers</p>
                     </div>
                     <div
                       onClick={() => setPage("following")}
                       className="flex flex-col items-center cursor-pointer text-center"
                     >
-                      <p className="font-bold text-xl">{profile?.following_count || 0}</p>
+                      <p className="font-bold text-xl">
+                        {profile?.following_count || 0}
+                      </p>
                       <p className="text-sm text-gray-300">Following</p>
                     </div>
                   </div>
@@ -206,21 +250,28 @@ const Profile = () => {
                             onClick={() => unfollow(nameFromUrl)}
                             className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-red-500/80 hover:bg-red-600/90 text-white font-bold shadow transition"
                           >
-                            <span className="material-symbols-outlined">person_remove</span> Unfollow
+                            <span className="material-symbols-outlined">
+                              person_remove
+                            </span>{" "}
+                            Unfollow
                           </button>
                         ) : (
                           <button
                             onClick={() => follow(nameFromUrl)}
                             className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-blue-500/80 hover:bg-blue-600/90 text-white font-bold shadow transition"
                           >
-                            <span className="material-symbols-outlined">person_add</span> Follow
+                            <span className="material-symbols-outlined">
+                              person_add
+                            </span>{" "}
+                            Follow
                           </button>
                         )}
                         <button
                           onClick={() => navigate(`/chat/${nameFromUrl}`)}
                           className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-white/20 hover:bg-white/40 text-white font-bold shadow transition"
                         >
-                          <span className="material-symbols-outlined">chat</span> Message
+                          <span className="material-symbols-outlined">chat</span>{" "}
+                          Message
                         </button>
                       </>
                     ) : (
@@ -229,13 +280,19 @@ const Profile = () => {
                           onClick={() => setPage("edit")}
                           className="glass-btn flex items-center gap-2 px-3 py-2 rounded-xl bg-white/30 hover:bg-white/50 text-black font-bold shadow transition"
                         >
-                          <span className="material-symbols-outlined">edit_square</span> Edit Profile
+                          <span className="material-symbols-outlined">
+                            edit_square
+                          </span>{" "}
+                          Edit Profile
                         </button>
                         <button
                           onClick={() => navigate("/logout")}
                           className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-red-500/80 hover:bg-red-600/90 text-white font-bold shadow transition"
                         >
-                          <span className="material-symbols-outlined">logout</span> Logout
+                          <span className="material-symbols-outlined">
+                            logout
+                          </span>{" "}
+                          Logout
                         </button>
                       </>
                     )}
@@ -244,7 +301,14 @@ const Profile = () => {
               </div>
             )}
 
-            <Suspense fallback={<div className="flex justify-center items-center p-10"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div></div>}>
+            {/* Sub-pages */}
+            <Suspense
+              fallback={
+                <div className="flex justify-center items-center p-10">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                </div>
+              }
+            >
               {page === "following" ? (
                 <FollowingPage username={profile?.username || Username} />
               ) : page === "followers" ? (
@@ -255,7 +319,8 @@ const Profile = () => {
                     onClick={() => setPage(null)}
                     className="flex items-center gap-2 w-full max-w-max px-4 py-2 rounded-lg mb-4 bg-white/10 hover:bg-white/20 transition"
                   >
-                    <span className="material-symbols-outlined">arrow_back</span> Back to Profile
+                    <span className="material-symbols-outlined">arrow_back</span>{" "}
+                    Back to Profile
                   </button>
                   <ProfileEditForm
                     profile={profile}
@@ -266,45 +331,38 @@ const Profile = () => {
                   />
                 </div>
               ) : (
+                // Posts grid
                 <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-8">
                   <div className="lg:col-span-2">
                     <h2 className="text-2xl font-bold text-white/90 mb-4 px-3 flex items-center gap-2">
-                      <span className="material-symbols-outlined">description</span> Notes
+                      <span className="material-symbols-outlined">
+                        description
+                      </span>{" "}
+                      Notes
                     </h2>
                     <div className="space-y-4">
-                      {loading ? (
-                        Array.from({ length: 3 }).map((_, index) => (
-                          <div
-                            key={index}
-                            className="glass-info p-5 m-3 rounded-2xl border border-white/10 bg-white/10 animate-pulse"
-                          >
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <div className="h-5 bg-gray-600 rounded w-48 mb-2"></div>
-                                <div className="h-4 bg-gray-700 rounded w-64"></div>
-                              </div>
-                              <div className="h-8 bg-gray-600 rounded w-20"></div>
-                            </div>
-                          </div>
-                        ))
-                      ) : posts.length === 0 ? (
+                      {posts.length === 0 ? (
                         <div className="glass-info p-6 m-3 rounded-xl text-center text-white/70">
-                          This user hasn't posted any notes yet.
-                          {error && <div className="text-red-400 mt-4">{error}</div>}
+                          This user hasn&apos;t posted any notes yet.
                         </div>
                       ) : (
-                        posts.map(post => (
+                        posts.map((post) => (
                           <div
                             key={post.id}
                             className="glass-info p-5 m-3 rounded-2xl border border-white/10 bg-white/10 backdrop-blur-lg shadow-lg hover:bg-white/15 transition-all duration-300"
                           >
                             <div className="flex justify-between items-start">
                               <div className="flex items-start gap-4">
-                                <span className="material-symbols-outlined text-blue-400 mt-1">description</span>
+                                <span className="material-symbols-outlined text-blue-400 mt-1">
+                                  description
+                                </span>
                                 <div>
-                                  <h3 className="font-bold text-lg text-white">{post.contant}</h3>
+                                  <h3 className="font-bold text-lg text-white">
+                                    {post.contant}
+                                  </h3>
                                   <p className="font-medium text-sm text-gray-300 mt-1">
-                                    {post.choose} in {post.sub} for Semester {post.sem}
+                                    {post.choose} in {post.sub} for Semester{" "}
+                                    {post.sem}
                                   </p>
                                 </div>
                               </div>
@@ -315,14 +373,19 @@ const Profile = () => {
                                   rel="noopener noreferrer"
                                   className="px-3 py-1.5 rounded-lg bg-blue-600/80 hover:bg-blue-500/80 text-white font-semibold flex items-center gap-1 transition"
                                 >
-                                  <span className="material-symbols-outlined text-sm">download</span> PDF
+                                  <span className="material-symbols-outlined text-sm">
+                                    download
+                                  </span>{" "}
+                                  PDF
                                 </a>
                                 {!nameFromUrl && (
                                   <button
                                     onClick={() => handleDelete(post.pdf)}
                                     className="px-3 py-1.5 rounded-lg bg-red-500/80 hover:bg-red-600/80 text-white font-semibold flex items-center gap-1 transition"
                                   >
-                                    <span className="material-symbols-outlined text-sm">delete</span>
+                                    <span className="material-symbols-outlined text-sm">
+                                      delete
+                                    </span>
                                   </button>
                                 )}
                               </div>
@@ -343,6 +406,7 @@ const Profile = () => {
       <Footer />
       <FloatingMessagesButton />
 
+      {/* Profile picture modal */}
       {isPhotoModalOpen && (
         <div
           className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
