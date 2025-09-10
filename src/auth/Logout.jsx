@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import api from '../utils/api';
-import Cookies from 'js-cookie';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../utils/api";
+import Cookies from "js-cookie";
 
 const Logout = () => {
   const navigate = useNavigate();
@@ -9,24 +9,34 @@ const Logout = () => {
   useEffect(() => {
     const performLogout = async () => {
       try {
-        // Call the backend to clear HttpOnly cookies
-        await api.post('/user/logout/');
+        // 🔑 Ensure backend clears HttpOnly cookie
+        await api.post("/user/logout/", {}, { withCredentials: true });
       } catch (error) {
         console.error("Logout failed on backend:", error);
       } finally {
-        // Clear any remaining frontend cookies
-        Cookies.remove('username');
-        Cookies.remove('profile_pic');
-        
-        // Redirect to home page and force a full refresh to clear all states
-        window.location.href = '/';
+        // 🔑 Clear any non-HttpOnly cookies stored on frontend
+        Cookies.remove("username");
+        Cookies.remove("profile_pic");
+        Cookies.remove("access");
+        Cookies.remove("refresh");
+
+        // 🔑 Clear localStorage/sessionStorage if used
+        localStorage.clear();
+        sessionStorage.clear();
+
+        // 🔑 Redirect & force reload to wipe all React states
+        window.location.replace("/");
       }
     };
 
     performLogout();
-  }, []);
+  }, [navigate]);
 
-  return <div>Logging out...</div>;
+  return (
+    <div className="flex items-center justify-center min-h-screen text-white text-xl">
+      Logging out...
+    </div>
+  );
 };
 
 export default Logout;

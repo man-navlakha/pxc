@@ -3,6 +3,8 @@ import Cookies from 'js-cookie';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
+import api from '../utils/api'
+
 import Navbar from '../componet/Navbar';
 import Footer from '../componet/Footer';
 import SharePopup from '../componet/SharePopup';
@@ -52,22 +54,22 @@ const ErrorState = ({ error }) => (
 );
 
 const SubjectPage = () => {
-  const { subject, sem } = useParams();
-  const navigate = useNavigate();
+    const { subject, sem } = useParams();
+    const navigate = useNavigate();
 
-  const [activeOption, setActiveOption] = useState('all');
-  const [allPdfData, setAllPdfData] = useState([]);
-  const [pdfSizes, setPdfSizes] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isUploadOpen, setIsUploadOpen] = useState(false);
+    const [activeOption, setActiveOption] = useState('all');
+    const [allPdfData, setAllPdfData] = useState([]);
+    const [pdfSizes, setPdfSizes] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [isUploadOpen, setIsUploadOpen] = useState(false);
 
     const [choose, setChoose] = useState('');
 
     const { files, content, setContent, setChoise,
-  setSub,
-  choise,
-  setSemester, handleFileChange, handleSubmit, isUploading } = useFileUploadHandler();
+        setSub,
+        choise,
+        setSemester, handleFileChange, handleSubmit, isUploading } = useFileUploadHandler();
     const { handleDownload, downloadStates, loadingStates } = useDownloadHandler();
     const { shareModal, setShareModal, shareMessage, setShareMessage, getShareLink, generateQrCodeURL, openShareModal } = useShareHandler();
     const [showShareChatPopup, setShowShareChatPopup] = useState(false);
@@ -75,10 +77,10 @@ const SubjectPage = () => {
 
 
 
-  useEffect(() => {
-    setSub(subject);
-    setSemester(sem);
-  }, [subject, sem]);
+    useEffect(() => {
+        setSub(subject);
+        setSemester(sem);
+    }, [subject, sem]);
 
 
 
@@ -105,37 +107,50 @@ const SubjectPage = () => {
             setLoading(true);
             setError(null);
             try {
-                const res = await fetch('https://pixel-classes.onrender.com/api/home/QuePdf/Subject_Pdf', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ course_name: "B.C.A", sub: subject })
-                });
-                if (!res.ok) throw new Error(`API request failed with status ${res.status}`);
-                const data = await res.json();
-                if (!Array.isArray(data)) throw new Error("API did not return an array of documents.");
+                setLoading(true);
+                setError(null);
 
-                const dataWithIds = data.map((item, index) => ({ ...item, id: item.id || index }));
+                // Use api instance if available
+                const res = await api.post('/home/QuePdf/Subject_Pdf', {
+                    course_name: "B.C.A",
+                    sub: subject,
+                });
+
+                if (!Array.isArray(res.data)) {
+                    throw new Error("API did not return an array of documents.");
+                }
+
+                // Ensure each document has an ID
+                const dataWithIds = res.data.map((item, index) => ({ ...item, id: item.id || index }));
                 setAllPdfData(dataWithIds);
 
+                // Fetch file sizes concurrently
                 const sizes = {};
-                await Promise.all(dataWithIds.map(async (pdf) => {
-                    if (pdf.pdf) {
-                        try {
-                            const response = await fetch(pdf.pdf, { method: 'HEAD' });
-                            const size = response.headers.get('Content-Length');
-                            sizes[pdf.pdf] = size ? (parseInt(size) / 1024).toFixed(2) + ' KB' : 'Size N/A';
-                        } catch (headError) {
-                            sizes[pdf.pdf] = 'N/A';
+                await Promise.all(
+                    dataWithIds.map(async (pdf) => {
+                        if (pdf.pdf) {
+                            try {
+                                const response = await fetch(pdf.pdf, { method: 'HEAD' });
+                                const size = response.headers.get('Content-Length');
+                                sizes[pdf.pdf] = size ? (parseInt(size) / 1024).toFixed(2) + ' KB' : 'Size N/A';
+                            } catch {
+                                sizes[pdf.pdf] = 'N/A';
+                            }
                         }
-                    }
-                }));
+                    })
+                );
+
                 setPdfSizes(sizes);
+
             } catch (e) {
+                console.error("[PDF FETCH ERROR]", e);
                 setError(e.message || "Could not load documents. The server might be offline.");
                 setAllPdfData([]);
+                setPdfSizes({});
             } finally {
                 setLoading(false);
             }
+
         };
         fetchData();
     }, [subject]);

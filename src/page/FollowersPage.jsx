@@ -9,6 +9,7 @@ import { toast } from "react-toastify";
 import Cookies from "js-cookie";
 import { verifiedUsernames } from "../verifiedAccounts";
 import VerifiedBadge from "../componet/VerifiedBadge";
+import api from "../utils/api";
 
 const UserCardSkeleton = () => (
     <div className="flex items-center gap-4 p-4 animate-pulse">
@@ -31,7 +32,7 @@ const FollowersPage = ({ username, onClose }) => {
     const [followers, setFollowers] = useState([]);
     const [loading, setLoading] = useState(true);
     const currentUserUsername = Cookies.get("username");
-    
+
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -41,13 +42,13 @@ const FollowersPage = ({ username, onClose }) => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const followersRes = await axios.post("https://pixel-classes.onrender.com/api/Profile/followers/", { username });
-                const followingRes = await axios.post("https://pixel-classes.onrender.com/api/Profile/following/", { username: currentUserUsername });
-                const followingUsernames = new Set(followingRes.data.map(u => u.username));
+                const followersRes = await api.post("/Profile/followers/", { username });
+                const followingRes = await api.post("/Profile/following/", { username: currentUserUsername });
 
-                const usersWithStatus = followersRes.data.map(user => ({
+                const followingUsernames = new Set(followingRes.data?.map(u => u.username) || []);
+                const usersWithStatus = (followersRes.data || []).map(user => ({
                     ...user,
-                    is_following: followingUsernames.has(user.username),
+                    is_following: followingUsernames.has(user.username)
                 }));
 
                 setFollowers(usersWithStatus);
@@ -63,7 +64,7 @@ const FollowersPage = ({ username, onClose }) => {
 
     const handleFollow = async (targetUsername) => {
         try {
-            await axios.post("https://pixel-classes.onrender.com/api/Profile/follow/", {
+            await api.post("/Profile/follow/", {
                 username: currentUserUsername,
                 follow_username: targetUsername,
             });
@@ -76,7 +77,7 @@ const FollowersPage = ({ username, onClose }) => {
 
     const handleUnfollow = async (targetUsername) => {
         try {
-            await axios.post("https://pixel-classes.onrender.com/api/Profile/unfollow/", {
+            await api.post("/Profile/unfollow/", {
                 username: currentUserUsername,
                 unfollow_username: targetUsername,
             });
@@ -90,7 +91,7 @@ const FollowersPage = ({ username, onClose }) => {
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto py-4 px-2 sm:px-6">
             <div className="flex items-center mb-6">
-                 <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-white/10 transition-colors">
+                <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-white/10 transition-colors">
                     <Undo2 className="text-white" />
                 </button>
                 <h1 className="text-3xl font-bold text-white/90 text-center flex-1">Followers</h1>
