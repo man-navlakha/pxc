@@ -12,10 +12,7 @@ export default function FloatingMessagesButton() {
     let socket = null;
 
     async function initWebSocket() {
-      if (!USERNAME) {
-        console.error("[WS ERROR] USERNAME is not available");
-        return;
-      }
+      
 
       try {
         // Step 1: Get short-lived WS token using api.get()
