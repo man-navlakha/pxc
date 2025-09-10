@@ -306,24 +306,24 @@ export default function Chat() {
 
 const [USERNAME, setUSERNAME] = useState(null);
 
-  // Receiver profile (from URL param)
-  useEffect(() => {
-    if (!RECEIVER) return;
+  // // Receiver profile (from URL param)
+  // useEffect(() => {
+  //   if (!RECEIVER) return;
 
-    const fetchProfile = async () => {
-      try {
-        console.warn(RECEIVER)
-        const res = await api.get(`/Profile/details/?username=${RECEIVER}`);
-        setReceiverProfile(res.data);
-        console.warn(res.data)
-      } catch (err) {
-        console.warn("[Profile GET failed, trying POST fallback]", err);
+  //   const fetchProfile = async () => {
+  //     try {
+  //       console.warn(RECEIVER)
+  //       const res = await api.get(`/Profile/details/?username=${RECEIVER}`);
+  //       setReceiverProfile(res.data);
+  //       console.warn(res.data)
+  //     } catch (err) {
+  //       console.warn("[Profile GET failed, trying POST fallback]", err);
         
-      }
-    };
+  //     }
+  //   };
 
-    fetchProfile();
-  }, [RECEIVER]);
+  //   fetchProfile();
+  // }, [RECEIVER]);
 
   // ---------- WebSocket + history ----------
   useEffect(() => {

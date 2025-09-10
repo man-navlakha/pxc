@@ -48,8 +48,8 @@ const EmptyState = ({ onFindFriendsClick }) => (
 
 export default function Listuser() {
   const navigate = useNavigate();
-  const USERNAME = Cookies.get("username");
-  const wsToken = Cookies.get("ws_token"); // assume you set token in cookies
+  const USERNAME = " ";
+  const wsToken = ""// assume you set token in cookies
   const wsRef = useRef(null);
 
   const [search, setSearch] = useState("");
@@ -62,95 +62,96 @@ export default function Listuser() {
     return allUsers.filter((user) => {
       const fullName = `${user.first_name || ""} ${user.last_name || ""}`.toLowerCase();
       return (
-        user.username.toLowerCase().includes(searchTerm) ||
+        user.username.includes(searchTerm) ||
         fullName.includes(searchTerm)
       );
     });
   }, [allUsers, search]);
 
-  // 🛰️ Connect WebSocket
+  // 🛰️Connect WebSocket
   useEffect(() => {
-  let ws;
-  let loadTimeout;
+    let ws;
+    let loadTimeout;
 
-  const connectWS = async () => {
-    try {
-      // Step 1: Get short-lived WS token
-      const res = await api.get("/ws-token/", {
-        withCredentials: true, // sends cookies (refresh/access token)
-      });
-      const wsToken = res.data.ws_token;
+    const connectWS = async () => {
+      try {
+        // Step 1: Get short-lived WS token
+        const res = await api.get("/ws-token/", {
+          withCredentials: true, // sends cookies (refresh/access token)
+        });
+        const wsToken = res.data.ws_token;
 
-      // Step 2: Open WebSocket with token
-      ws = new WebSocket(
-        `wss://pixel-classes.onrender.com/ws/message-inbox/?token=${wsToken}`
-      );
-      wsRef.current = ws;
+        // Step 2: Open WebSocket with token
+        ws = new WebSocket(
+          `wss://pixel-classes.onrender.com/ws/message-inbox/?token=${wsToken}`
+        );
+        wsRef.current = ws;
 
-      // fallback loader timeout
-      loadTimeout = setTimeout(() => {
-        console.warn("⏳ No inbox_list received, stopping loader.");
-        setLoading(false);
-      }, 5000);
-
-      ws.onopen = () => {
-        console.log("✅ WS connected");
-      };
-
-      ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
-
-        if (data.type === "inbox_list") {
-          clearTimeout(loadTimeout);
-          const sorted = [...data.inbox].sort(
-            (a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
-          );
-          setAllUsers(sorted);
+        // fallback loader timeout
+        loadTimeout = setTimeout(() => {
+          console.warn("⏳ No inbox_list received, stopping loader.");
           setLoading(false);
-        }
+        }, 5000);
 
-        if (data.type === "inbox_update") {
-          setAllUsers((prev) => {
-            const updated = prev.filter((u) => u.username !== data.user.username);
-            return [
-              {
-                ...data.user,
-                lastMessage: data.latest_message,
-                lastTime: data.timestamp,
-                isSeen: data.is_seen,
-              },
-              ...updated,
-            ].sort(
-              (a, b) => new Date(b.lastTime || 0) - new Date(a.lastTime || 0)
+        ws.onopen = () => {
+          console.log("✅ WS connected");
+        };
+
+        ws.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+
+          if (data.type === "inbox_list") {
+            clearTimeout(loadTimeout);
+            const sorted = [...data.inbox].sort(
+              (a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
             );
-          });
-        }
-      };
+            setAllUsers(sorted);
+            setLoading(false);
+          }
 
-      ws.onerror = (err) => {
-        console.error("❌ WS error", err);
-        clearTimeout(loadTimeout);
+          if (data.type === "inbox_update") {
+            setAllUsers((prev) => {
+              const updated = prev.filter((u) => u.username !== data.user.username);
+              return [
+                {
+                  ...data.user,
+                  lastMessage: data.latest_message,
+                  lastTime: data.timestamp,
+                  isSeen: data.is_seen,
+                },
+                ...updated,
+              ].sort(
+                (a, b) => new Date(b.lastTime || 0) - new Date(a.lastTime || 0)
+              );
+            });
+          }
+        };
+
+
+        ws.onerror = (err) => {
+          console.error("❌ WS error", err);
+          clearTimeout(loadTimeout);
+          setLoading(false);
+        };
+
+        ws.onclose = () => {
+          console.log("🔌 WS closed");
+          clearTimeout(loadTimeout);
+          setLoading(false);
+        };
+      } catch (err) {
+        console.error("❌ Failed to fetch ws-token", err);
         setLoading(false);
-      };
+      }
+    };
 
-      ws.onclose = () => {
-        console.log("🔌 WS closed");
-        clearTimeout(loadTimeout);
-        setLoading(false);
-      };
-    } catch (err) {
-      console.error("❌ Failed to fetch ws-token", err);
-      setLoading(false);
-    }
-  };
+    connectWS();
 
-  connectWS();
-
-  return () => {
-    clearTimeout(loadTimeout);
-    if (ws) ws.close();
-  };
-}, []);
+    return () => {
+      clearTimeout(loadTimeout);
+      if (ws) ws.close();
+    };
+  }, []);
 
 
   return (
@@ -239,16 +240,15 @@ export default function Listuser() {
                         )}
                       </div>
                       <p
-                        className={`text-sm truncate max-w-36 ${
-                          user.lastSender !== USERNAME && !user.isSeen
+                        className={`text-sm truncate max-w-36 ${user.lastSender !== USERNAME && !user.isSeen
                             ? "text-white font-semibold"
                             : "text-white/60"
-                        }`}
+                          }`}
                       >
                         {user.lastSender === USERNAME && user.latest_message
                           ? `You: ${user.latest_message}`
                           : user.latest_message ||
-                            `${user.first_name || ""} ${user.last_name || ""}`}
+                          `${user.first_name || ""} ${user.last_name || ""}`}
                       </p>
                     </div>
                   </motion.div>

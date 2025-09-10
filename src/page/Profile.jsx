@@ -56,7 +56,7 @@ const Profile = () => {
           try {
             // Step 2: fetch profile details (GET not POST)
             const details = await api.get(
-              `/Profile/details/?username=${userToFetch}`
+              `/Profile/details/`
             );
 
             // Step 3: fetch posts
