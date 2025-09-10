@@ -30,12 +30,12 @@ export default function FloatingMessagesButton() {
         // Step 2: Connect to WebSocket with token
         const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
         const wsUrl = `${wsScheme}://pixel-classes.onrender.com/ws/notifications/?token=${wsToken}`;
-        console.log("[WS CONNECT]: ", wsUrl);
+        // console.log("[WS CONNECT]: ", wsUrl);
 
         socket = new WebSocket(wsUrl);
 
         socket.onopen = () => {
-          console.log("[WS CONNECT] Connected to notifications WebSocket", wsUrl);
+          // console.log("[WS CONNECT] Connected to notifications WebSocket", wsUrl);
         };
 
         socket.onmessage = (event) => {

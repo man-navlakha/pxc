@@ -4,6 +4,9 @@ import Cookies from "js-cookie";
 import { Send, Undo2, Image as ImageIcon } from "lucide-react";
 import axios from "axios";
 import "../../new.css";
+
+import api from "../../utils/api";
+
 import Listuser from "./Listuser";
 import { motion, AnimatePresence } from "framer-motion";
 import { Clipboard } from "lucide-react"; // Assuming you use lucide-react
@@ -93,7 +96,7 @@ const renderMedia = (raw, linkMeta = {}, openLightbox) => {
     const ext = getExtFromUrl(raw);
 
     // 📷 Image bubble (cropped)
-       if (IMAGE_EXT.includes(ext)) {
+    if (IMAGE_EXT.includes(ext)) {
       return (
         <img
           src={raw}
@@ -211,10 +214,18 @@ function LightboxModal({ openData, onClose }) {
 
 
 
+
 export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
-  const [profile, setProfile] = useState(null);
+
+  const [ownProfile, setOwnProfile] = useState(null);
+  const [receiverProfile, setReceiverProfile] = useState(null);
+
+
+
+
+
   const [linkMeta, setLinkMeta] = useState({});
   const loadingRef = useRef(new Set()); // track which urls are being fetched
   const [lightbox, setLightbox] = useState({ url: null, type: null });
@@ -237,11 +248,10 @@ export default function Chat() {
   const textareaRef = useRef(null);
 
   const { RECEIVER } = useParams();
-  const USERNAME = Cookies.get("username");
-  const token = Cookies.get("refresh"); 
   const navigate = useNavigate();
   const location = useLocation();
 
+  console.log(RECEIVER)
   // ---------- helpers ----------
   const getExtFromUrl = (raw) => {
     try {
@@ -294,83 +304,162 @@ export default function Chat() {
     []
   );
 
+const [USERNAME, setUSERNAME] = useState(null);
+
+  // Receiver profile (from URL param)
+  useEffect(() => {
+    if (!RECEIVER) return;
+
+    const fetchProfile = async () => {
+      try {
+        console.warn(RECEIVER)
+        const res = await api.get(`/Profile/details/?username=${RECEIVER}`);
+        setReceiverProfile(res.data);
+        console.warn(res.data)
+      } catch (err) {
+        console.warn("[Profile GET failed, trying POST fallback]", err);
+        
+      }
+    };
+
+    fetchProfile();
+  }, [RECEIVER]);
+
   // ---------- WebSocket + history ----------
   useEffect(() => {
-    if (!USERNAME || !RECEIVER) return;
-    const roomName = [USERNAME, RECEIVER].sort().join("__");
-    const socket = new WebSocket(
-      `wss://pixel-classes.onrender.com/ws/chat/${roomName}/`
-    );
-    socketRef.current = socket;
+  if (!RECEIVER) return;
 
-    socket.onopen = async () => {
-      try {
-        const res = await fetch(
-          `https://pixel-classes.onrender.com/api/chatting/${roomName}/`
-        );
-        const data = await res.json();
-        if (Array.isArray(data)) {
-          // ensure chronological: oldest -> newest
-          const hist = data
-            .map((msg) => ({
-              id: msg.id,
-              sender: msg.sender,
-              message: msg.content,
-              seen: msg.seen_at,
-              status: msg.is_seen ? "seen" : "sent",
-            }))
-            .sort((a, b) => String(a.id).localeCompare(String(b.id)));
-          setMessages(hist);
-          // after paint, snap to bottom
-          setTimeout(() => scrollToBottom(true), 0);
-        }
-      } catch (e) {
-        console.error("history load failed", e);
-      }
-    };
+  let socket;
 
-    socket.onmessage = (e) => {
-      const data = JSON.parse(e.data);
-      if (data.type === "seen") {
-        setMessages((prev) =>
-          prev.map((m) =>
-            m.id === data.message_id ? { ...m, status: "seen", seen: new Date().toISOString() } : m
-          )
-        );
+  const initWebSocket = async () => {
+    try {
+      // 🧑‍💻 Step 0: fetch logged-in user
+      const meRes = await api.get("/me/", { withCredentials: true });
+      if (!meRes.data?.username) {
+        console.error("❌ Failed to fetch logged-in user");
         return;
       }
-      if (data.type === "chat") {
-        setMessages((prev) => {
-          // update optimistic by temp id/content if present
-          const upd = [...prev];
-          const idx = upd.findIndex(
-            (m) =>
-              (data.temp_id && m.temp_id === data.temp_id) ||
-              (data.tempId && m.temp_id === data.tempId) ||
-              (m.sender === data.sender && m.message === data.message && m.status === "sending")
-          );
-          if (idx !== -1) {
-            upd[idx] = { ...upd[idx], id: data.id, status: "sent" };
-            return upd;
-          }
-          // push new
-          upd.push({
-            id: data.id,
-            sender: data.sender,
-            receiver: data.receiver,
-            message: data.message,
-            status: "sent",
-          });
-          return upd;
-        });
-        // scroll to bottom when a truly new message arrives
-        setTimeout(() => scrollToBottom(), 0);
-      }
-    };
+      const USERNAME = meRes.data.username;
 
-    socket.onclose = () => console.log("❌ Disconnected");
-    return () => socket.close();
-  }, [USERNAME, RECEIVER]);
+      // (optional) fetch own profile details
+      try {
+        const details = await api.get(
+          `/Profile/details/?username=${USERNAME}`
+        );
+        setOwnProfile(details.data);
+      } catch (err) {
+        console.warn("⚠️ Failed to fetch own profile details", err);
+      }
+
+      // 🔑 Step 1: request short-lived ws_token
+      const res = await api.get("/ws-token/", {
+        withCredentials: true,
+      });
+      const wsToken = res.data.ws_token;
+
+      if (!wsToken) {
+        console.error("❌ Failed to get WS token");
+        return;
+      }
+
+      // 🔗 Step 2: build WebSocket URL with wsToken + receiver
+      const wsUrl = `wss://pixel-classes.onrender.com/ws/chat/?token=${wsToken}&receiver=${RECEIVER}`;
+      socket = new WebSocket(wsUrl);
+      socketRef.current = socket;
+
+      console.log("🌐 Connecting to:", wsUrl);
+
+      socket.onopen = async () => {
+        console.log("✅ Connected to chat WebSocket:", wsUrl);
+
+        try {
+          // Fetch chat history via REST
+          const res = await api.get(`chatting/${RECEIVER}/`, {
+            withCredentials: true,
+          });
+
+          const data = res.data;
+          if (Array.isArray(data)) {
+            const hist = data
+              .map((msg) => ({
+                id: msg.id,
+                sender: msg.sender,
+                message: msg.content,
+                seen: msg.seen_at,
+                status: msg.is_seen ? "seen" : "sent",
+              }))
+              .sort((a, b) => String(a.id).localeCompare(String(b.id)));
+
+            setMessages(hist);
+            setTimeout(() => scrollToBottom(true), 0);
+          }
+        } catch (e) {
+          console.error("history load failed", e);
+        }
+      };
+
+      socket.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+
+        if (data.type === "seen") {
+          setMessages((prev) =>
+            prev.map((m) =>
+              m.id === data.message_id
+                ? { ...m, status: "seen", seen: new Date().toISOString() }
+                : m
+            )
+          );
+          return;
+        }
+
+        if (data.type === "chat") {
+          setMessages((prev) => {
+            const upd = [...prev];
+            const idx = upd.findIndex(
+              (m) =>
+                (data.temp_id && m.temp_id === data.temp_id) ||
+                (data.tempId && m.temp_id === data.tempId) ||
+                (m.sender === data.sender &&
+                  m.message === data.message &&
+                  m.status === "sending")
+            );
+
+            if (idx !== -1) {
+              upd[idx] = { ...upd[idx], id: data.id, status: "sent" };
+              return upd;
+            }
+
+            upd.push({
+              id: data.id,
+              sender: data.sender,
+              receiver: data.receiver,
+              message: data.message,
+              status: "sent",
+            });
+            return upd;
+          });
+
+          setTimeout(() => scrollToBottom(), 0);
+        }
+      };
+
+      socket.onclose = () =>
+        console.log("❌ Disconnected from chat WebSocket");
+    } catch (err) {
+      console.error("❌ Failed to init WebSocket:", err);
+    }
+  };
+
+  initWebSocket();
+
+  return () => {
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.close();
+    }
+  };
+}, [RECEIVER]);
+
+
 
   // ---------- Seen on scroll ----------
   useEffect(() => {
@@ -433,8 +522,8 @@ export default function Chat() {
       } catch (err) { /* not a URL, ignore */ }
     });
   }, [messages]);
-const openLightbox = (data) => setLightboxData(data); // data = { url, type }
-const closeLightbox = () => setLightboxData(null);
+  const openLightbox = (data) => setLightboxData(data); // data = { url, type }
+  const closeLightbox = () => setLightboxData(null);
 
 
 
@@ -504,17 +593,6 @@ const closeLightbox = () => setLightboxData(null);
     setTimeout(() => scrollToBottom(true), 0);
   };
 
-  // ---------- Profile ----------
-  useEffect(() => {
-    if (!token) navigate("/");
-    if (!RECEIVER) return;
-    axios
-      .post("https://pixel-classes.onrender.com/api/Profile/details/", { username: RECEIVER })
-      .then((res) => setProfile(res.data))
-      .catch(() => console.error("Failed to load profile"));
-  }, [RECEIVER, token, navigate]);
-
-
 
 
 
@@ -530,7 +608,7 @@ const closeLightbox = () => setLightboxData(null);
     }
   }, [location.search]);
 
-
+// console.log(receiverProfile)
 
   return (
     <div className="flex h-screen ccf bg-gray-900">
@@ -543,19 +621,39 @@ const closeLightbox = () => setLightboxData(null);
       {/* Right panel */}
       <div className="flex-1 flex flex-col text-white">
         {/* Header */}
-        <div className="sticky top-0 bg-gray-900 overflow-hidden flex items-center gap-3 px-4 py-3 border-b border-gray-700">
-          <button onClick={() => navigate("/chat")} className="p-2">
-            <Undo2 className="text-white" />
-          </button>
-          <img onClick={() => navigate(`/profile/${profile?.username}`)}
-            src={profile?.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"}
-            className="w-8 h-8 rounded-full"
-          />
-          <div onClick={() => navigate(`/profile/${profile?.username}`)} className="flex flex-col">
-            <span className="font-semibold flex justify-center items-center gap-1">{profile?.username} {verifiedUsernames.has(profile?.username) && <VerifiedBadge size={24} />}</span>
-            <span className="text-xs text-gray-400">last seen</span>
-          </div>
-        </div>
+        {/* Header */}
+<div className="sticky top-0 bg-gray-900 overflow-hidden flex items-center gap-3 px-4 py-3 border-b border-gray-700">
+  <button onClick={() => navigate("/chat")} className="p-2">
+    <Undo2 className="text-white" />
+  </button>
+
+  <img
+    onClick={() => navigate(`/profile/${receiverProfile?.username || RECEIVER}`)}
+    src={
+      receiverProfile?.profile_pic ||
+      "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"
+    }
+    className="w-8 h-8 rounded-full"
+  />
+
+  <div
+    onClick={() => navigate(`/profile/${receiverProfile?.username || RECEIVER}`)}
+    className="flex flex-col"
+  >
+    <span className="font-semibold flex items-center gap-1">
+      {receiverProfile?.username || RECEIVER}
+      {verifiedUsernames.has(receiverProfile?.username || RECEIVER) && (
+        <VerifiedBadge size={24} />
+      )}
+    </span>
+    <span className="text-xs text-gray-400">
+      {receiverProfile?.last_seen
+        ? `last seen ${receiverProfile.last_seen}`
+        : "last seen recently"}
+    </span>
+  </div>
+</div>
+
 
         {/* Messages */}
         <div
@@ -593,44 +691,45 @@ const closeLightbox = () => setLightboxData(null);
                 </div>
 
                 {/* Lightbox modal */}
-{lightboxData && (
-  <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
-    <button
-      onClick={() => setLightboxData(null)}
-      className="absolute top-4 right-4 text-white text-2xl"
-    >
-      ✕
-    </button>
+                {lightboxData && (
+                  <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
+                    <button
+                      onClick={() => setLightboxData(null)}
+                      className="absolute top-4 right-4 text-white text-2xl"
+                    >
+                      ✕
+                    </button>
 
-    {lightboxData.type === "image" && (
-      <img
-        src={lightboxData.url}
-        alt="preview"
-        className="max-w-[90vw] max-h-[90vh] object-contain"
-      />
-    )}
+                    {lightboxData.type === "image" && (
+                      <img
+                        src={lightboxData.url}
+                        alt="preview"
+                        className="max-w-[90vw] max-h-[90vh] object-contain"
+                      />
+                    )}
 
-    {lightboxData.type === "video" && (
-      <video
-        controls
-        className="max-w-[90vw] max-h-[90vh] object-contain"
-      >
-        <source src={lightboxData.url} />
-      </video>
-    )}
-  </div>
-)}
+                    {lightboxData.type === "video" && (
+                      <video
+                        controls
+                        className="max-w-[90vw] max-h-[90vh] object-contain"
+                      >
+                        <source src={lightboxData.url} />
+                      </video>
+                    )}
+                  </div>
+                )}
 
 
                 {!isOwn && isLastOfGroup && (
                   <div className="flex items-center gap-1 mt-1">
                     <img
-                      src={profile?.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"}
+                      src={receiverProfile?.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"}
                       alt="receiver avatar"
                       className="w-5 h-5 rounded-full"
                     />
                   </div>
                 )}
+
 
                 {isOwn && isLastOfGroup && (
                   <p className="text-right text-xs text-gray-400 mt-1">

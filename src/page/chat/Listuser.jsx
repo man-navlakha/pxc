@@ -1,19 +1,20 @@
 // Listuser.jsx
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import { Undo2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "react-toastify";
 import "../../new.css";
+
+import api from "../../utils/api";
+
 import { verifiedUsernames } from "../../verifiedAccounts";
 import VerifiedBadge from "../../componet/VerifiedBadge";
-import api from "../../utils/api"; // ✅ central axios instance
 
 function toISOStringCompat(dateString) {
   if (!dateString) return null;
   const [date, time] = dateString.split(" ");
-  const fullTime = time.length === 5 ? `${time}:00` : time;
+  const fullTime = time?.length === 5 ? `${time}:00` : time;
   return `${date}T${fullTime}`;
 }
 
@@ -48,17 +49,18 @@ const EmptyState = ({ onFindFriendsClick }) => (
 export default function Listuser() {
   const navigate = useNavigate();
   const USERNAME = Cookies.get("username");
+  const wsToken = Cookies.get("ws_token"); // assume you set token in cookies
+  const wsRef = useRef(null);
 
   const [search, setSearch] = useState("");
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // 🔍 Filter users by search
   const filteredUsers = useMemo(() => {
     const searchTerm = search.toLowerCase();
     return allUsers.filter((user) => {
-      const fullName = `${user.first_name || ""} ${
-        user.last_name || ""
-      }`.toLowerCase();
+      const fullName = `${user.first_name || ""} ${user.last_name || ""}`.toLowerCase();
       return (
         user.username.toLowerCase().includes(searchTerm) ||
         fullName.includes(searchTerm)
@@ -66,63 +68,90 @@ export default function Listuser() {
     });
   }, [allUsers, search]);
 
-  const fetchUsers = useCallback(async () => {
-    if (!USERNAME) {
-      toast.error("No username found. Please log in again.");
-      setLoading(false);
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const [followingRes, followersRes] = await Promise.all([
-        api.post("/Profile/following/", { username: USERNAME }),
-        api.post("/Profile/followers/", { username: USERNAME }),
-      ]);
-
-      const combined = [...followersRes.data, ...followingRes.data];
-      const deduplicated = Array.from(
-        new Map(combined.map((u) => [u.username, u])).values()
-      );
-
-      const updated = await Promise.all(
-        deduplicated.map(async (user) => {
-          try {
-            const roomName = [USERNAME, user.username].sort().join("__");
-            const res = await api.get(`/chatting/${roomName}/`);
-            const messages = res.data;
-            const lastMsg = messages.at(-1);
-            return {
-              ...user,
-              lastMessage: lastMsg?.content || "",
-              lastTime: lastMsg?.timestamp || null,
-              lastSender: lastMsg?.sender || null,
-              isSeen: lastMsg ? lastMsg.is_seen : true,
-            };
-          } catch (err) {
-            console.warn("Chat fetch failed for", user.username, err);
-            return { ...user, lastMessage: "", lastTime: null, isSeen: true };
-          }
-        })
-      );
-
-      updated.sort(
-        (a, b) => new Date(b.lastTime || 0) - new Date(a.lastTime || 0)
-      );
-      setAllUsers(updated);
-    } catch (err) {
-      toast.error("Failed to load conversations.");
-      setAllUsers([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [USERNAME]);
-
+  // 🛰️ Connect WebSocket
   useEffect(() => {
-    fetchUsers();
-    const interval = setInterval(fetchUsers, 60000);
-    return () => clearInterval(interval);
-  }, [fetchUsers]);
+  let ws;
+  let loadTimeout;
+
+  const connectWS = async () => {
+    try {
+      // Step 1: Get short-lived WS token
+      const res = await api.get("/ws-token/", {
+        withCredentials: true, // sends cookies (refresh/access token)
+      });
+      const wsToken = res.data.ws_token;
+
+      // Step 2: Open WebSocket with token
+      ws = new WebSocket(
+        `wss://pixel-classes.onrender.com/ws/message-inbox/?token=${wsToken}`
+      );
+      wsRef.current = ws;
+
+      // fallback loader timeout
+      loadTimeout = setTimeout(() => {
+        console.warn("⏳ No inbox_list received, stopping loader.");
+        setLoading(false);
+      }, 5000);
+
+      ws.onopen = () => {
+        console.log("✅ WS connected");
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.type === "inbox_list") {
+          clearTimeout(loadTimeout);
+          const sorted = [...data.inbox].sort(
+            (a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
+          );
+          setAllUsers(sorted);
+          setLoading(false);
+        }
+
+        if (data.type === "inbox_update") {
+          setAllUsers((prev) => {
+            const updated = prev.filter((u) => u.username !== data.user.username);
+            return [
+              {
+                ...data.user,
+                lastMessage: data.latest_message,
+                lastTime: data.timestamp,
+                isSeen: data.is_seen,
+              },
+              ...updated,
+            ].sort(
+              (a, b) => new Date(b.lastTime || 0) - new Date(a.lastTime || 0)
+            );
+          });
+        }
+      };
+
+      ws.onerror = (err) => {
+        console.error("❌ WS error", err);
+        clearTimeout(loadTimeout);
+        setLoading(false);
+      };
+
+      ws.onclose = () => {
+        console.log("🔌 WS closed");
+        clearTimeout(loadTimeout);
+        setLoading(false);
+      };
+    } catch (err) {
+      console.error("❌ Failed to fetch ws-token", err);
+      setLoading(false);
+    }
+  };
+
+  connectWS();
+
+  return () => {
+    clearTimeout(loadTimeout);
+    if (ws) ws.close();
+  };
+}, []);
+
 
   return (
     <div className="min-h-screen ccf flex flex-col text-white bg-gray-900">
@@ -172,7 +201,7 @@ export default function Listuser() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    onClick={() => navigate(`/chat/${user.username}`)} // ✅ no reload
+                    onClick={() => navigate(`/chat/${user.username}`)}
                     className="cursor-pointer p-3 rounded-lg flex items-center gap-4 hover:bg-white/10 transition-colors"
                   >
                     <div className="relative">
@@ -198,10 +227,10 @@ export default function Listuser() {
                             <VerifiedBadge size={20} />
                           )}
                         </span>
-                        {user.lastTime && (
+                        {user.timestamp && (
                           <span className="text-xs text-white/40 flex-shrink-0 ml-2">
                             {new Date(
-                              toISOStringCompat(user.lastTime)
+                              toISOStringCompat(user.timestamp)
                             ).toLocaleTimeString([], {
                               hour: "2-digit",
                               minute: "2-digit",
@@ -216,9 +245,10 @@ export default function Listuser() {
                             : "text-white/60"
                         }`}
                       >
-                        {user.lastSender === USERNAME && user.lastMessage && "You: "}
-                        {user.lastMessage ||
-                          `${user.first_name || ""} ${user.last_name || ""}`}
+                        {user.lastSender === USERNAME && user.latest_message
+                          ? `You: ${user.latest_message}`
+                          : user.latest_message ||
+                            `${user.first_name || ""} ${user.last_name || ""}`}
                       </p>
                     </div>
                   </motion.div>
