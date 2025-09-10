@@ -1,12 +1,14 @@
+// Listuser.jsx
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { Undo2 } from "lucide-react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "react-toastify";
 import "../../new.css";
 import { verifiedUsernames } from "../../verifiedAccounts";
 import VerifiedBadge from "../../componet/VerifiedBadge";
-import api from "../../utils/api"; // ✅ use centralized axios instance
+import api from "../../utils/api"; // ✅ central axios instance
 
 function toISOStringCompat(dateString) {
   if (!dateString) return null;
@@ -44,9 +46,9 @@ const EmptyState = ({ onFindFriendsClick }) => (
 );
 
 export default function Listuser() {
-  const location = useLocation();
   const navigate = useNavigate();
   const USERNAME = Cookies.get("username");
+
   const [search, setSearch] = useState("");
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -65,9 +67,14 @@ export default function Listuser() {
   }, [allUsers, search]);
 
   const fetchUsers = useCallback(async () => {
-    if (!USERNAME) return;
+    if (!USERNAME) {
+      toast.error("No username found. Please log in again.");
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
     try {
-      // ✅ use proxy-aware axios instance
       const [followingRes, followersRes] = await Promise.all([
         api.post("/Profile/following/", { username: USERNAME }),
         api.post("/Profile/followers/", { username: USERNAME }),
@@ -93,7 +100,7 @@ export default function Listuser() {
               isSeen: lastMsg ? lastMsg.is_seen : true,
             };
           } catch (err) {
-            console.error("Chat fetch failed for", user.username, err);
+            console.warn("Chat fetch failed for", user.username, err);
             return { ...user, lastMessage: "", lastTime: null, isSeen: true };
           }
         })
@@ -104,7 +111,8 @@ export default function Listuser() {
       );
       setAllUsers(updated);
     } catch (err) {
-      console.error("Failed to fetch users:", err);
+      toast.error("Failed to load conversations.");
+      setAllUsers([]);
     } finally {
       setLoading(false);
     }
@@ -158,14 +166,14 @@ export default function Listuser() {
             <motion.div layout className="flex flex-col overflow-y-auto">
               <AnimatePresence>
                 {filteredUsers.map((user) => (
-                  <motion.a
+                  <motion.div
                     layout
                     key={user.username}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    href={`/chat/${user.username}`}
-                    className="p-3 rounded-lg flex items-center gap-4 hover:bg-white/10 transition-colors"
+                    onClick={() => navigate(`/chat/${user.username}`)} // ✅ no reload
+                    className="cursor-pointer p-3 rounded-lg flex items-center gap-4 hover:bg-white/10 transition-colors"
                   >
                     <div className="relative">
                       <img
@@ -176,7 +184,6 @@ export default function Listuser() {
                         alt={user.username}
                         className="w-14 h-14 rounded-full border-2 border-white/20 object-cover"
                       />
-                      {/* Unread Indicator */}
                       {user.lastSender &&
                         user.lastSender !== USERNAME &&
                         !user.isSeen && (
@@ -185,13 +192,12 @@ export default function Listuser() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-center">
-                        <span className="font-semibold truncate flex justify-center items-center gap-1 ">
-                          {user.username}{" "}
+                        <span className="font-semibold truncate flex items-center gap-1">
+                          {user.username}
                           {verifiedUsernames.has(user?.username) && (
-                            <VerifiedBadge size={24} />
+                            <VerifiedBadge size={20} />
                           )}
                         </span>
-
                         {user.lastTime && (
                           <span className="text-xs text-white/40 flex-shrink-0 ml-2">
                             {new Date(
@@ -215,7 +221,7 @@ export default function Listuser() {
                           `${user.first_name || ""} ${user.last_name || ""}`}
                       </p>
                     </div>
-                  </motion.a>
+                  </motion.div>
                 ))}
               </AnimatePresence>
             </motion.div>

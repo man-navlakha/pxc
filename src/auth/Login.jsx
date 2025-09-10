@@ -25,7 +25,7 @@ const Login = () => {
         // Only check login if not on login page
         if (!window.location.pathname.includes("/auth/login")) return;
 
-        const res = await api.get("/me/"); // proxy-ready
+        const res = await api.get("me/"); // proxy-ready
         if (res.data.username) {
           window.location.href = redirectTo;
         }
