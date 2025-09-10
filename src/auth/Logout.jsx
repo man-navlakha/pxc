@@ -25,7 +25,7 @@ const Logout = () => {
         sessionStorage.clear();
 
         // 🔑 Redirect & force reload to wipe all React states
-        window.location.replace("/");
+        window.location.replace("/auth/login");
       }
     };
 

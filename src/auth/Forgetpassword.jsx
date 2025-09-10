@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import api from "../utils/api";
 import '../new.css';
 
 const Forgetpassword = () => {
@@ -19,8 +20,7 @@ const Forgetpassword = () => {
     setSuccessMessage(null);
 
     try {
-      const response = await fetch("https://pixel-classes.onrender.com/api/user/password_reset/", {
-        method: "POST",
+      const response = await api.post("user/password_reset/", {
         headers: {
           "Content-Type": "application/json",
         },
@@ -51,7 +51,7 @@ const Forgetpassword = () => {
   const startPolling = (emailToPoll) => {
     pollingInterval.current = setInterval(async () => {
       try {
-        const response = await fetch("https://pixel-classes.onrender.com/api/user/reset/status/", {
+        const response = await api.post("user/reset/status/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

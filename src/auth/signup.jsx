@@ -5,13 +5,15 @@ import Cookies from "js-cookie";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import '../new.css'
 
+import api from "../utils/api"; // axios with withCredentials:true
+
 const signup = () => {
 
 
     const [loading, setLoading] = useState(false);
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [error, setError] = useState(null);
-    const [username, setUserame] = useState(null);
+    const [username, setUsername] = useState(null);
     const [last_s, setlast_s] = useState(Cookies.get("last_s") || null);
     const [sucsses, setSucsses] = useState(null);
     const navigate = useNavigate();
@@ -19,7 +21,7 @@ const signup = () => {
 
     // ✅ Handle redirection if user is already logged in
     useEffect(() => {
-        const token = Cookies.get("refresh"); 
+        const token = Cookies.get("refresh");
         if (token) {
             setTimeout(() => {
                 navigate(location?.state?.from || " ", { replace: true });
@@ -39,7 +41,6 @@ const signup = () => {
         e.preventDefault();
 
         const fileInput = document.getElementById("profile_pic");
-        const username = document.getElementById("username").value;
         const email = document.getElementById("email").value; // ✅ Define it here
         const password = document.getElementById("password").value;
         const confirmPassword = document.getElementById("confirmPassword").value;
@@ -50,6 +51,7 @@ const signup = () => {
 
         }
         console.log("Username:", username);
+        console.log("Pass:", password);
         console.log("Email:", email); // ✅ Log email to check its value
 
         // ✅ Now it's safe to use `email` here
@@ -65,99 +67,32 @@ const signup = () => {
         }
 
         const formData = new FormData();
-        formData.append("profile_pic", fileInput.files[0]);
         formData.append("username", username);
         formData.append("email", email);
         formData.append("password", password);
         Cookies.set("username", username, { expires: 7 });
+        if (fileInput.files.length > 0) {
+            formData.append("profile_pic", fileInput.files[0]);
+        }
+
 
         try {
-            const response = await fetch("https://pixel-classes.onrender.com/api/user/register/", {
-                method: "POST",
-                body: formData,
+            const response = await api.post("/user/register/", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
             });
-            const data = await response.json();
-            console.log(formData);
-            console.log(response);
 
-
-            if (response.ok) {
-                navigate("/auth/verification", { state: { user: { username, email } } });
-            } else {
-                alert(data.message || "Registration failed.");
-            }
-        } catch (error) {
-            console.error(error);
-            alert("Something went wrong. Try again later.");
+            console.log("Signup success:", response.data);
+            navigate("/auth/verification", { state: { user: { username, email } } });
+        } catch (err) {
+            console.error("Signup error:", err.response?.data || err.message);
+            alert(err.response?.data?.error || "Registration failed.");
         }
+
         finally {
             setLoading(false);
             Cookies.set("username", username, { expires: 7 });
         }
     };
-
-
-    // const handleSignupClick = async () => {
-    //     setLoading(true);
-    //     setError(null);
-
-    //     const fileInput = document.getElementById("profile_pic");
-    //     const username = document.getElementById("username").value;
-    //     const email = document.getElementById("email").value;
-    //     const password = document.getElementById("password").value;
-    //     const confirmPassword = document.getElementById("confirmPassword").value;
-
-    //     if (!username || !email || !password || !confirmPassword) {
-    //         setError("All fields are required.");
-    //         setLoading(false);
-    //         return;
-    //     }
-
-    //     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    //     if (!emailRegex.test(email)) {
-    //         setError("Please enter a valid email address.");
-    //         setLoading(false);
-    //         return;
-    //     }
-
-    //     if (password !== confirmPassword) {
-    //         setError("Passwords do not match!");
-    //         setLoading(false);
-    //         return;
-    //     }
-
-    //     const formData = new FormData();
-    //     if (fileInput.files[0]) {
-    //         formData.append("profile_pic", fileInput.files[0]);
-    //     }
-    //     formData.append("username", username);
-    //     formData.append("email", email);
-    //     formData.append("password", password);
-
-    //     try {
-    //         const response = await fetch("https://pixel-classes.onrender.com/api/user/register/", {
-    //             method: "POST",
-    //             body: formData,
-    //         });
-    //         console.log(formData);
-    //         console.log(response);
-
-    //         const data = await response.json();
-
-    //         if (response.ok) {
-    //             setSucsses("Signup successful!");
-    //             Cookies.set("last_s", "username");
-    //             navigate("/auth/verification", { state: { user: { username, email } } });
-    //         } else {
-    //             setError(data.message || "Registration failed.");
-    //         }
-    //     } catch (err) {
-    //         setError("Something went wrong. Try again later.");
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
     const googlelogin = async (credentialResponse) => {
         setLoading(true)
         try {
@@ -167,9 +102,11 @@ const signup = () => {
             if (res.data.message === "Signup successful!") {
 
                 Cookies.set("refresh_token", res.data.refresh_token, { expires: 7 });
-                Cookies.set("username", res.data.username, { expires: 7 });
+                Cookies.set("username", res.data.username, { expires: 7 }); -+
 
-                setSucsses("signup Sucssesful");
+
+
+                    setSucsses("signup Sucssesful");
                 Cookies.set("last_s", "Google");
                 setTimeout(() => {
                     const redirectTo = "/";
@@ -212,13 +149,13 @@ const signup = () => {
                             </Link>
                         </div>
                     </div>
-                    {loading ?  <div className='flex items-center flex-col justify-center w-[360px] p-6'>
-              <div className=' px-4 py-6 flex flex-col bg-white border shadow-lg border-gray-200 max-w-[360px] w-full max-h-screen rounded-xl '> <div className="flex justify-center">
+                    {loading ? <div className='flex items-center flex-col justify-center w-[360px] p-6'>
+                        <div className=' px-4 py-6 flex flex-col bg-white border shadow-lg border-gray-200 max-w-[360px] w-full max-h-screen rounded-xl '> <div className="flex justify-center">
                             <div className=" border-t-2 rounded-full border-gray-500 bg-gray-300 animate-spin
 aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
-                        </div> 
-                        </div> 
-                        </div>  :
+                        </div>
+                        </div>
+                    </div> :
                         <div className='flex items-center flex-col justify-center p-6'>
                             <div className=' px-4 py-6 flex flex-col bg-white border shadow-lg border-gray-200 max-w-[360px] w-full max-h-screen rounded-xl '>
 
@@ -276,11 +213,15 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
                                             </div>
                                             <div>
 
-                                                <input type="text"
-                                                    value={username}
-                                                    onChange={(e) => setUserame(e.target.value = e.target.value.toLowerCase())}
-                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input   "
-                                                    id="username" placeholder="Enter your new username " />
+                                                <input
+                                                    type="text"
+                                                    value={username ?? ""}
+                                                    onChange={(e) => setUsername(e.target.value.toLowerCase())}
+                                                    className="w-full px-2 py-1.5 outline-none text-sm rounded-lg border max-h-8 transition-all duration-100 border-gray-200 bg-gray-00 text-gray-1k hover:border-gray-300 focus-within:border-gray-300 dark:bg-gray-50 shadow-input hover:shadow-input-hover focus-within:shadow-input"
+                                                    id="username"
+                                                    placeholder="Enter your new username"
+                                                />
+
                                             </div>
 
                                         </div>

@@ -12,7 +12,7 @@ export default function FloatingMessagesButton() {
     let socket = null;
 
     async function initWebSocket() {
-      
+
 
       try {
         // Step 1: Get short-lived WS token using api.get()
@@ -29,7 +29,7 @@ export default function FloatingMessagesButton() {
 
         // Step 2: Connect to WebSocket with token
         const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
-        const wsUrl = `${wsScheme}://${window.location.host}/ws/notifications/?token=${wsToken}`;
+        const wsUrl = `${wsScheme}://pixel-classes.onrender.com/ws/notifications/?token=${wsToken}`;
         console.log("[WS CONNECT]: ", wsUrl);
 
         socket = new WebSocket(wsUrl);
