@@ -9,14 +9,16 @@ export default function FloatingMessagesButton() {
   const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    let socket;
+    let socket = null;
 
     async function initWebSocket() {
+     
       try {
         // Step 1: Get short-lived WS token using api.get()
         const res = await api.get("/ws-token/", {
           withCredentials: true, // send HttpOnly access token cookie
         });
+
         const wsToken = res.data.ws_token;
 
         if (!wsToken) {
@@ -28,6 +30,7 @@ export default function FloatingMessagesButton() {
         const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
         const wsUrl = `${wsScheme}://${window.location.host}/ws/notifications/?token=${wsToken}`;
         console.log("[WS CONNECT]: ", wsUrl);
+
         socket = new WebSocket(wsUrl);
 
         socket.onopen = () => {
@@ -62,7 +65,9 @@ export default function FloatingMessagesButton() {
 
     // Cleanup on unmount
     return () => {
-      if (socket && socket.readyState === WebSocket.OPEN) socket.close();
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.close();
+      }
     };
   }, [USERNAME]);
 
