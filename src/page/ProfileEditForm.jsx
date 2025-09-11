@@ -114,16 +114,13 @@ const ProfileEditForm = ({ profile, onUpdateSuccess }) => {
     setLoading(true);
 
     const formData = new FormData();
-    formData.append("username", originalUsername);
     formData.append("new_username", username);
     if (profilePic) {
       formData.append("profile_pic", profilePic);
     }
-
+console.log(formData)
     try {
-      const response = await api.put("Profile/edit/", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await api.put("Profile/edit/", formData);
 
       if (response.data.message) {
         toast.success("Profile updated successfully!");

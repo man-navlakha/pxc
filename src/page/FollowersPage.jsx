@@ -42,8 +42,15 @@ const FollowersPage = ({ username, onClose }) => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const followersRes = await api.post("/Profile/followers/", { username });
-                const followingRes = await api.post("/Profile/following/", { username: currentUserUsername });
+                // ✅ Pass the username parameter to fetch specific user's followers
+                const followersRes = await api.post("/Profile/followers/", {
+                    username: username
+                });
+                
+                // ✅ Get current user's following list to determine follow status
+                const followingRes = await api.post("/Profile/following/", {
+                    username: currentUserUsername
+                });
 
                 const followingUsernames = new Set(followingRes.data?.map(u => u.username) || []);
                 const usersWithStatus = (followersRes.data || []).map(user => ({
@@ -53,6 +60,7 @@ const FollowersPage = ({ username, onClose }) => {
 
                 setFollowers(usersWithStatus);
             } catch (err) {
+                console.error("Error fetching followers:", err);
                 toast.error("Could not load followers.");
             } finally {
                 setLoading(false);
@@ -70,7 +78,8 @@ const FollowersPage = ({ username, onClose }) => {
             });
             toast.success(`You are now following ${targetUsername}`);
             setFollowers(followers.map(u => u.username === targetUsername ? { ...u, is_following: true } : u));
-        } catch {
+        } catch (err) {
+            console.error("Error following user:", err);
             toast.error(`Could not follow ${targetUsername}.`);
         }
     };
@@ -83,7 +92,8 @@ const FollowersPage = ({ username, onClose }) => {
             });
             toast.info(`Unfollowed ${targetUsername}`);
             setFollowers(followers.map(u => u.username === targetUsername ? { ...u, is_following: false } : u));
-        } catch {
+        } catch (err) {
+            console.error("Error unfollowing user:", err);
             toast.error(`Could not unfollow ${targetUsername}.`);
         }
     };
@@ -94,7 +104,9 @@ const FollowersPage = ({ username, onClose }) => {
                 <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-white/10 transition-colors">
                     <Undo2 className="text-white" />
                 </button>
-                <h1 className="text-3xl font-bold text-white/90 text-center flex-1">Followers</h1>
+                <h1 className="text-3xl font-bold text-white/90 text-center flex-1">
+                    {username === currentUserUsername ? "Your Followers" : `${username}'s Followers`}
+                </h1>
             </div>
 
             {loading ? (

@@ -38,7 +38,7 @@ export default function Navbar() {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const token = Cookies.get('refresh'); // still needed for WS
+  const token = Cookies.get('Logged'); // still needed for WS
   const unreadCount = useChatSummary(profile?.username, token);
 
   useEffect(() => {
@@ -56,7 +56,9 @@ export default function Navbar() {
         if (res.data?.username) {
           try {
             // Step 2: Fetch profile details (GET, not POST)
-            const details = await api.get(`/Profile/details/`);
+            const details = await api.post(`/Profile/details/`, {
+              username: res.data.username,
+            });
 
             // Merge backend data into one object
             setProfile({
@@ -93,7 +95,7 @@ export default function Navbar() {
             <img src="https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png?updatedAt=1735069173555" alt="Logo" />
           </Link>
 
-          {!loading && profile ? (
+          {!loading && token ? (
             <>
               {/* Desktop Links */}
               <div className="hidden lg:flex items-center gap-6 text-neutral-300 font-medium">
@@ -147,7 +149,7 @@ export default function Navbar() {
       </nav>
 
       {/* --- Bottom Navbar (Mobile Only) --- */}
-      {profile && (
+      {token && (
         <div className="fixed bottom-0 left-0 right-0 z-30 lg:hidden">
           <div className="flex justify-around items-center bg-black/30 backdrop-blur-xl shadow-2xl shadow-black/30 py-2">
             {[

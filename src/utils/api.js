@@ -1,4 +1,5 @@
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const api = axios.create({
   baseURL: "/api",
@@ -48,15 +49,16 @@ api.interceptors.response.use(
 
         isRefreshing = false;
         onRefreshed();
-
+        const hi = Cookies.set("Logged", true )
         return api(originalRequest);
       } catch (refreshError) {
         isRefreshing = false;
+        Cookies.set("Logged", false )
 
         // Redirect only if not already on login page
         if (!window.location.pathname.includes("/auth/login")) {
-          // window.location.href = "/auth/login";
-          console.log("/auth/login")
+          window.location.href = "/auth/login";
+          // console.log("/auth/login")
         }
 
         return Promise.reject(refreshError);

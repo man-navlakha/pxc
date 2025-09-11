@@ -16,13 +16,14 @@ const FollowersPage = lazy(() => import("./FollowersPage"));
 const ProfileEditForm = lazy(() => import("./ProfileEditForm"));
 
 const Profile = () => {
-  const Username = Cookies.get("username");
+  let Username = "Guest"; // Changed from const to let
   const accessToken = Cookies.get("access");
   const { nameFromUrl } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [profile, setProfile] = useState(null);
+  const [userToFetch, setUserToFetch] = useState("Guest");
   const [page, setPage] = useState(null);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -39,7 +40,6 @@ const Profile = () => {
     }
   }, [urlusername, navigate]);
 
-  // Redirect if viewing own profile via /profile/:username
   // --- Fetch profile + posts ---
   useEffect(() => {
     const fetchProfile = async () => {
@@ -48,19 +48,33 @@ const Profile = () => {
 
       try {
         // Step 1: check authentication
-        const res = await api.get("/me/");
+        const res = await api.post("/Profile/details/");
 
         if (res.data?.username) {
-          const userToFetch = nameFromUrl || res.data.username;
+          Username = res.data.username; // Update Username
+          
+          // Determine which user to fetch
+          const targetUser = nameFromUrl || res.data.username;
+          setUserToFetch(targetUser);
+          
+          console.log("Target user to fetch:", targetUser);
+          console.log("Current user:", res.data.username);
+          console.log("nameFromUrl:", nameFromUrl);
 
           try {
-            // Step 2: fetch profile details (GET not POST)
+            // Step 2: fetch profile details
+            // Fixed: Remove backticks and use proper template literal
             const details = await api.post(`/Profile/details/`, {
-              username: res.data.username,
+              username: targetUser, // Use targetUser instead of userToFetch
             });
 
             // Step 3: fetch posts
-            const postsRes = await api.get(`/Profile/posts/?username=${userToFetch}`);
+            const postsRes = await api.post(`/Profile/posts/`, {
+              username: targetUser, // Use targetUser instead of userToFetch
+            });
+
+            console.log("Posts response:", postsRes);
+            console.log("Details response:", details);
 
             // Merge backend data
             setProfile({
@@ -91,16 +105,14 @@ const Profile = () => {
     fetchProfile();
   }, [nameFromUrl, navigate]);
 
-
-
   // --- Fetch follow status ---
   useEffect(() => {
     if (!nameFromUrl || !Username || nameFromUrl === Username) return;
 
     const fetchFollowStatus = async () => {
       try {
-        const res = await api.post("/Profile/following/", { username: Username });
-        const isUserFollowing = res.data.some((u) => u.username === nameFromUrl);
+        const res = await api.post("/Profile/following/", { username: nameFromUrl });
+        const isUserFollowing = res.data.some((u) => u.username === Username);
         setIsFollowing(isUserFollowing);
       } catch (err) {
         console.error("Error checking follow status:", err);
@@ -109,8 +121,6 @@ const Profile = () => {
 
     fetchFollowStatus();
   }, [nameFromUrl, Username]);
-
-
 
   // --- Follow / Unfollow ---
   const follow = async (follow_username) => {
@@ -142,7 +152,7 @@ const Profile = () => {
     if (window.confirm("Are you sure you want to delete this repository?")) {
       try {
         await api.delete("/Profile/deletePost/", {
-          data: { pdf_url: String(pdf_url), username: Username },
+          data: { pdf_url: String(pdf_url), username: userToFetch },
         });
         setPosts(posts.filter((p) => p.pdf !== pdf_url));
       } catch (err) {
@@ -151,6 +161,9 @@ const Profile = () => {
       }
     }
   };
+
+  // Check if viewing own profile
+  const isOwnProfile = !nameFromUrl || nameFromUrl === Username;
 
   return (
     <>
@@ -241,7 +254,30 @@ const Profile = () => {
                     </div>
                   </div>
                   <div className="mt-6 flex gap-4">
-                    {nameFromUrl ? (
+                    {isOwnProfile ? (
+                      // Own profile - show edit and logout buttons
+                      <>
+                        <button
+                          onClick={() => setPage("edit")}
+                          className="glass-btn flex items-center gap-2 px-3 py-2 rounded-xl bg-white/30 hover:bg-white/50 text-black font-bold shadow transition"
+                        >
+                          <span className="material-symbols-outlined">
+                            edit_square
+                          </span>{" "}
+                          Edit Profile
+                        </button>
+                        <button
+                          onClick={() => navigate("/logout")}
+                          className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-red-500/80 hover:bg-red-600/90 text-white font-bold shadow transition"
+                        >
+                          <span className="material-symbols-outlined">
+                            logout
+                          </span>{" "}
+                          Logout
+                        </button>
+                      </>
+                    ) : (
+                      // Other user's profile - show follow/unfollow and message buttons
                       <>
                         {isFollowing ? (
                           <button
@@ -272,27 +308,6 @@ const Profile = () => {
                           Message
                         </button>
                       </>
-                    ) : (
-                      <>
-                        <button
-                          onClick={() => setPage("edit")}
-                          className="glass-btn flex items-center gap-2 px-3 py-2 rounded-xl bg-white/30 hover:bg-white/50 text-black font-bold shadow transition"
-                        >
-                          <span className="material-symbols-outlined">
-                            edit_square
-                          </span>{" "}
-                          Edit Profile
-                        </button>
-                        <button
-                          onClick={() => navigate("/logout")}
-                          className="glass-btn flex items-center gap-2 px-5 py-2 rounded-xl bg-red-500/80 hover:bg-red-600/90 text-white font-bold shadow transition"
-                        >
-                          <span className="material-symbols-outlined">
-                            logout
-                          </span>{" "}
-                          Logout
-                        </button>
-                      </>
                     )}
                   </div>
                 </div>
@@ -308,9 +323,9 @@ const Profile = () => {
               }
             >
               {page === "following" ? (
-                <FollowingPage username={profile?.username || Username} />
+                <FollowingPage username={profile?.username} />
               ) : page === "followers" ? (
-                <FollowersPage username={profile?.username || Username} />
+                <FollowersPage username={userToFetch} />
               ) : page === "edit" ? (
                 <div className="glass-card m-3 p-6">
                   <button
@@ -341,7 +356,10 @@ const Profile = () => {
                     <div className="space-y-4">
                       {posts.length === 0 ? (
                         <div className="glass-info p-6 m-3 rounded-xl text-center text-white/70">
-                          This user hasn&apos;t posted any notes yet.
+                          {isOwnProfile 
+                            ? "You haven't posted any notes yet." 
+                            : "This user hasn't posted any notes yet."
+                          }
                         </div>
                       ) : (
                         posts.map((post) => (
@@ -376,7 +394,7 @@ const Profile = () => {
                                   </span>{" "}
                                   PDF
                                 </a>
-                                {!nameFromUrl && (
+                                {isOwnProfile && (
                                   <button
                                     onClick={() => handleDelete(post.pdf)}
                                     className="px-3 py-1.5 rounded-lg bg-red-500/80 hover:bg-red-600/80 text-white font-semibold flex items-center gap-1 transition"

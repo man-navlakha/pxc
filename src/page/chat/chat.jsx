@@ -471,7 +471,7 @@ export default function Chat() {
 
         // Fetch own profile details
         try {
-          const details = await api.get(`/Profile/details/?username=${currentUsername}`);
+          const details = await api.post(`/Profile/details`);
           setOwnProfile(details.data);
         } catch (err) {
           console.warn("⚠️ Failed to fetch own profile details", err);
@@ -479,8 +479,10 @@ export default function Chat() {
 
         // Fetch receiver profile details
         try {
-          const receiverDetails = await api.get(`/Profile/details/?username=${RECEIVER}`);
-          setReceiverProfile(receiverDetails.data);
+          const receiverDetails = await api.post(`/Profile/details/`, {
+                        username: RECEIVER, // Use targetUser instead of userToFetch
+                      });
+                      setReceiverProfile(receiverDetails.data);
         } catch (err) {
           console.warn("⚠️ Failed to fetch receiver profile details", err);
         }

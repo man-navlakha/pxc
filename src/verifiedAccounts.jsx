@@ -6,5 +6,5 @@ export const verifiedUsernames = new Set([
 'Dhruv☆',
 'mann',
 'man',
-''
+'Finder'
 ]);
