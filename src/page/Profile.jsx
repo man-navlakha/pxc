@@ -55,14 +55,12 @@ const Profile = () => {
 
           try {
             // Step 2: fetch profile details (GET not POST)
-            const details = await api.get(
-              `/Profile/details/`
-            );
+            const details = await api.post(`/Profile/details/`, {
+              username: res.data.username,
+            });
 
             // Step 3: fetch posts
-            const postsRes = await api.get(
-              `/Profile/posts/?username=${userToFetch}`
-            );
+            const postsRes = await api.get(`/Profile/posts/?username=${userToFetch}`);
 
             // Merge backend data
             setProfile({
