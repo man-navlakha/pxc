@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
-import { Send, Undo2, Image as ImageIcon } from "lucide-react";
+import { Send, Undo2, Image as ImageIcon, MoreVertical, Edit3, Trash2, Check, X } from "lucide-react";
 import axios from "axios";
 import "../../new.css";
 
@@ -251,7 +251,7 @@ export default function Chat() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  console.log(RECEIVER)
+
   // ---------- helpers ----------
   const getExtFromUrl = (raw) => {
     try {
@@ -304,160 +304,382 @@ export default function Chat() {
     []
   );
 
-const [USERNAME, setUSERNAME] = useState(null);
 
-  // // Receiver profile (from URL param)
-  // useEffect(() => {
-  //   if (!RECEIVER) return;
 
-  //   const fetchProfile = async () => {
-  //     try {
-  //       console.warn(RECEIVER)
-  //       const res = await api.get(`/Profile/details/?username=${RECEIVER}`);
-  //       setReceiverProfile(res.data);
-  //       console.warn(res.data)
-  //     } catch (err) {
-  //       console.warn("[Profile GET failed, trying POST fallback]", err);
-        
-  //     }
-  //   };
+  const [USERNAME, setUSERNAME] = useState(null);
 
-  //   fetchProfile();
-  // }, [RECEIVER]);
+
+
+
+  const [editingMessage, setEditingMessage] = useState(null);
+  const [editText, setEditText] = useState("");
+  const [showMessageMenu, setShowMessageMenu] = useState(null);
+
+  const handleEditMessage = async (messageId, newContent) => {
+    try {
+      const response = await api.put(
+        `chatting/${messageId}/edit/`,
+        { content: newContent },
+        {
+          withCredentials: true,
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': Cookies.get('csrftoken')
+          }
+        }
+      );
+
+      if (response.data && response.data.id) {
+        setMessages(prev => prev.map(msg =>
+          msg.id === messageId
+            ? { ...msg, message: newContent, is_edited: true }
+            : msg
+        ));
+        setEditingMessage(null);
+        setEditText("");
+        return true;
+      }
+    } catch (error) {
+      console.error('Failed to edit message:', error);
+      console.error('Response data:', error.response?.data);
+
+      // If PUT fails, try POST as fallback
+      try {
+        const postResponse = await api.post(
+          `chatting/${messageId}/edit/`,
+          { content: newContent },
+          {
+            withCredentials: true,
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': Cookies.get('csrftoken')
+            }
+          }
+        );
+
+        if (postResponse.data && postResponse.data.id) {
+          setMessages(prev => prev.map(msg =>
+            msg.id === messageId
+              ? { ...msg, message: newContent, is_edited: true }
+              : msg
+          ));
+          setEditingMessage(null);
+          setEditText("");
+          return true;
+        }
+      } catch (postError) {
+        console.error('POST fallback also failed:', postError);
+        alert('Failed to edit message. Check console for details.');
+      }
+    }
+    return false;
+  };
+
+
+  // Delete message function
+  const handleDeleteMessage = async (messageId) => {
+    if (!confirm('Are you sure you want to delete this message?')) return;
+
+    try {
+      const response = await api.delete(`chatting/${messageId}/delete/`, {
+        withCredentials: true,
+        headers: {
+          'X-CSRFToken': Cookies.get('csrftoken')
+        }
+      });
+
+      if (response.data.success) {
+        setMessages(prev => prev.filter(msg => msg.id !== messageId));
+        setShowMessageMenu(null);
+      }
+    } catch (error) {
+      console.error('Failed to delete message:', error);
+      console.error('Response data:', error.response?.data);
+      alert('Failed to delete message. Check console for details.');
+    }
+  };
+
+
+  // Start editing
+  const startEditing = (msg) => {
+    setEditingMessage(msg.id);
+    setEditText(msg.message);
+    setShowMessageMenu(null);
+  };
+
+  // Cancel editing
+  const cancelEditing = () => {
+    setEditingMessage(null);
+    setEditText("");
+  };
+
+  // Save edit
+  const saveEdit = () => {
+    if (editText.trim() && editText.trim() !== messages.find(m => m.id === editingMessage)?.message) {
+      handleEditMessage(editingMessage, editText.trim());
+    } else {
+      cancelEditing();
+    }
+  };
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      if (showMessageMenu) setShowMessageMenu(null);
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [showMessageMenu]);
+
+
+   // Receiver profile (from URL param)
+  useEffect(() => {
+    if (!RECEIVER) return;
+
+    const fetchProfile = async () => {
+      try {
+        console.warn(RECEIVER)
+        const res = await api.get(`/Profile/details/?username=${RECEIVER}`);
+        setReceiverProfile(res.data);
+        console.warn(res.data)
+      } catch (err) {
+        console.warn("[Profile GET failed, trying POST fallback]", err);
+
+      }
+    };
+
+    fetchProfile();
+  }, [RECEIVER]);
 
   // ---------- WebSocket + history ----------
   useEffect(() => {
-  if (!RECEIVER) return;
+    if (!RECEIVER) return;
 
-  let socket;
+    let socket;
 
-  const initWebSocket = async () => {
-    try {
-      // 🧑‍💻 Step 0: fetch logged-in user
-      const meRes = await api.get("/me/", { withCredentials: true });
-      if (!meRes.data?.username) {
-        console.error("❌ Failed to fetch logged-in user");
-        return;
-      }
-      const USERNAME = meRes.data.username;
-
-      // (optional) fetch own profile details
+    const initWebSocket = async () => {
       try {
-        const details = await api.get(
-          `/Profile/details/?username=${USERNAME}`
-        );
-        setOwnProfile(details.data);
-      } catch (err) {
-        console.warn("⚠️ Failed to fetch own profile details", err);
-      }
-
-      // 🔑 Step 1: request short-lived ws_token
-      const res = await api.get("/ws-token/", {
-        withCredentials: true,
-      });
-      const wsToken = res.data.ws_token;
-
-      if (!wsToken) {
-        console.error("❌ Failed to get WS token");
-        return;
-      }
-
-      // 🔗 Step 2: build WebSocket URL with wsToken + receiver
-      const wsUrl = `wss://pixel-classes.onrender.com/ws/chat/?token=${wsToken}&receiver=${RECEIVER}`;
-      socket = new WebSocket(wsUrl);
-      socketRef.current = socket;
-
-      console.log("🌐 Connecting to:", wsUrl);
-
-      socket.onopen = async () => {
-        console.log("✅ Connected to chat WebSocket:", wsUrl);
-
-        try {
-          // Fetch chat history via REST
-          const res = await api.get(`chatting/${RECEIVER}/`, {
-            withCredentials: true,
-          });
-
-          const data = res.data;
-          if (Array.isArray(data)) {
-            const hist = data
-              .map((msg) => ({
-                id: msg.id,
-                sender: msg.sender,
-                message: msg.content,
-                seen: msg.seen_at,
-                status: msg.is_seen ? "seen" : "sent",
-              }))
-              .sort((a, b) => String(a.id).localeCompare(String(b.id)));
-
-            setMessages(hist);
-            setTimeout(() => scrollToBottom(true), 0);
-          }
-        } catch (e) {
-          console.error("history load failed", e);
+        // Step 0: fetch logged-in user
+        const meRes = await api.get("/me/", { withCredentials: true });
+        if (!meRes.data?.username) {
+          console.error("❌ Failed to fetch logged-in user");
+          return;
         }
-      };
+        const currentUsername = meRes.data.username;
+        setUSERNAME(currentUsername); // Make sure to set this
 
-      socket.onmessage = (e) => {
-        const data = JSON.parse(e.data);
+        // Fetch own profile details
+        try {
+          const details = await api.get(`/Profile/details/?username=${currentUsername}`);
+          setOwnProfile(details.data);
+        } catch (err) {
+          console.warn("⚠️ Failed to fetch own profile details", err);
+        }
 
-        if (data.type === "seen") {
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === data.message_id
-                ? { ...m, status: "seen", seen: new Date().toISOString() }
-                : m
-            )
-          );
+        // Fetch receiver profile details
+        try {
+          const receiverDetails = await api.get(`/Profile/details/?username=${RECEIVER}`);
+          setReceiverProfile(receiverDetails.data);
+        } catch (err) {
+          console.warn("⚠️ Failed to fetch receiver profile details", err);
+        }
+
+        // Step 1: request short-lived ws_token
+        const res = await api.get("/ws-token/", { withCredentials: true });
+        const wsToken = res.data.ws_token;
+
+        if (!wsToken) {
+          console.error("❌ Failed to get WS token");
           return;
         }
 
-        if (data.type === "chat") {
-          setMessages((prev) => {
-            const upd = [...prev];
-            const idx = upd.findIndex(
-              (m) =>
-                (data.temp_id && m.temp_id === data.temp_id) ||
-                (data.tempId && m.temp_id === data.tempId) ||
+        // Step 2: build WebSocket URL
+        const wsUrl = `wss://pixel-classes.onrender.com/ws/chat/?token=${wsToken}&receiver=${RECEIVER}`;
+        socket = new WebSocket(wsUrl);
+        socketRef.current = socket;
+
+        console.log("🌐 Connecting to:", wsUrl);
+
+        socket.onopen = async () => {
+          console.log("✅ Connected to chat WebSocket:", wsUrl);
+
+          try {
+            // Fetch chat history via REST
+            const res = await api.get(`chatting/${RECEIVER}/`, {
+              withCredentials: true,
+            });
+
+            const data = res.data;
+            if (Array.isArray(data)) {
+              const hist = data
+                .map((msg) => ({
+                  id: msg.id,
+                  sender: msg.sender,
+                  receiver: msg.receiver, // Make sure this is included
+                  message: msg.content,
+                  seen: msg.seen_at,
+                  status: msg.is_seen ? "seen" : "sent",
+                  created_at: msg.created_at
+                }))
+                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+              setMessages(hist);
+              setTimeout(() => scrollToBottom(true), 0);
+            }
+          } catch (e) {
+            console.error("history load failed", e);
+          }
+        };
+
+        socket.onmessage = (e) => {
+          const data = JSON.parse(e.data);
+          console.log("📨 Received WebSocket message:", data);
+
+          if (data.type === "seen") {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === data.message_id
+                  ? { ...m, status: "seen", seen: new Date().toISOString() }
+                  : m
+              )
+            );
+            return;
+          }
+
+          if (data.type === "chat") {
+            setMessages((prev) => {
+              // First, try to find and update existing temporary message
+              const tempIndex = prev.findIndex(m =>
+                data.temp_id && m.temp_id === data.temp_id && m.status === "sending"
+              );
+
+              if (tempIndex !== -1) {
+                // Update the temporary message with real data
+                const updated = [...prev];
+                updated[tempIndex] = {
+                  ...updated[tempIndex],
+                  id: data.id,
+                  status: "sent",
+                  created_at: data.created_at
+                };
+                return updated;
+              }
+
+              // If no temporary message found, check if this is a duplicate
+              const existingMessage = prev.find(m =>
+                m.id === data.id ||
                 (m.sender === data.sender &&
                   m.message === data.message &&
-                  m.status === "sending")
-            );
+                  Math.abs(new Date(m.created_at || Date.now()) - new Date(data.created_at)) < 1000)
+              );
 
-            if (idx !== -1) {
-              upd[idx] = { ...upd[idx], id: data.id, status: "sent" };
-              return upd;
-            }
+              if (existingMessage) {
+                // Message already exists, don't add duplicate
+                return prev;
+              }
 
-            upd.push({
-              id: data.id,
-              sender: data.sender,
-              receiver: data.receiver,
-              message: data.message,
-              status: "sent",
+              // Add new message
+              const newMessage = {
+                id: data.id,
+                sender: data.sender,
+                receiver: data.receiver,
+                message: data.message,
+                status: "sent",
+                created_at: data.created_at
+              };
+
+              return [...prev, newMessage].sort((a, b) =>
+                new Date(a.created_at || Date.now()) - new Date(b.created_at || Date.now())
+              );
             });
-            return upd;
-          });
 
-          setTimeout(() => scrollToBottom(), 0);
-        }
-      };
+            setTimeout(() => scrollToBottom(), 0);
+          }
 
-      socket.onclose = () =>
-        console.log("❌ Disconnected from chat WebSocket");
-    } catch (err) {
-      console.error("❌ Failed to init WebSocket:", err);
+          if (data.type === "error") {
+            console.error("❌ WebSocket error:", data.message);
+          }
+        };
+
+        socket.onclose = () => {
+          console.log("❌ Disconnected from chat WebSocket");
+        };
+
+        socket.onerror = (error) => {
+          console.error("❌ WebSocket error:", error);
+        };
+
+      } catch (err) {
+        console.error("❌ Failed to init WebSocket:", err);
+      }
+    };
+
+    initWebSocket();
+
+    return () => {
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.close();
+      }
+    };
+  }, [RECEIVER]);
+
+  // Updated sendMessage function
+  const sendMessage = (messageText = null) => {
+    const messageContent = messageText || input.trim();
+
+    if (!messageContent || socketRef.current?.readyState !== WebSocket.OPEN || !USERNAME) {
+      return;
     }
+
+    const temp_id = `temp-${Date.now()}-${Math.random()}`;
+
+    // Add temporary message to UI immediately
+    const tempMessage = {
+      temp_id,
+      sender: USERNAME,
+      receiver: RECEIVER,
+      message: messageContent,
+      status: "sending",
+      created_at: new Date().toISOString()
+    };
+
+    setMessages((prev) => [...prev, tempMessage]);
+
+    // Send message via WebSocket
+    const wsMessage = {
+      type: "chat",
+      temp_id,
+      sender: USERNAME,
+      receiver: RECEIVER,
+      message: messageContent,
+    };
+
+    socketRef.current.send(JSON.stringify(wsMessage));
+
+    // Clear input only if sending from input field
+    if (!messageText) {
+      setInput("");
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+      }
+    }
+
+    setTimeout(() => scrollToBottom(true), 0);
   };
 
-  initWebSocket();
-
-  return () => {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      socket.close();
+  // Updated sendSeenStatus function
+  const sendSeenStatus = (messageId) => {
+    if (socketRef.current?.readyState === WebSocket.OPEN && USERNAME) {
+      socketRef.current.send(
+        JSON.stringify({
+          type: "seen",
+          message_id: messageId,
+          seen_by: USERNAME
+        })
+      );
     }
   };
-}, [RECEIVER]);
 
 
 
@@ -561,39 +783,6 @@ const [USERNAME, setUSERNAME] = useState(null);
     scrollToBottom();
   }, [messages]);
 
-  // ---------- Actions ----------
-  const sendSeenStatus = (messageId) => {
-    if (socketRef.current?.readyState === WebSocket.OPEN) {
-      socketRef.current.send(
-        JSON.stringify({ type: "seen", message_id: messageId, seen_by: USERNAME })
-      );
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === messageId ? { ...msg, status: "seen", seen: new Date().toISOString() } : msg
-        )
-      );
-    }
-  };
-
-  const sendMessage = () => {
-    if (!input.trim() || socketRef.current?.readyState !== WebSocket.OPEN) return;
-    const temp_id = `temp-${Date.now()}`;
-    const msg = {
-      type: "chat",
-      temp_id,
-      sender: USERNAME,
-      receiver: RECEIVER,
-      message: input.trim(),
-      status: "sending",
-    };
-    setMessages((prev) => [...prev, msg]);
-    socketRef.current.send(JSON.stringify(msg));
-    setInput("");
-    if (textareaRef.current) textareaRef.current.style.height = "auto";
-    setTimeout(() => scrollToBottom(true), 0);
-  };
-
-
 
 
   useEffect(() => {
@@ -608,7 +797,13 @@ const [USERNAME, setUSERNAME] = useState(null);
     }
   }, [location.search]);
 
-// console.log(receiverProfile)
+  // console.log(receiverProfile)
+
+
+
+
+
+
 
   return (
     <div className="flex h-screen ccf bg-gray-900">
@@ -622,44 +817,44 @@ const [USERNAME, setUSERNAME] = useState(null);
       <div className="flex-1 flex flex-col text-white">
         {/* Header */}
         {/* Header */}
-<div className="sticky top-0 bg-gray-900 overflow-hidden flex items-center gap-3 px-4 py-3 border-b border-gray-700">
-  <button onClick={() => navigate("/chat")} className="p-2">
-    <Undo2 className="text-white" />
-  </button>
+        <div className="sticky top-0 bg-gray-900 overflow-hidden flex items-center gap-3 px-4 py-3 border-b border-gray-700">
+          <button onClick={() => navigate("/chat")} className="p-2">
+            <Undo2 className="text-white" />
+          </button>
 
-  <img
-    onClick={() => navigate(`/profile/${receiverProfile?.username || RECEIVER}`)}
-    src={
-      receiverProfile?.profile_pic ||
-      "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"
-    }
-    className="w-8 h-8 rounded-full"
-  />
+          <img
+            onClick={() => navigate(`/profile/${receiverProfile?.username || RECEIVER}`)}
+            src={
+              receiverProfile?.profile_pic ||
+              "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"
+            }
+            className="w-8 h-8 rounded-full"
+          />
 
-  <div
-    onClick={() => navigate(`/profile/${receiverProfile?.username || RECEIVER}`)}
-    className="flex flex-col"
-  >
-    <span className="font-semibold flex items-center gap-1">
-      {receiverProfile?.username || RECEIVER}
-      {verifiedUsernames.has(receiverProfile?.username || RECEIVER) && (
-        <VerifiedBadge size={24} />
-      )}
-    </span>
-    <span className="text-xs text-gray-400">
-      {receiverProfile?.last_seen
-        ? `last seen ${receiverProfile.last_seen}`
-        : "last seen recently"}
-    </span>
-  </div>
-</div>
+          <div
+            onClick={() => navigate(`/profile/${receiverProfile?.username || RECEIVER}`)}
+            className="flex flex-col"
+          >
+            <span className="font-semibold flex items-center gap-1">
+              {receiverProfile?.username || RECEIVER}
+              {verifiedUsernames.has(receiverProfile?.username || RECEIVER) && (
+                <VerifiedBadge size={24} />
+              )}
+            </span>
+            <span className="text-xs text-gray-400">
+              {receiverProfile?.last_seen
+                ? `last seen ${receiverProfile.last_seen}`
+                : "last seen recently"}
+            </span>
+          </div>
+        </div>
+
 
 
         {/* Messages */}
         <div
           ref={listRef}
           className="flex flex-1 flex-col overflow-y-auto px-4 py-4 space-y-1"
-        // No justify-end: we keep natural flow, but we smart-scroll to bottom. 
         >
           {messages.map((msg, i) => {
             const isOwn = msg.sender === USERNAME;
@@ -679,47 +874,104 @@ const [USERNAME, setUSERNAME] = useState(null);
               else if (!isFirstOfGroup && isLastOfGroup) bubbleClasses = "rounded-2xl rounded-tl-sm";
             }
 
+            const isEditing = editingMessage === msg.id;
+
             return (
               <div key={`${msg.id ?? "temp"}-${i}`} className="flex flex-col">
                 <div
                   id={msg.id ? `msg-${msg.id}` : undefined}
-                  className={`w-fit max-w-[75%] h-fit px-4 py-3 overflow-x-auto shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn ? "ml-auto bg-emerald-500/30 text-white" : "mr-auto bg-gray-200/10 text-white"}`}
+                  className={`group relative w-fit max-w-[75%] h-fit overflow-x-auto shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn ? "ml-auto bg-emerald-500/30 text-white" : "mr-auto bg-gray-200/10 text-white"
+                    }`}
                 >
-
-
-                  {renderMedia(msg.message, linkMeta, openLightbox)}
-                </div>
-
-                {/* Lightbox modal */}
-                {lightboxData && (
-                  <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
-                    <button
-                      onClick={() => setLightboxData(null)}
-                      className="absolute top-4 right-4 text-white text-2xl"
-                    >
-                      ✕
-                    </button>
-
-                    {lightboxData.type === "image" && (
-                      <img
-                        src={lightboxData.url}
-                        alt="preview"
-                        className="max-w-[90vw] max-h-[90vh] object-contain"
-                      />
-                    )}
-
-                    {lightboxData.type === "video" && (
-                      <video
-                        controls
-                        className="max-w-[90vw] max-h-[90vh] object-contain"
-                      >
-                        <source src={lightboxData.url} />
-                      </video>
+                  {/* Message Content */}
+                  <div className="px-4 py-3">
+                    {isEditing ? (
+                      // Edit mode
+                      <div className="flex flex-col gap-2 min-w-[200px]">
+                        <textarea
+                          value={editText}
+                          onChange={(e) => setEditText(e.target.value)}
+                          className="w-full bg-transparent border border-gray-500 rounded px-2 py-1 text-white placeholder-gray-400 focus:outline-none focus:border-emerald-400 resize-none"
+                          rows={Math.max(1, editText.split('\n').length)}
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault();
+                              saveEdit();
+                            } else if (e.key === 'Escape') {
+                              cancelEditing();
+                            }
+                          }}
+                        />
+                        <div className="flex gap-1 justify-end">
+                          <button
+                            onClick={cancelEditing}
+                            className="p-1 rounded hover:bg-gray-600 text-gray-300 hover:text-white"
+                          >
+                            <X size={16} />
+                          </button>
+                          <button
+                            onClick={saveEdit}
+                            className="p-1 rounded hover:bg-emerald-600 text-emerald-400 hover:text-white"
+                          >
+                            <Check size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      // Normal message display
+                      <div>
+                        {renderMedia(msg.message, linkMeta, openLightbox)}
+                        {msg.is_edited && (
+                          <span className="text-xs text-gray-400 ml-2">(edited)</span>
+                        )}
+                      </div>
                     )}
                   </div>
-                )}
 
+                  {/* Message Options Menu (only for own messages) */}
+                  {isOwn && !isEditing && msg.id && !String(msg.id).startsWith("temp-") && (
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setShowMessageMenu(showMessageMenu === msg.id ? null : msg.id);
+                        }}
+                        className="p-1 rounded-full hover:bg-black/20 text-gray-300 hover:text-white"
+                      >
+                        <MoreVertical size={16} />
+                      </button>
 
+                      {/* Dropdown Menu */}
+                      {showMessageMenu === msg.id && (
+                        <div
+                          className="absolute right-0 top-8 bg-gray-800 border border-gray-600 rounded-lg shadow-lg py-1 z-10 min-w-[120px]"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <button
+                            onClick={() => startEditing(msg)}
+                            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-white hover:bg-gray-700 transition-colors"
+                          >
+                            <Edit3 size={14} />
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleDeleteMessage(msg.id);
+                              setShowMessageMenu(null);
+                            }}
+                            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-500/20 transition-colors"
+                          >
+                            <Trash2 size={14} />
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Avatar and status info */}
                 {!isOwn && isLastOfGroup && (
                   <div className="flex items-center gap-1 mt-1">
                     <img
@@ -729,7 +981,6 @@ const [USERNAME, setUSERNAME] = useState(null);
                     />
                   </div>
                 )}
-
 
                 {isOwn && isLastOfGroup && (
                   <p className="text-right text-xs text-gray-400 mt-1">
@@ -741,8 +992,6 @@ const [USERNAME, setUSERNAME] = useState(null);
           })}
           <div ref={messagesEndRef} />
         </div>
-
-
 
 
 

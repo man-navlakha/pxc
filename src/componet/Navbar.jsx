@@ -56,7 +56,7 @@ export default function Navbar() {
         if (res.data?.username) {
           try {
             // Step 2: Fetch profile details (GET, not POST)
-            const details = await api.get(`/Profile/details/?username=${res.data.username}`);
+            const details = await api.get(`/Profile/details/`);
 
             // Merge backend data into one object
             setProfile({
