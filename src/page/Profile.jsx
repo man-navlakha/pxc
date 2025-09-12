@@ -41,69 +41,57 @@ const Profile = () => {
   }, [urlusername, navigate]);
 
   // --- Fetch profile + posts ---
-  useEffect(() => {
-    const fetchProfile = async () => {
-      setLoading(true);
-      setError(null);
+    
+        useEffect(() => {
+  const fetchProfile = async () => {
+    setLoading(true);
+    setError(null);
 
-      try {
-        // Step 1: check authentication
-        const res = await api.post("/Profile/details/");
+    try {
+      // Step 1: Always fetch current user first
+      const res = await api.post("/Profile/details/", {
+        username: nameFromUrl || undefined, // ✅ always send something
+      });
 
-        if (res.data?.username) {
-          Username = res.data.username; // Update Username
-          
-          // Determine which user to fetch
-          const targetUser = nameFromUrl || res.data.username;
-          setUserToFetch(targetUser);
-          
-          console.log("Target user to fetch:", targetUser);
-          console.log("Current user:", res.data.username);
-          console.log("nameFromUrl:", nameFromUrl);
+      const currentUser = res.data.username;
+      const targetUser = nameFromUrl || currentUser;
 
-          try {
-            // Step 2: fetch profile details
-            // Fixed: Remove backticks and use proper template literal
-            const details = await api.post(`/Profile/details/`, {
-              username: targetUser, // Use targetUser instead of userToFetch
-            });
+      setUserToFetch(targetUser);
 
-            // Step 3: fetch posts
-            const postsRes = await api.post(`/Profile/posts/`, {
-              username: targetUser, // Use targetUser instead of userToFetch
-            });
+      console.log("Target user to fetch:", targetUser);
+      console.log("Current user:", currentUser);
 
-            console.log("Posts response:", postsRes);
-            console.log("Details response:", details);
+      // Step 2: Fetch profile details (redundant but safe)
+      const details = await api.post("/Profile/details/", {
+        username: targetUser,
+      });
 
-            // Merge backend data
-            setProfile({
-              ...res.data,
-              ...details.data,
-            });
-            setPosts(postsRes.data.posts || []);
-          } catch (err) {
-            console.error("[PROFILE DATA ERROR]", err);
-            // fallback only with /me/
-            setProfile(res.data);
-            setPosts([]);
-          }
-        } else {
-          setProfile(null);
-        }
-      } catch (err) {
-        console.error("[AUTH ERROR]", err);
-        setProfile(null);
-        if (err.response?.status === 401) {
-          navigate("/auth/login");
-        }
-      } finally {
-        setLoading(false);
+      // Step 3: Fetch posts
+      const postsRes = await api.post("/Profile/posts/", {
+        username: targetUser,
+      });
+
+      // Merge data
+      setProfile({
+        ...res.data,
+        ...details.data,
+      });
+      setPosts(postsRes.data.posts || []);
+    } catch (err) {
+      console.error("[PROFILE FETCH ERROR]", err);
+      setProfile(null);
+      setPosts([]);
+      if (err.response?.status === 401) {
+        navigate("/auth/login");
       }
-    };
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchProfile();
-  }, [nameFromUrl, navigate]);
+  fetchProfile();
+}, [nameFromUrl, navigate]);
+
 
   // --- Fetch follow status ---
   useEffect(() => {
@@ -111,7 +99,9 @@ const Profile = () => {
 
     const fetchFollowStatus = async () => {
       try {
-        const res = await api.post("/Profile/following/", { username: nameFromUrl });
+        const res = await api.post("/Profile/following/", {
+          username: nameFromUrl,
+        });
         const isUserFollowing = res.data.some((u) => u.username === Username);
         setIsFollowing(isUserFollowing);
       } catch (err) {
@@ -125,7 +115,10 @@ const Profile = () => {
   // --- Follow / Unfollow ---
   const follow = async (follow_username) => {
     try {
-      await api.post("/Profile/follow/", { username: Username, follow_username });
+      await api.post("/Profile/follow/", {
+        username: Username,
+        follow_username,
+      });
       setIsFollowing(true);
       setProfile((p) =>
         p ? { ...p, follower_count: (p.follower_count || 0) + 1 } : p
@@ -137,7 +130,10 @@ const Profile = () => {
 
   const unfollow = async (unfollow_username) => {
     try {
-      await api.post("/Profile/unfollow/", { username: Username, unfollow_username });
+      await api.post("/Profile/unfollow/", {
+        username: Username,
+        unfollow_username,
+      });
       setIsFollowing(false);
       setProfile((p) =>
         p ? { ...p, follower_count: (p.follower_count || 1) - 1 } : p
@@ -325,7 +321,7 @@ const Profile = () => {
               {page === "following" ? (
                 <FollowingPage username={profile?.username} />
               ) : page === "followers" ? (
-                <FollowersPage username={userToFetch} />
+                <FollowersPage username={profile?.username} />
               ) : page === "edit" ? (
                 <div className="glass-card m-3 p-6">
                   <button
@@ -356,10 +352,9 @@ const Profile = () => {
                     <div className="space-y-4">
                       {posts.length === 0 ? (
                         <div className="glass-info p-6 m-3 rounded-xl text-center text-white/70">
-                          {isOwnProfile 
-                            ? "You haven't posted any notes yet." 
-                            : "This user hasn't posted any notes yet."
-                          }
+                          {isOwnProfile
+                            ? "You haven't posted any notes yet."
+                            : "This user hasn't posted any notes yet."}
                         </div>
                       ) : (
                         posts.map((post) => (
