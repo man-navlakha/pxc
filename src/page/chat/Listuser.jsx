@@ -1,4 +1,4 @@
-// Listuser.jsx
+// Enhanced Listuser.jsx with improved seen/unseen logic
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { Undo2, Search, Users, Filter, Bell, Check, CheckCheck } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -16,7 +16,34 @@ function toISOStringCompat(dateString) {
   return `${date}T${fullTime}`;
 }
 
-// Skeleton Loader - Improved with better animation
+// Enhanced Message Status Component
+const MessageStatus = ({ status, isOwnMessage, isSeen }) => {
+  if (!isOwnMessage) return null;
+  
+  if (isSeen) {
+    return <CheckCheck size={14} className="text-blue-400" title="Seen" />;
+  } else {
+    return <Check size={14} className="text-white/40" title="Sent" />;
+  }
+};
+
+// Enhanced Unread Badge Component
+const UnreadBadge = ({ count, isVisible }) => {
+  if (!isVisible || count === 0) return null;
+  
+  return (
+    <motion.span 
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      exit={{ scale: 0 }}
+      className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 rounded-full bg-blue-500 border-2 border-gray-900 text-xs font-bold flex items-center justify-center"
+    >
+      {count > 99 ? '99+' : count}
+    </motion.span>
+  );
+};
+
+// Skeleton Loader
 const ChatUserSkeleton = () => (
   <div className="flex items-center gap-4 p-4 w-full">
     <div className="relative">
@@ -29,7 +56,7 @@ const ChatUserSkeleton = () => (
   </div>
 );
 
-// Empty State - Enhanced with illustration and options
+// Empty State
 const EmptyState = ({ onFindFriendsClick }) => (
   <motion.div 
     initial={{ opacity: 0, y: 20 }}
@@ -61,45 +88,29 @@ const EmptyState = ({ onFindFriendsClick }) => (
   </motion.div>
 );
 
-// Message Status Icon
-const MessageStatus = ({ status, isOwnMessage }) => {
-  if (!isOwnMessage) return null;
-  
-  switch(status) {
-    case 'sent':
-      return <Check size={14} className="text-white/40" />;
-    case 'delivered':
-      return <CheckCheck size={14} className="text-white/40" />;
-    case 'read':
-      return <CheckCheck size={14} className="text-blue-400" />;
-    default:
-      return <Check size={14} className="text-white/40" />;
-  }
-};
-
 export default function Listuser() {
   const navigate = useNavigate();
- const [USERNAME, setUSERNAME] = useState("");
-  const [error, setError] = useState(null); // This should be replaced with actual username
+  const [USERNAME, setUSERNAME] = useState("");
+  const [error, setError] = useState(null);
   const wsRef = useRef(null);
   const listRef = useRef(null);
 
   const [search, setSearch] = useState("");
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState('all'); // 'all', 'unread', 'groups'
+  const [activeFilter, setActiveFilter] = useState('all');
   const [refreshing, setRefreshing] = useState(false);
   const [pullToRefresh, setPullToRefresh] = useState({ active: false, startY: 0, distance: 0 });
+  const [totalUnreadCount, setTotalUnreadCount] = useState(0);
 
-
+  // Enhanced user details fetching
   useEffect(() => {
     const fetchUserDetails = async () => {
       setLoading(true);
       setError(null);
       
       try {
-        // Try different endpoint variations based on your API
-        const details = await api.get(`/Profile/details/`);
+        const details = await api.post("/Profile/details/", {});
         
         if (details.data?.username) {
           setUSERNAME(details.data.username);
@@ -112,17 +123,15 @@ export default function Listuser() {
         const errorMessage = err.response?.data?.message || err.message || "Unknown error";
         setError(errorMessage);
         console.error("Failed to fetch user details:", err.response?.data || err);
-      
       } finally {
         setLoading(false);
       }
     };
 
     fetchUserDetails();
-  }, []); 
+  }, []);
 
-
-  // Filter users based on search and active filter
+  // Enhanced filtering with better unread logic
   const filteredUsers = useMemo(() => {
     const searchTerm = search.toLowerCase();
     let filtered = allUsers.filter((user) => {
@@ -133,27 +142,37 @@ export default function Listuser() {
       );
       
       if (activeFilter === 'unread') {
-        return matchesSearch && user.lastSender !== USERNAME && !user.isSeen;
+        // Show conversations with unread messages
+        return matchesSearch && user.hasUnread;
       }
       
       return matchesSearch;
     });
     
-    // Sort by timestamp (most recent first)
-    return filtered.sort((a, b) => 
-      new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
-    );
-  }, [allUsers, search, activeFilter, USERNAME]);
+    // Enhanced sorting: unread first, then by timestamp
+    return filtered.sort((a, b) => {
+      // First, prioritize unread messages
+      if (a.hasUnread && !b.hasUnread) return -1;
+      if (!a.hasUnread && b.hasUnread) return 1;
+      
+      // Then sort by timestamp
+      return new Date(b.timestamp || 0) - new Date(a.timestamp || 0);
+    });
+  }, [allUsers, search, activeFilter]);
 
-  // Online status simulation (in a real app, this would come from the server)
+  // Calculate total unread conversations
+  const unreadConversationsCount = useMemo(() => {
+    return allUsers.filter(user => user.hasUnread).length;
+  }, [allUsers]);
+
+  // Online status simulation
   const onlineUsers = useMemo(() => {
-    // Simulating online status - in a real app this would come from WebSocket
     return allUsers
-      .filter(() => Math.random() > 0.7) // 30% of users are "online"
+      .filter(() => Math.random() > 0.7)
       .map(user => user.username);
   }, [allUsers]);
 
-  // Handle pull to refresh
+  // Pull to refresh handlers
   const handleTouchStart = useCallback((e) => {
     if (listRef.current && listRef.current.scrollTop === 0) {
       setPullToRefresh({
@@ -176,17 +195,20 @@ export default function Listuser() {
   const handleTouchEnd = useCallback(() => {
     if (pullToRefresh.active && pullToRefresh.distance > 50) {
       setRefreshing(true);
-      // Simulate refresh
       setTimeout(() => {
         setRefreshing(false);
         setPullToRefresh({ active: false, startY: 0, distance: 0 });
+        // Trigger a refresh of inbox data
+        if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+          wsRef.current.send(JSON.stringify({ type: "refresh_inbox" }));
+        }
       }, 1000);
     } else {
       setPullToRefresh({ active: false, startY: 0, distance: 0 });
     }
   }, [pullToRefresh.active, pullToRefresh.distance]);
 
-  // WebSocket connection
+  // Enhanced WebSocket connection with better message handling
   useEffect(() => {
     let ws;
     let loadTimeout;
@@ -214,12 +236,34 @@ export default function Listuser() {
 
         ws.onmessage = (event) => {
           const data = JSON.parse(event.data);
+          console.log("WebSocket message received:", data);
 
           if (data.type === "inbox_data") {
             clearTimeout(loadTimeout);
-            const sorted = [...data.inbox].sort(
+            
+            // Enhanced inbox processing with proper seen/unseen logic
+            const processedInbox = data.inbox.map(user => {
+              // Determine if message is from current user
+              const isOwnMessage = user.latest_message && 
+                user.latest_message.sender_id === user.user_id; // This needs adjustment based on your actual data structure
+              
+              // Determine if conversation has unread messages
+              const hasUnread = user.latest_message && 
+                !isOwnMessage && 
+                !user.is_seen;
+              
+              return {
+                ...user,
+                hasUnread,
+                unreadCount: hasUnread ? 1 : 0,
+                isOwnMessage
+              };
+            });
+
+            const sorted = processedInbox.sort(
               (a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
             );
+            
             setAllUsers(sorted);
             setLoading(false);
           }
@@ -227,19 +271,37 @@ export default function Listuser() {
           if (data.type === "inbox_update") {
             setAllUsers((prev) => {
               const updated = prev.filter((u) => u.username !== data.user.username);
-              return [
-                {
-                  ...data.user,
-                  lastMessage: data.latest_message,
-                  lastTime: data.timestamp,
-                  isSeen: data.is_seen,
-                  messageStatus: data.message_status || 'sent'
-                },
-                ...updated,
-              ].sort(
-                (a, b) => new Date(b.lastTime || 0) - new Date(a.lastTime || 0)
+              
+              // Determine if message is from current user
+              const isOwnMessage = data.latest_message && 
+                data.latest_message.sender_id === data.user.user_id; // Adjust based on your data structure
+              
+              // Determine if conversation has unread messages
+              const hasUnread = data.latest_message && 
+                !isOwnMessage && 
+                !data.is_seen;
+              
+              const updatedUser = {
+                ...data.user,
+                latest_message: data.latest_message,
+                timestamp: data.timestamp,
+                is_seen: data.is_seen,
+                hasUnread,
+                unreadCount: hasUnread ? 1 : 0,
+                isOwnMessage
+              };
+              
+              const newList = [updatedUser, ...updated].sort(
+                (a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0)
               );
+              
+              return newList;
             });
+          }
+
+          // Handle total unread count updates
+          if (data.type === "total_unread_update") {
+            setTotalUnreadCount(data.total_unread_count || 0);
           }
         };
 
@@ -260,17 +322,38 @@ export default function Listuser() {
       }
     };
 
-    connectWS();
+    if (USERNAME) {
+      connectWS();
+    }
 
     return () => {
       clearTimeout(loadTimeout);
       if (ws) ws.close();
     };
-  }, []);
+  }, [USERNAME]);
+
+  // Mark conversation as read when navigating to chat
+  const handleChatNavigation = useCallback((username) => {
+    // Update local state immediately for better UX
+    setAllUsers(prev => prev.map(user => {
+      if (user.username === username) {
+        return {
+          ...user,
+          is_seen: true,
+          hasUnread: false,
+          unreadCount: 0
+        };
+      }
+      return user;
+    }));
+    
+    // Navigate to chat
+    navigate(`/chat/${username}`);
+  }, [navigate]);
 
   return (
     <div className="min-h-screen ccf flex flex-col text-white bg-gray-900">
-      {/* Header */}
+      {/* Enhanced Header with unread count */}
       <header className="sticky top-0 bg-gray-900/95 backdrop-blur-lg flex items-center gap-3 px-4 py-3 border-b border-white/10 z-10">
         <button
           onClick={() => navigate(-1)}
@@ -279,13 +362,27 @@ export default function Listuser() {
         >
           <Undo2 size={20} />
         </button>
-        <h1 className="text-xl font-semibold flex-1">Messages</h1>
-        <button 
-          className="p-2 rounded-full hover:bg-white/10 transition-colors"
-          aria-label="Notifications"
-        >
-          <Bell size={20} />
-        </button>
+        <div className="flex-1">
+          <h1 className="text-xl font-semibold">Messages</h1>
+          {unreadConversationsCount > 0 && (
+            <p className="text-xs text-blue-400">
+              {unreadConversationsCount} unread conversation{unreadConversationsCount > 1 ? 's' : ''}
+            </p>
+          )}
+        </div>
+        <div className="relative">
+          <button 
+            className="p-2 rounded-full hover:bg-white/10 transition-colors"
+            aria-label="Notifications"
+          >
+            <Bell size={20} />
+            {totalUnreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 text-xs font-bold flex items-center justify-center">
+                {totalUnreadCount > 9 ? '9+' : totalUnreadCount}
+              </span>
+            )}
+          </button>
+        </div>
       </header>
 
       <main 
@@ -335,95 +432,131 @@ export default function Listuser() {
               />
             </div>
 
-            {/* Filter Tabs */}
+            {/* Enhanced Filter Tabs with counts */}
             <div className="flex gap-2 mb-4 overflow-x-auto pb-2 hide-scrollbar">
-              {['All', 'Unread', 'Groups'].map((filter) => (
-                <button
-                  key={filter}
-                  onClick={() => setActiveFilter(filter.toLowerCase())}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${activeFilter === filter.toLowerCase() 
+              <button
+                onClick={() => setActiveFilter('all')}
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-2 ${
+                  activeFilter === 'all' 
                     ? 'bg-blue-600 text-white' 
                     : 'bg-white/5 text-white/60 hover:bg-white/10'
-                  }`}
-                >
-                  {filter}
-                </button>
-              ))}
+                }`}
+              >
+                All
+                <span className="text-xs bg-white/20 rounded-full px-2 py-0.5">
+                  {allUsers.length}
+                </span>
+              </button>
+              
+              <button
+                onClick={() => setActiveFilter('unread')}
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-2 ${
+                  activeFilter === 'unread' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white/5 text-white/60 hover:bg-white/10'
+                }`}
+              >
+                Unread
+                {unreadConversationsCount > 0 && (
+                  <span className="text-xs bg-red-500 rounded-full px-2 py-0.5">
+                    {unreadConversationsCount}
+                  </span>
+                )}
+              </button>
+
+              <button
+                onClick={() => setActiveFilter('groups')}
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                  activeFilter === 'groups' 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white/5 text-white/60 hover:bg-white/10'
+                }`}
+              >
+                Groups
+              </button>
             </div>
 
-            {/* Users list */}
+            {/* Enhanced Users list */}
             <motion.div layout className="flex flex-col overflow-y-auto">
               <AnimatePresence mode="popLayout">
-                {filteredUsers.map((user) => (
-                  <motion.div
-                    layout
-                    key={user.username}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
-                    onClick={() => navigate(`/chat/${user.username}`)}
-                    className="cursor-pointer p-3 rounded-lg flex items-center gap-4 hover:bg-white/10 active:bg-white/15 transition-colors"
-                  >
-                    <div className="relative">
-                      <img
-                        src={
-                          user.profile_pic ||
-                          `https://i.pravatar.cc/150?u=${user.username}`
-                        }
-                        alt={user.username}
-                        className="w-14 h-14 rounded-full border-2 border-white/20 object-cover"
-                      />
-                      {/* Online status indicator */}
-                      {onlineUsers.includes(user.username) && (
-                        <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-gray-900" />
-                      )}
-                      {/* Unread message indicator */}
-                      {user.lastSender && user.lastSender !== USERNAME && !user.isSeen && (
-                        <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 rounded-full bg-blue-500 border-2 border-gray-900 text-xs font-bold flex items-center justify-center">
-                          {user.unreadCount || 1}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="font-semibold truncate flex items-center gap-1">
-                          {user.username}
-                          {verifiedUsernames.has(user?.username) && (
-                            <VerifiedBadge size={16} />
-                          )}
-                        </span>
-                        {user.timestamp && (
-                          <span className="text-xs text-white/40 flex-shrink-0 ml-2">
-                            {new Date(
-                              toISOStringCompat(user.timestamp)
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </span>
+                {filteredUsers.map((user) => {
+                  return (
+                    <motion.div
+                      layout
+                      key={user.username}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      onClick={() => handleChatNavigation(user.username)}
+                      className={`cursor-pointer p-3 rounded-lg flex items-center gap-4 hover:bg-white/10 active:bg-white/15 transition-colors ${
+                        user.hasUnread ? 'bg-white/5' : ''
+                      }`}
+                    >
+                      <div className="relative">
+                        <img
+                          src={
+                            user.profile_pic ||
+                            `https://i.pravatar.cc/150?u=${user.username}`
+                          }
+                          alt={user.username}
+                          className="w-14 h-14 rounded-full border-2 border-white/20 object-cover"
+                        />
+                        
+                        {/* Online status indicator */}
+                        {onlineUsers.includes(user.username) && (
+                          <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 border-2 border-gray-900" />
                         )}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <p
-                          className={`text-sm truncate flex-1 ${user.lastSender !== USERNAME && !user.isSeen
-                              ? "text-white font-semibold"
-                              : "text-white/60"
-                            }`}
-                        >
-                          {user.lastSender === USERNAME && user.latest_message
-                            ? `You: ${user.latest_message}`
-                            : user.latest_message ||
-                            `${user.first_name || ""} ${user.last_name || ""}`.trim() || "No messages yet"}
-                        </p>
-                        <MessageStatus 
-                          status={user.messageStatus} 
-                          isOwnMessage={user.lastSender === USERNAME} 
+                        
+                        {/* Enhanced Unread message indicator */}
+                        <UnreadBadge 
+                          count={user.unreadCount || 0}
+                          isVisible={user.hasUnread}
                         />
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-center mb-1">
+                          <span className={`font-semibold truncate flex items-center gap-1 ${
+                            user.hasUnread ? 'text-white' : 'text-white/80'
+                          }`}>
+                            {user.username}
+                            {verifiedUsernames.has(user?.username) && (
+                              <VerifiedBadge size={16} />
+                            )}
+                          </span>
+                          {user.timestamp && (
+                            <span className="text-xs text-white/40 flex-shrink-0 ml-2">
+                              {new Date(
+                                toISOStringCompat(user.timestamp)
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className="flex items-center gap-1">
+                          <p className={`text-sm truncate flex-1 ${
+                            user.hasUnread ? "text-white font-medium" : "text-white/60"
+                          }`}>
+                            {user.isOwnMessage && user.latest_message
+                              ? `You: ${user.latest_message}`
+                              : user.latest_message ||
+                              `${user.first_name || ""} ${user.last_name || ""}`.trim() || ""}
+                          </p>
+                          
+                          <MessageStatus 
+                            status={user.messageStatus}
+                            isOwnMessage={user.isOwnMessage}
+                            isSeen={user.is_seen}
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </AnimatePresence>
               
               {filteredUsers.length === 0 && (
