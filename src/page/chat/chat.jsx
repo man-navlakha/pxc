@@ -440,7 +440,7 @@ export default function Chat() {
     const fetchProfile = async () => {
       try {
         console.warn(RECEIVER)
-        const res = await api.get(`/Profile/details/?username=${RECEIVER}`);
+        const res = await api.post(`/Profile/details/?username=${RECEIVER}`);
         setReceiverProfile(res.data);
         console.warn(res.data)
       } catch (err) {
@@ -810,7 +810,7 @@ export default function Chat() {
   return (
     <div className="flex h-screen ccf bg-gray-900">
       {/* Left panel */}
-      <div className="resize-x min-w-90 overflow-y-auto border-r border-gray-700 hidden lg:block">
+      <div className="resize-x min-w-[269px]  max-w-[469px] overflow-y-auto border-r border-gray-700 hidden lg:block">
 
         <Listuser />
       </div>
