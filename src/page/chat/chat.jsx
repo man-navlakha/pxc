@@ -15,7 +15,67 @@ import { verifiedUsernames } from "../../verifiedAccounts";
 import VerifiedBadge from "../../componet/VerifiedBadge";
 
 
+const Check2 = () => (
+  <svg
+    fill="#ffffffb7"
+    width="14px"
+    height="14px"
+    viewBox="0 0 24 24"
+    id="check-double"
+    data-name="Line Color"
+    xmlns="http://www.w3.org/2000/svg"
+    className="icon line-color"
+  >
+    <line
+      id="secondary"
+      x1={13.22}
+      y1={16.5}
+      x2={21}
+      y2={7.5}
+      style={{
+        fill: "none",
+        stroke: "rgba(255, 255, 255, 1)",
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        strokeWidth: 2,
+      }}
+    />
+    <polyline
+      id="primary"
+      points="3 11.88 7 16.5 14.78 7.5"
+      style={{
+        fill: "none",
+        stroke: "rgba(255, 255, 255, 1)",
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        strokeWidth: 2,
+      }}
+    />
+  </svg>) 
 
+
+const Clock = () => (
+   <svg
+    width="14px"
+    height="14px"
+    viewBox="0 0 1024 1024"
+    className="icon"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      fill="#ffffffff"
+      d="M512 896a384 384 0 100-768 384 384 0 000 768zm0 64a448 448 0 110-896 448 448 0 010 896z"
+    />
+    <path
+      fill="#ffffffff"
+      d="M480 256a32 32 0 0132 32v256a32 32 0 01-64 0V288a32 32 0 0132-32z"
+    />
+    <path
+      fill="#fff"
+      d="M480 512h256q32 0 32 32t-32 32H480q-32 0-32-32t32-32z"
+    />
+  </svg>) 
+const SendIcon = () => (<svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>);
 
 
 
@@ -990,7 +1050,7 @@ export default function Chat() {
 
                 {isOwn && isLastOfGroup && (
                   <p className="text-right text-xs text-gray-400 mt-1">
-                    {msg.status === "seen" && msg.seen ? `✓ Seen ${msg.seen}` : "⏱︎ Sent"}
+                    {msg.status === "seen" && msg.seen ? <div className="flex gap-1 items-center"><Check2 /> Seen ${msg.seen}</div> : <div className="flex gap-1 items-center"><Clock /> Sent</div>}
                   </p>
                 )}
               </div>
@@ -1102,7 +1162,7 @@ export default function Chat() {
               e.preventDefault();
               sendMessage();
             }}
-            className="relative flex items-end gap-2 rounded-3xl border border-white/20 bg-gray-900/30 p-2 shadow-2xl shadow-black/40 backdrop-blur-xl transition-all duration-300 focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/30"
+            className="relative flex items-end gap-2 rounded-xl border border-white/20 bg-gray-900/30 p-2 shadow-2xl shadow-black/40 backdrop-blur-xl transition-all duration-300 focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/30"
           >
             <textarea
               ref={textareaRef}
@@ -1149,10 +1209,9 @@ export default function Chat() {
               {/* Replace with your ImageIcon component */}
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>
             </button>
-
             <button
-              type="submit"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:shadow-none"
+            type="submit"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:shadow-none"
             disabled={!input.trim()}
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg>
