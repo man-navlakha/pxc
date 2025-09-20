@@ -104,36 +104,42 @@ const Select = () => {
 
     const handleFileChange = (e) => setFiles(Array.from(e.target.files));
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        if (!content.trim() || files.length === 0) {
-            return toast.warn("Please provide a description and select at least one file.");
-        }
-        setIsUploading(true);
-        try {
-            const formData = new FormData();
-            formData.append("name", Cookies.get("username") || "Anonymous");
-            formData.append("content", content);
-            formData.append("id", pdfID);
-            files.forEach(file => formData.append("pdf", file));
+   const handleSubmit = async (event) => {
+    event.preventDefault();
 
-            const res = await fetch("https://pixel-classes.onrender.com/api/home/upload_pdf/", {
-                method: "POST",
-                body: formData,
-            });
+    if (!content.trim() || files.length === 0) {
+        return toast.warn("Please provide a description and select at least one file.");
+    }
 
-            if (!res.ok) throw new Error("Upload failed. Please try again.");
-            
-            toast.success("Upload successful! Your answer may take a moment to appear.");
-            setIsUploadOpen(false);
-            setContent("");
-            setFiles([]);
-        } catch (err) {
-            toast.error(err.message);
-        } finally {
-            setIsUploading(false);
-        }
-    };
+    setIsUploading(true);
+
+    try {
+        const formData = new FormData();
+        formData.append("name", Cookies.get("username") || "Anonymous");
+        formData.append("content", content);
+        formData.append("id", pdfID);
+        files.forEach(file => formData.append("pdf", file));
+
+        // Send FormData directly without wrapping it in an object
+        const res = await api.post("home/upload_pdf/", formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data', // Axios will auto-set this, but it's good to explicitly set it.
+            },
+        });
+
+        if (!res.ok) throw new Error("Upload failed. Please try again.");
+
+        toast.success("Upload successful! Your answer may take a moment to appear.");
+        setIsUploadOpen(false);
+        setContent("");
+        setFiles([]);
+    } catch (err) {
+        toast.error(err.message);
+    } finally {
+        setIsUploading(false);
+    }
+};
+
 
     const handleDownload = async (pdfUrl, pdfName) => {
         if (!pdfUrl) return toast.error("No download URL available.");

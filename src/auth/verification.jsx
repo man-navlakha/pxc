@@ -18,7 +18,7 @@ const Verification = () => {
   const location = useLocation();
 
   const [otpCode, setOtpCode] = useState("");
-  const [timer, setTimer] = useState(0); // 2 minutes
+  const [timer, setTimer] = useState(120); // 2 minutes
   const [expired, setExpired] = useState(false);
 
   // Get email from location if passed
@@ -75,7 +75,7 @@ const Verification = () => {
   const handleResendOTP = async () => {
     setExpired(false);
     setOtpCode("");
-    setTimer(3); // reset timer
+    setTimer(15); // reset timer
     console.log(username)
     try {
       const response = await api.post(

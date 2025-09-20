@@ -406,7 +406,7 @@ const Profile = () => {
                       )}
                     </div>
                   </div>
-                  <DownloadHistory />
+                  {/* <DownloadHistory /> */}
                 </div>
               )}
             </Suspense>

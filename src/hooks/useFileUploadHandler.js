@@ -1,6 +1,7 @@
 // hooks/useFileUploadHandler.js
 import { useState } from 'react';
 import Cookies from 'js-cookie';
+import api from '../utils/api';
 
 export default function useFileUploadHandler() {
     const [files, setFiles] = useState([]);
@@ -77,16 +78,12 @@ export default function useFileUploadHandler() {
 
         try {
             setUploading(true);
-            const res = await fetch("https://pixel-classes.onrender.com/api/home/QuePdf/Add/", {
-                method: "POST",
-                body: formData,
+            const res = await api.post("home/QuePdf/Add/", formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                withCredentials: true,
             });
-
-            if (!res.ok) {
-                const errorText = await res.text();
-                console.error("Upload failed with response:", errorText);
-                throw new Error("Upload failed");
-            }
 
             alert("Uploaded successfully");
             setFiles([]);
@@ -97,6 +94,7 @@ export default function useFileUploadHandler() {
         } finally {
             setUploading(false);
         }
+
     };
 
 
