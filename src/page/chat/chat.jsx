@@ -1094,19 +1094,14 @@ export default function Chat() {
           </p>
         )}
 
-        {/* --- NEW FADE & INPUT FORM STRUCTURE --- */}
-        <div className="sticky -bottom-2 z-10 w-full p-4">
-          {/* (1) The FADE GRADIENT */}
-          {/* This div creates the fade effect above the input bar. */}
-          <div className="absolute bottom-full left-0 h-14 w-full bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent pointer-events-none" />
+        <div className="sticky bottom-0 z-10 w-full p-4">
+          <div className="absolute bottom-8 left-0 h-32 w-full bg-gradient-to-t from-gray-900 to-transparent pointer-events-none" />
 
-          {/* (2) The ENHANCED GLASSMORPHISM FORM */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              // sendMessage();
+              sendMessage();
             }}
-            // --- ENHANCED GLASSMORPHISM CLASSES ---
             className="relative flex items-end gap-2 rounded-3xl border border-white/20 bg-gray-900/30 p-2 shadow-2xl shadow-black/40 backdrop-blur-xl transition-all duration-300 focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/30"
           >
             <textarea
@@ -1122,17 +1117,11 @@ export default function Chat() {
                 setInput(e.target.value);
 
                 setIsTyping(true);
-
-                // Auto-resize logic
-
                 const ta = e.target;
 
                 ta.style.height = "auto";
 
                 ta.style.height = `${ta.scrollHeight}px`;
-
-                // Typing indicator timeout
-
                 if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
                 typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1500);
@@ -1154,7 +1143,7 @@ export default function Chat() {
 
             <button
               type="button"
-              // onClick={() => setShowImagePopup(true)}
+              onClick={() => setShowImagePopup(true)}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-neutral-400 transition-colors duration-200 hover:bg-white/10 hover:text-white"
             >
               {/* Replace with your ImageIcon component */}
@@ -1164,9 +1153,8 @@ export default function Chat() {
             <button
               type="submit"
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:shadow-none"
-            // disabled={!input.trim()}
+            disabled={!input.trim()}
             >
-              {/* Replace with your Send component */}
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg>
             </button>
           </form>
