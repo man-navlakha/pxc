@@ -13,23 +13,20 @@ const NotFound = () => {
 
   const [terminalLines] = useState(() => {
     let timestamp = 10;
-    const delays = [2000, 3000, 1000, 2500, 2000, 1000, 3000, 1500, 4000, 6000];
+    const delays = [100, 300, 400, 500, 2000];
 
     const texts = [
       'SYSTEM ALERT: PAGE NOT FOUND ...',
       '',
-      'ATTEMPTING TO LOCATE RESOURCE ...',
-      '',
-      'RESOURCE UNAVAILABLE ...',
-      '',
       'ERROR CODE: 404 ...',
       '',
       'THE PAGE YOU REQUESTED DOES NOT EXIST ...',
+      '',
       'RETURNING TO SAFE ZONE ...'
     ];
 
     const types = [
-      'name', 'empty', 'log', 'empty', 'log', 'empty', 'log', 'empty', 'log', 'success'
+      'name', 'empty', 'log', 'empty', 'log', 'empty', 'log'
     ];
 
     return texts.map((text, i) => {
@@ -38,7 +35,7 @@ const NotFound = () => {
         delay: delays[i],
         type: types[i]
       };
-      timestamp += delays[i] / 4000;
+      timestamp += delays[i] / 1000;
       return line;
     });
   });
@@ -83,7 +80,7 @@ const NotFound = () => {
   const getLineStyle = (type) => {
     switch (type) {
       case 'log':
-        return 'text-gray-300';
+        return 'text-gray-300 font-black';
       case 'success':
         return 'text-red-400 font-medium';
       case 'name':
@@ -119,7 +116,7 @@ const NotFound = () => {
           <div className="mt-6">
             <a
               href="/"
-              className="inline-block rounded border border-red-400 px-6 py-2 text-red-400 hover:bg-red-400 hover:text-black transition"
+              className="inline-block rounded border border-red-400 px-6 py-2 text-red-400 hover:bg-red-400 hover:text-black font-black transition"
             >
               Go Back Home
             </a>

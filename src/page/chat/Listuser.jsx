@@ -94,9 +94,9 @@ const UnreadBadge = ({ count, isVisible }) => {
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       exit={{ scale: 0 }}
-      className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 rounded-full bg-green-600 border-2 border-black text-xs font-bold flex items-center justify-center"
+      className="absolute right-5 h-2 w-2 px-1 rounded-full bg-blue-800 text-xs font-bold flex items-center justify-center"
     >
-      {count > 99 ? "99+" : count}
+      {/* {count > 99 ? "99+" : count} */}
     </motion.span>
   );
 };
@@ -117,7 +117,7 @@ const EmptyState = ({ onFindFriendsClick }) => (
   <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center py-20 text-white/60">
     <div className="w-48 h-48 mx-auto mb-6 flex items-center justify-center rounded-full bg-gradient-to-br from-black/40 to-white/5 backdrop-blur-md border border-white/5">
       <svg width="96" height="96" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8 12H8.01M12 12H12.01M16 12H16.01M21 12C21 16.4183 16.9706 20 12 20C10.4607 20 9.01172 19.6565 7.74467 19.0511L3 20L4.39499 16.28C3.51156 15.0423 3 13.5743 3 12C3 7.58172 7.02944 4 12 4C16.9706 4 21 7.58172 21 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8 12H8.01M12 12H12.01M16 12H16.01M21 12C21 16.4183 16.9706 20 12 20C10.4607 20 9.01172 19.6565 7.74467 19.0511L3 20L4.39499 16.28C3.51156 15.0423 3 13.5743 3 12C3 7.58172 7.02944 4 12 4C16.9706 4 21 7.58172 21 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       </svg>
     </div>
 
@@ -160,7 +160,7 @@ export default function Listuser() {
       setLoading(true);
       setError(null);
       try {
-        const details = await api.post("/Profile/details/", {});
+        const details = await api.post("/Profile/details/", { username: undefined });
         if (!mounted) return;
         const data = details.data || {};
         if (data.username) setCurrentUsername(data.username);
@@ -249,9 +249,6 @@ export default function Listuser() {
         ws = new WebSocket(`wss://pixel-classes.onrender.com/ws/message-inbox/?token=${wsToken}`);
         wsRef.current = ws;
 
-        loadTimeout = setTimeout(() => {
-          if (mounted) setLoading(false);
-        }, 5000);
 
         ws.onopen = () => {
           console.log("WebSocket connected");
@@ -370,18 +367,7 @@ export default function Listuser() {
     };
   }, [currentUsername, currentUserId]);
 
-  // mark read + navigate
-  const markConversationRead = async (username) => {
-    setAllUsers(prev => prev.map(u => u.username === username ? { ...u, is_seen: true, hasUnread: false, unreadCount: 0 } : u));
-    try {
-      await api.post("/messages/mark-read/", { username });
-    } catch (err) {
-      console.warn("failed to mark as read", err);
-    }
-  };
-
   const handleChatNavigation = useCallback((username) => {
-    markConversationRead(username);
     navigate(`/chat/${username}`);
   }, [navigate]);
 
@@ -395,19 +381,12 @@ export default function Listuser() {
 
         <div className="flex-1">
           <h1 className="text-xl font-semibold">Messages</h1>
-          {unreadConversationsCount > 0 && (
+          {/* {unreadConversationsCount > 0 && (
             <p className="text-xs text-green-400">{unreadConversationsCount} unread conversation{unreadConversationsCount > 1 ? 's' : ''}</p>
-          )}
+          )} */}
         </div>
 
-        <div className="relative">
-          <button className="p-2 rounded-full hover:bg-white/6 transition-colors" aria-label="Notifications">
-            <Bell size={20} />
-            {totalUnreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-green-600 text-xs font-bold flex items-center justify-center border-2 border-black">{totalUnreadCount > 9 ? '9+' : totalUnreadCount}</span>
-            )}
-          </button>
-        </div>
+
       </header>
 
       <main ref={listRef} onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd} className="flex-1 flex flex-col p-4">
@@ -416,7 +395,7 @@ export default function Listuser() {
           <div className="flex items-center justify-center h-12">
             {pullToRefresh.distance > 50 ? (
               <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.0784 19.0784L16.25 16.25M19.0784 4.99994L16.25 7.82837M4.92157 19.0784L7.75 16.25M4.92157 4.99994L7.75 7.82837" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.0784 19.0784L16.25 16.25M19.0784 4.99994L16.25 7.82837M4.92157 19.0784L7.75 16.25M4.92157 4.99994L7.75 7.82837" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
               </motion.div>
             ) : (
               <span className="text-white/60">Pull to refresh</span>
@@ -435,7 +414,7 @@ export default function Listuser() {
             {/* Search */}
             <div className="relative mb-4">
               {/* <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black" size={18} /> */}
-              <input className="w-full bg-white pl-4 pr-4 py-3 text-black rounded-2xl border border-black/6 backdrop-blur-md focus:border-green-400 transition-colors duration-300 outline-none placeholder:text-black/10" onChange={(e) => setSearch(e.target.value)} placeholder="Search conversations by name or username..." value={search} type="text" />
+              <input className="w-full bg-gray-700 pl-4 pr-4 py-3 text-white rounded-2xl border border-black backdrop-blur-md focus:border-green-400 transition-colors duration-300 outline-none placeholder:text-white/30" onChange={(e) => setSearch(e.target.value)} placeholder="Search conversations by name or username..." value={search} type="text" />
             </div>
 
             {/* List */}
@@ -451,19 +430,18 @@ export default function Listuser() {
                   }
 
                   return (
-                    <motion.div key={user.username} layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }} onClick={() => handleChatNavigation(user.username)} className={`cursor-pointer p-3 rounded-2xl flex items-center gap-4 transition-colors ${user.hasUnread ? 'bg-white/6 border border-white/6' : 'bg-white/3 border border-white/5'} backdrop-blur-md`}>
+                    <motion.div key={user.username} layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.18 }} onClick={() => handleChatNavigation(user.username)} className={`cursor-pointer p-3 rounded-2xl flex items-center gap-4 transition-colors ${user.hasUnread ? 'bg-white/6 ' : 'bg-white/3'}  border border-white/5 backdrop-blur-md`}>
 
                       <div className="relative">
-                        <img src={user.profile_pic || `https://i.pravatar.cc/150?u=${user.username}`} alt={user.username} className="w-14 h-14 rounded-full object-cover border-2 border-black" />
+                        <img src={user.profile_pic || `https://i.pravatar.cc/150?u=${user.username}`} alt={user.username} className="w-14 h-14 rounded-full object-cover border-1 border-black" />
 
                         {user.is_online && <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-400 border-2 border-black" />}
 
-                        <UnreadBadge count={user.unreadCount || 0} isVisible={user.hasUnread} />
                       </div>
 
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-center mb-1">
-                          <span className={`font-semibold truncate flex items-center gap-2 ${user.hasUnread ? 'text-white' : 'text-white/80'}`}>
+                          <span className={`font-semibold truncate flex items-center gap-2 ${user.hasUnread ? 'text-white' : 'text-white/60'}`}>
                             <span className="flex items-center gap-2">
                               {user.username}
                               {verifiedUsernames.has(user?.username) && <VerifiedBadge size={16} />}
@@ -476,9 +454,10 @@ export default function Listuser() {
                         </div>
 
                         <div className="flex items-center gap-2">
-                          <p className={`text-sm truncate flex-1 ${user.hasUnread ? 'text-white font-medium' : 'text-white/60'}`}>
+                          <p className={`text-sm truncate flex-1 ${user.hasUnread ? 'text-white/80 font-medium' : 'text-white/60'}`}>
                             {user.isOwnMessage && user.latest_message ? `You: ${getLatestMessageText(user.latest_message)}` : getLatestMessageText(user.latest_message) || `${user.first_name || ''} ${user.last_name || ''}`.trim()}
-                          </p>
+                          </p> 
+                           <UnreadBadge count={user.unreadCount || 0} isVisible={user.hasUnread} />
 
                           <MessageStatus isOwnMessage={user.isOwnMessage} isSeen={user.is_seen} />
                         </div>

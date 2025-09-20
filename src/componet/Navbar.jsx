@@ -55,7 +55,7 @@ export default function Navbar() {
     const fetchProfileAndToken = async () => {
       try {
         // ✅ Get current user's profile
-        const details = await api.post("/Profile/details/", {});
+        const details = await api.post("/Profile/details/", {username:undefined});
 
         setProfile(details.data);
 

@@ -879,10 +879,10 @@ export default function Chat() {
             const isEditing = editingMessage === msg.id;
 
             return (
-              <div key={`${msg.id ?? "temp"}-${i}`} className="flex flex-col">
+              <div key={`${msg.id ?? "temp"}-${i}`} className="flex flex-col items-end">
                 <div
                   id={msg.id ? `msg-${msg.id}` : undefined}
-                  className={`group relative w-fit max-w-[75%] h-fit overflow-x-auto shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn ? "ml-auto bg-emerald-500/30 text-white" : "mr-auto bg-gray-200/10 text-white"
+                  className={`group relative w-fit max-w-[75%] h-fit overflow-x-auto shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn ? "ml-auto bg-emerald-500/30 text-white flex-end" : "mr-auto bg-gray-200/10 text-white"
                     }`}
                 >
                   {/* Message Content */}
@@ -943,35 +943,35 @@ export default function Chat() {
                       >
                         <MoreVertical size={16} />
                       </button>
-
-                      {/* Dropdown Menu */}
-                      {showMessageMenu === msg.id && (
-                        <div
-                          className="absolute right-0 top-8 bg-gray-800 border border-gray-600 rounded-lg shadow-lg py-1 z-10 min-w-[120px]"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <button
-                            onClick={() => startEditing(msg)}
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-white hover:bg-gray-700 transition-colors"
-                          >
-                            <Edit3 size={14} />
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => {
-                              handleDeleteMessage(msg.id);
-                              setShowMessageMenu(null);
-                            }}
-                            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-500/20 transition-colors"
-                          >
-                            <Trash2 size={14} />
-                            Delete
-                          </button>
-                        </div>
-                      )}
                     </div>
                   )}
                 </div>
+                  
+                                        {/* Dropdown Menu */}
+                                        {showMessageMenu === msg.id && (
+                                          <div
+                                            className="block right-2 top-8  m-2 bg-gray-800 border border-gray-600 rounded-lg shadow-lg py-1 z-10 max-w-64 min-w-[120px]"
+                                            onClick={(e) => e.stopPropagation()}
+                                          >
+                                            <button
+                                              onClick={() => startEditing(msg)}
+                                              className="flex items-center gap-2 w-full px-3 py-2 text-sm text-white hover:bg-gray-700 transition-colors"
+                                            >
+                                              <Edit3 size={14} />
+                                              Edit
+                                            </button>
+                                            <button
+                                              onClick={() => {
+                                                handleDeleteMessage(msg.id);
+                                                setShowMessageMenu(null);
+                                              }}
+                                              className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-500/20 transition-colors"
+                                            >
+                                              <Trash2 size={14} />
+                                              Delete
+                                            </button>
+                                          </div>
+                                        )}
 
                 {/* Avatar and status info */}
                 {!isOwn && isLastOfGroup && (
