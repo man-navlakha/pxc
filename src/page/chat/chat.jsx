@@ -433,7 +433,7 @@ export default function Chat() {
   }, [showMessageMenu]);
 
 
-   // Receiver profile (from URL param)
+  // Receiver profile (from URL param)
   useEffect(() => {
     if (!RECEIVER) return;
 
@@ -480,9 +480,9 @@ export default function Chat() {
         // Fetch receiver profile details
         try {
           const receiverDetails = await api.post(`/Profile/details/`, {
-                        username: RECEIVER, // Use targetUser instead of userToFetch
-                      });
-                      setReceiverProfile(receiverDetails.data);
+            username: RECEIVER, // Use targetUser instead of userToFetch
+          });
+          setReceiverProfile(receiverDetails.data);
         } catch (err) {
           console.warn("⚠️ Failed to fetch receiver profile details", err);
         }
@@ -879,7 +879,7 @@ export default function Chat() {
             const isEditing = editingMessage === msg.id;
 
             return (
-              <div key={`${msg.id ?? "temp"}-${i}`} className={`flex flex-col ${isOwn?'items-end':'items-start' } `}>
+              <div key={`${msg.id ?? "temp"}-${i}`} className={`flex flex-col ${isOwn ? 'items-end' : 'items-start'} `}>
                 <div
                   id={msg.id ? `msg-${msg.id}` : undefined}
                   className={`group relative w-fit max-w-[75%] h-fit overflow-x-auto shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn ? "ml-auto bg-emerald-500/30 text-white flex-end" : "mr-auto bg-gray-200/10 text-white"
@@ -946,32 +946,32 @@ export default function Chat() {
                     </div>
                   )}
                 </div>
-                  
-                                        {/* Dropdown Menu */}
-                                        {showMessageMenu === msg.id && (
-                                          <div
-                                            className="block right-2 top-8  m-2 bg-gray-800 border border-gray-600 rounded-lg shadow-lg py-1 z-10 max-w-64 min-w-[120px]"
-                                            onClick={(e) => e.stopPropagation()}
-                                          >
-                                            <button
-                                              onClick={() => startEditing(msg)}
-                                              className="flex items-center gap-2 w-full px-3 py-2 text-sm text-white hover:bg-gray-700 transition-colors"
-                                            >
-                                              <Edit3 size={14} />
-                                              Edit
-                                            </button>
-                                            <button
-                                              onClick={() => {
-                                                handleDeleteMessage(msg.id);
-                                                setShowMessageMenu(null);
-                                              }}
-                                              className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-500/20 transition-colors"
-                                            >
-                                              <Trash2 size={14} />
-                                              Delete
-                                            </button>
-                                          </div>
-                                        )}
+
+                {/* Dropdown Menu */}
+                {showMessageMenu === msg.id && (
+                  <div
+                    className="block right-2 top-8  m-2 bg-gray-800 border border-gray-600 rounded-lg shadow-lg py-1 z-10 max-w-64 min-w-[120px]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      onClick={() => startEditing(msg)}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-white hover:bg-gray-700 transition-colors"
+                    >
+                      <Edit3 size={14} />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleDeleteMessage(msg.id);
+                        setShowMessageMenu(null);
+                      }}
+                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-500/20 transition-colors"
+                    >
+                      <Trash2 size={14} />
+                      Delete
+                    </button>
+                  </div>
+                )}
 
                 {/* Avatar and status info */}
                 {!isOwn && isLastOfGroup && (
@@ -1090,61 +1090,51 @@ export default function Chat() {
           </p>
         )}
 
-        {/* Input Form with Enhanced Glassmorphism */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            sendMessage();
-          }}
-          // --- REDESIGNED CLASSES ---
-          className="sticky bottom-4 z-10 m-4 rounded-2xl border border-white/10 bg-black/20 shadow-2xl shadow-black/20 backdrop-blur-lg"
-        >
-          <div className="flex items-end gap-2 p-2">
+        {/* --- NEW FADE & INPUT FORM STRUCTURE --- */}
+        <div className="sticky -bottom-2 z-10 w-full p-4">
+          {/* (1) The FADE GRADIENT */}
+          {/* This div creates the fade effect above the input bar. */}
+          <div className="absolute bottom-full left-0 h-14 w-full bg-gradient-to-t from-gray-900 via-gray-900/80 to-transparent pointer-events-none" />
+
+          {/* (2) The ENHANCED GLASSMORPHISM FORM */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              // sendMessage();
+            }}
+            // --- ENHANCED GLASSMORPHISM CLASSES ---
+            className="relative flex items-end gap-2 rounded-3xl border border-white/20 bg-gray-900/30 p-2 shadow-2xl shadow-black/40 backdrop-blur-xl transition-all duration-300 focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/30"
+          >
             <textarea
-              ref={textareaRef}
+              // ref={textareaRef}
               style={{ maxHeight: "200px", overflowY: "auto" }}
-              className="flex-1 resize-none bg-transparent px-3 py-2 text-base text-white placeholder-neutral-400 transition-colors duration-200 focus:outline-none focus:ring-0"
+              className="flex-1 resize-none bg-transparent px-3 py-2 text-base text-neutral-100 placeholder-neutral-400 transition-colors duration-200 focus:outline-none"
               rows={1}
               placeholder="Type a message..."
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                setIsTyping(true);
-                // Auto-resize logic
-                const ta = e.target;
-                ta.style.height = "auto";
-                ta.style.height = `${ta.scrollHeight}px`;
-                // Typing indicator timeout
-                if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-                typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1500);
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  sendMessage();
-                }
-              }}
+            // value={input}
+            // onChange={...}
+            // onKeyDown={...}
             />
 
-            {/* --- REDESIGNED ICON BUTTON --- */}
             <button
               type="button"
-              onClick={() => setShowImagePopup(true)}
+              // onClick={() => setShowImagePopup(true)}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-neutral-400 transition-colors duration-200 hover:bg-white/10 hover:text-white"
             >
-              <ImageIcon className="h-5 w-5" />
+              {/* Replace with your ImageIcon component */}
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>
             </button>
 
-            {/* --- REDESIGNED SEND BUTTON --- */}
             <button
               type="submit"
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:shadow-none"
-              disabled={!input.trim()}
+            // disabled={!input.trim()}
             >
-              <Send className="h-5 w-5" />
+              {/* Replace with your Send component */}
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg>
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );
