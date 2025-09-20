@@ -375,7 +375,7 @@ export default function Listuser() {
     <div className="min-h-screen ccf flex flex-col text-white bg-gray-900">
       {/* Header */}
       <header className="sticky top-0 bg-black/60 backdrop-blur-md flex items-center gap-3 px-4 py-3 border-b border-white/5 z-10">
-        <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-white/6 transition-colors" aria-label="Go back">
+        <button onClick={() => navigate('/')} className="p-2 rounded-full hover:bg-white/6 transition-colors" aria-label="Go back">
           <Undo2 size={20} />
         </button>
 

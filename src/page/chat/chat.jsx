@@ -75,9 +75,6 @@ const Clock = () => (
       d="M480 512h256q32 0 32 32t-32 32H480q-32 0-32-32t32-32z"
     />
   </svg>) 
-const SendIcon = () => (<svg viewBox="0 0 24 24" width="24" height="24" fill="white"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" /></svg>);
-
-
 
 const LinkPreview = ({ url, meta }) => {
   // meta from link-preview-js: { title, description, images: [...] }
@@ -312,6 +309,9 @@ export default function Chat() {
   const location = useLocation();
 
 
+useEffect(() => {
+  setMessages([]);
+}, [RECEIVER]);
   // ---------- helpers ----------
   const getExtFromUrl = (raw) => {
     try {

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
 import './App.css';
 import './index.css';
@@ -42,7 +43,14 @@ function App() {
             window.removeEventListener('offline', handleOffline);
         };
     }, []);
-
+function ChatWrapper() {
+  const { RECEIVER } = useParams();
+  return (
+    <Protected>
+      <Chat key={RECEIVER} />
+    </Protected>
+  );
+}
     return (
         <>
             {!isOnline && (
@@ -68,7 +76,8 @@ function App() {
                     <Route path="/following" element={<Protected><FollowingPage /></Protected>} />
                     <Route path="/followers" element={<Protected><FollowersPage /></Protected>} />
                     <Route path="/chat" element={<Protected><Chatlist /></Protected>} />
-                    <Route path="/chat/:RECEIVER" element={<Protected><Chat /></Protected>} />
+                    {/* <Route path="/chat/:RECEIVER" element={<Protected><Chat /></Protected>} /> */}
+                    <Route path="/chat/:RECEIVER" element={<ChatWrapper />} />
                     <Route path="/profile" element={<Protected><Prof /></Protected>} />
                     <Route path="/profile/:nameFromUrl" element={<Protected><Prof /></Protected>} />
 

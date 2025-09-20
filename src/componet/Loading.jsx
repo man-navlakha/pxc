@@ -115,7 +115,7 @@ const [terminalLines] = useState(() => {
 
   return (
     <div className="bg-gray-900 min-h-screen flex  p-4">
-        <div className="p-4 overflow-auto h-full text-left font-mono text-sm">
+        <div className="p-4 overflow-auto h-full text-left font-mono text-sm md:text-sm lg:text-lg">
           {displayedLines.map((line, index) => (
             <div key={index} className={`${getLineStyle(line.type)} leading-relaxed`}>
               {line.text || '\u00A0'}
