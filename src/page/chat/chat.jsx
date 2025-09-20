@@ -665,6 +665,10 @@ export default function Chat() {
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
       }
+    // 3. THE FIX: Re-focus the textarea to keep the keyboard open
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
     }
 
     setTimeout(() => scrollToBottom(true), 0);
@@ -1106,14 +1110,46 @@ export default function Chat() {
             className="relative flex items-end gap-2 rounded-3xl border border-white/20 bg-gray-900/30 p-2 shadow-2xl shadow-black/40 backdrop-blur-xl transition-all duration-300 focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/30"
           >
             <textarea
-              // ref={textareaRef}
+              ref={textareaRef}
               style={{ maxHeight: "200px", overflowY: "auto" }}
               className="flex-1 resize-none bg-transparent px-3 py-2 text-base text-neutral-100 placeholder-neutral-400 transition-colors duration-200 focus:outline-none"
               rows={1}
               placeholder="Type a message..."
-            // value={input}
-            // onChange={...}
-            // onKeyDown={...}
+              value={input}
+
+              onChange={(e) => {
+
+                setInput(e.target.value);
+
+                setIsTyping(true);
+
+                // Auto-resize logic
+
+                const ta = e.target;
+
+                ta.style.height = "auto";
+
+                ta.style.height = `${ta.scrollHeight}px`;
+
+                // Typing indicator timeout
+
+                if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+                typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1500);
+
+              }}
+
+              onKeyDown={(e) => {
+
+                if (e.key === "Enter" && !e.shiftKey) {
+
+                  e.preventDefault();
+
+                  sendMessage();
+
+                }
+
+              }}
             />
 
             <button
