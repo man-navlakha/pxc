@@ -879,7 +879,7 @@ export default function Chat() {
             const isEditing = editingMessage === msg.id;
 
             return (
-              <div key={`${msg.id ?? "temp"}-${i}`} className="flex flex-col items-end">
+              <div key={`${msg.id ?? "temp"}-${i}`} className={`flex flex-col ${isOwn?'items-end':'items-start' } `}>
                 <div
                   id={msg.id ? `msg-${msg.id}` : undefined}
                   className={`group relative w-fit max-w-[75%] h-fit overflow-x-auto shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn ? "ml-auto bg-emerald-500/30 text-white flex-end" : "mr-auto bg-gray-200/10 text-white"
@@ -975,7 +975,7 @@ export default function Chat() {
 
                 {/* Avatar and status info */}
                 {!isOwn && isLastOfGroup && (
-                  <div className="flex items-center gap-1 mt-1">
+                  <div className="flex items-center left-0 gap-1 mt-1">
                     <img
                       src={receiverProfile?.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"}
                       alt="receiver avatar"
