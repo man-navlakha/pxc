@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useRef, useCallback } from "react";
-import { Undo2, Search, Users, Bell, Check, CheckCheck } from "lucide-react";
+import { Undo2, Search, Users, Bell, Check } from "lucide-react"; // removed invalid CheckCheck
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import "../../new.css";
@@ -74,18 +74,23 @@ function getLatestMessageText(latest) {
 }
 
 // Small presentational components
-const MessageStatus = ({ isOwnMessage, isSeen }) => {
+const MessageStatus = ({ isOwnMessage, seenByOther }) => {
   if (!isOwnMessage) return null;
   return (
     <span className="flex items-center ml-2">
-      {isSeen ? (
-        <CheckCheck size={14} className="text-green-400" title="Seen" />
+      {seenByOther ? (
+        <span title="Seen" className="flex gap-0.5 items-center">
+          <Check size={12} className="text-green-400" />
+          <Check size={12} className="text-green-400" />
+        </span>
       ) : (
         <Check size={14} className="text-white/50" title="Sent" />
       )}
     </span>
   );
 };
+
+
 
 const UnreadBadge = ({ count, isVisible }) => {
   if (!isVisible || !count) return null;
@@ -259,39 +264,57 @@ export default function Listuser() {
             const data = JSON.parse(event.data);
 
             // Helper to process a single user payload into our ui model
-            const processUser = (u, override = {}) => {
-              const latest = u.latest_message ?? u.last_message ?? null;
+            // currentUsername is from state (ensure closure captures it)
+const processUser = (u) => {
+  // backend now returns u.latest_message as an object OR null
+  const latest = (u.latest_message && typeof u.latest_message === "object") ? u.latest_message : null;
 
-              // Prefer server-provided unread_count if available
-              const serverUnread = u.unread_count ?? u.unread ?? null;
+  // server-provided unread_count takes priority if present
+  const serverUnread = u.unread_count ?? null;
 
-              // If the server tells us 'is_mine' or 'from_current_user' use it
-              const latestIsMineFlag = latest?.is_mine ?? latest?.from_current_user ?? null;
+  // Determine whether the latest message was sent by the current user
+  const isOwnMessage = !!(latest && latest.sender_username && String(latest.sender_username) === String(currentUsername));
 
-              const senderId = latest?.sender_id ?? latest?.from ?? latest?.user_id ?? latest?.author ?? null;
+  // If I sent the last message, seenByOther := whether the other person has seen it
+  const seenByOther = isOwnMessage ? !!latest?.is_seen : null;
 
-              const isOwnMessage = latestIsMineFlag ?? (senderId != null && (String(senderId) === String(currentUserId) || String(senderId) === String(currentUsername)));
+  // Compute hasUnread / unreadCount:
+  let hasUnread = false;
+  let unreadCount = 0;
+  if (serverUnread != null) {
+    hasUnread = Number(serverUnread) > 0;
+    unreadCount = Number(serverUnread);
+  } else if (latest) {
+    if (isOwnMessage) {
+      // I sent last -> it's not "unread for me"
+      hasUnread = false;
+      unreadCount = 0;
+    } else {
+      // They sent last -> it's unread for me if I haven't seen it
+      const seenByMe = !!latest?.is_seen; // backend 'is_seen' on latest_msg means receiver has seen it
+      hasUnread = !seenByMe;
+      unreadCount = hasUnread ? 1 : 0;
+    }
+  }
 
-              const isSeen = u.is_seen ?? latest?.is_seen ?? false;
+  return {
+    username: u.username,
+    profile_pic: u.profile_pic,
+    first_name: u.first_name ?? "",
+    last_name: u.last_name ?? "",
+    latest_message: latest ? latest : u.latest_message, // keep shape for your getLatestMessageText
+    timestamp: u.timestamp ?? (latest && latest.timestamp) ?? null,
+    isOwnMessage,
+    seenByOther,
+    hasUnread,
+    unreadCount,
+    is_online: u.is_online ?? false,
+  };
+};
 
-              const hasUnread = serverUnread != null ? (Number(serverUnread) > 0) : (!!latest && !isOwnMessage && !isSeen);
 
-              const unreadCount = serverUnread != null ? Number(serverUnread) : (hasUnread ? 1 : 0);
 
-              return {
-                username: u.username ?? u.user_name ?? u.id ?? override.username,
-                profile_pic: u.profile_pic ?? u.avatar ?? override.profile_pic,
-                first_name: u.first_name ?? "",
-                last_name: u.last_name ?? "",
-                latest_message: latest,
-                timestamp: u.timestamp ?? latest?.timestamp ?? latest?.created_at ?? override.timestamp ?? null,
-                is_seen: isSeen,
-                hasUnread,
-                unreadCount,
-                isOwnMessage,
-                is_online: u.is_online ?? u.online ?? false,
-              };
-            };
+
 
             // Full inbox payload
             if (data.type === "inbox_data" && Array.isArray(data.inbox)) {
@@ -420,7 +443,8 @@ export default function Listuser() {
             {/* List */}
             <motion.div layout className="flex-1 overflow-y-auto space-y-3 pr-2">
               <AnimatePresence mode="popLayout">
-                {filteredUsers.map((user) => {
+                {filteredUsers.map((user, idx) => {
+                  const key = user.username ?? user.user_id ?? user.id ?? `user-${idx}`;
                   // compute time string safely
                   const iso = toISOStringCompat(user.timestamp ?? user.latest_message?.timestamp ?? user.latest_message?.created_at ?? null);
                   let timeString = "";
@@ -456,10 +480,13 @@ export default function Listuser() {
                         <div className="flex items-center gap-2">
                           <p className={`text-sm truncate flex-1 ${user.hasUnread ? 'text-white/80 font-medium' : 'text-white/60'}`}>
                             {user.isOwnMessage && user.latest_message ? `You: ${getLatestMessageText(user.latest_message)}` : getLatestMessageText(user.latest_message) || `${user.first_name || ''} ${user.last_name || ''}`.trim()}
-                          </p> 
-                           <UnreadBadge count={user.unreadCount || 0} isVisible={user.hasUnread} />
+                          </p>
+                          <UnreadBadge count={user.unreadCount || 0} isVisible={user.hasUnread} />
 
-                          <MessageStatus isOwnMessage={user.isOwnMessage} isSeen={user.is_seen} />
+                          <MessageStatus isOwnMessage={user.isOwnMessage} seenByOther={user.seenByOther} />
+<UnreadBadge count={user.unreadCount || 0} isVisible={user.hasUnread} />
+
+
                         </div>
                       </div>
 
