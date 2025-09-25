@@ -32,6 +32,8 @@ export default function UserSearch() {
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(null);
   const [usernamec, setUsernamec] = useState(null);
+  const [followingUsernames, setFollowingUsernames] = useState([]);
+
   const navigate = useNavigate();
 
   // --- Fetch logged-in username from API ---
@@ -88,42 +90,73 @@ export default function UserSearch() {
   };
 
   // --- Fetch users on search ---
-  useEffect(() => {
-    if (!usernamec) return; // Wait until username is fetched
+  // --- Fetch "following" list ONCE after usernamec is known ---
+useEffect(() => {
+  if (!usernamec) return;
 
-    const fetchUsers = async () => {
-      setLoading(true);
-      try {
-        // Self-search check
-        if (search.trim() === usernamec) {
-          setUsers([]);
-          alert("You cannot search for yourself.");
-          return;
-        }
+  const fetchFollowing = async () => {
+    try {
+      const res = await api.post("/Profile/following/", { username: usernamec });
+      setFollowingUsernames(res.data.map(u => u.username));
+    } catch (err) {
+      console.error("Error fetching following list:", err);
+    }
+  };
 
-        const followingRes = await api.post("/Profile/following/", { username: usernamec });
-        const followingUsernames = followingRes.data.map(u => u.username);
+  fetchFollowing();
+}, [usernamec]);
 
-        const response = await api.get("/Profile/UserSearch/", { params: { username: search } });
+// --- Fetch users on search ---
+useEffect(() => {
+  if (!usernamec || !search.trim()) {
+    setUsers([]);
+    return;
+  }
 
-        const filtered = response.data
-          .filter(user => user.username !== usernamec) // exclude logged-in user
-          .map(user => ({
-            ...user,
-            is_following: followingUsernames.includes(user.username),
-          }));
+  if (search.trim() === usernamec) {
+    // show empty state instead of alert spam
+    setUsers([]);
+    return;
+  }
 
-        setUsers(filtered);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  let active = true; // cancellation flag
 
-    if (search.trim()) fetchUsers();
-    else setUsers([]);
-  }, [search, usernamec]);
+  const fetchUsers = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get("/Profile/UserSearch/", {
+        params: { username: search },
+      });
+
+      if (!active) return; // ignore outdated response
+
+     const filtered = response.data
+  .filter(user => user.username !== usernamec) // exclude logged-in user
+  .filter(user =>
+    user.username.toLowerCase().includes(search.toLowerCase()) ||
+    (user.first_name && user.first_name.toLowerCase().includes(search.toLowerCase())) ||
+    (user.last_name && user.last_name.toLowerCase().includes(search.toLowerCase()))
+  )
+  .map(user => ({
+    ...user,
+    is_following: followingUsernames.includes(user.username),
+  }));
+
+
+      setUsers(filtered);
+    } catch (error) {
+      if (active) console.error("Error fetching users:", error);
+    } finally {
+      if (active) setLoading(false);
+    }
+  };
+
+  fetchUsers();
+
+  return () => {
+    active = false; // cancel previous call
+  };
+}, [search, usernamec, followingUsernames]);
 
   return (
     <>

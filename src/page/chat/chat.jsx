@@ -141,7 +141,7 @@ export default function Chat() {
 
         // Fetch own profile details
         try {
-          const details = await api.post(`/Profile/details`);
+          const details = await api.post(`/Profile/details`, {username: undefined});
           setOwnProfile(details.data);
         } catch (err) {
           console.warn("⚠️ Failed to fetch own profile details", err);

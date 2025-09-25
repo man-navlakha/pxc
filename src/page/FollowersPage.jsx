@@ -100,14 +100,14 @@ const FollowersPage = ({ username, onClose }) => {
 
     return (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-5xl mx-auto py-4 px-2 sm:px-6">
-            <div className="flex items-center mb-6">
+            {/* <div className="flex items-center mb-6">
                 <button onClick={() => navigate(-1)} className="p-2 rounded-full hover:bg-white/10 transition-colors">
                     <Undo2 className="text-white" />
                 </button>
                 <h1 className="text-3xl font-bold text-white/90 text-center flex-1">
                     {username === currentUserUsername ? "Your Followers" : `${username}'s Followers`}
                 </h1>
-            </div>
+            </div> */}
 
             {loading ? (
                 <div className="space-y-4">

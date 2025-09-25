@@ -9,6 +9,7 @@ import DownloadHistory from "../componet/DownloadHistory";
 import api from "../utils/api";
 import { verifiedUsernames } from "../verifiedAccounts";
 import VerifiedBadge from "../componet/VerifiedBadge";
+import NotFollowingBack from "./NotFollowingBack";
 
 // Lazy load heavy sub-pages
 const FollowingPage = lazy(() => import("./FollowingPage"));
@@ -41,56 +42,56 @@ const Profile = () => {
   }, [urlusername, navigate]);
 
   // --- Fetch profile + posts ---
-    
-        useEffect(() => {
-  const fetchProfile = async () => {
-    setLoading(true);
-    setError(null);
 
-    try {
-      // Step 1: Always fetch current user first
-      const res = await api.post("/Profile/details/", {
-        username: nameFromUrl || undefined, // ✅ always send something
-      });
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setLoading(true);
+      setError(null);
 
-      const currentUser = res.data.username;
-      const targetUser = nameFromUrl || currentUser;
+      try {
+        // Step 1: Always fetch current user first
+        const res = await api.post("/Profile/details/", {
+          username: nameFromUrl || undefined, // ✅ always send something
+        });
 
-      setUserToFetch(targetUser);
+        const currentUser = res.data.username;
+        const targetUser = nameFromUrl || currentUser;
 
-      console.log("Target user to fetch:", targetUser);
-      console.log("Current user:", currentUser);
+        setUserToFetch(targetUser);
 
-      // Step 2: Fetch profile details (redundant but safe)
-      const details = await api.post("/Profile/details/", {
-        username: targetUser,
-      });
+        console.log("Target user to fetch:", targetUser);
+        console.log("Current user:", currentUser);
 
-      // Step 3: Fetch posts
-      const postsRes = await api.post("/Profile/posts/", {
-        username: targetUser,
-      });
+        // Step 2: Fetch profile details (redundant but safe)
+        const details = await api.post("/Profile/details/", {
+          username: targetUser,
+        });
 
-      // Merge data
-      setProfile({
-        ...res.data,
-        ...details.data,
-      });
-      setPosts(postsRes.data.posts || []);
-    } catch (err) {
-      console.error("[PROFILE FETCH ERROR]", err);
-      setProfile(null);
-      setPosts([]);
-      if (err.response?.status === 401) {
-        navigate("/auth/login");
+        // Step 3: Fetch posts
+        const postsRes = await api.post("/Profile/posts/", {
+          username: targetUser,
+        });
+
+        // Merge data
+        setProfile({
+          ...res.data,
+          ...details.data,
+        });
+        setPosts(postsRes.data.posts || []);
+      } catch (err) {
+        console.error("[PROFILE FETCH ERROR]", err);
+        setProfile(null);
+        setPosts([]);
+        if (err.response?.status === 401) {
+          navigate("/auth/login");
+        }
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
 
-  fetchProfile();
-}, [nameFromUrl, navigate]);
+    fetchProfile();
+  }, [nameFromUrl, navigate]);
 
 
   // --- Fetch follow status ---
@@ -319,11 +320,32 @@ const Profile = () => {
               }
             >
               {page === "following" ? (
-                <FollowingPage username={profile?.username} />
+                <div className="glass-card rounded-3xl m-3 p-6">
+                  <button
+                    onClick={() => setPage(null)}
+                    className="flex items-center gap-2 w-full max-w-max px-4 py-2 rounded-lg mb-4 bg-white/10 hover:bg-white/20 transition"
+                  >
+                    <span className="material-symbols-outlined">arrow_back</span>
+                    Back to Profile
+                  </button>
+                  <FollowingPage username={profile?.username} />
+
+                </div>
+
               ) : page === "followers" ? (
-                <FollowersPage username={profile?.username} />
+                <div className="glass-card rounded-3xl m-3 p-6">
+                  <button
+                    onClick={() => setPage(null)}
+                    className="flex items-center gap-2 w-full max-w-max px-4 py-2 rounded-lg mb-4 bg-white/10 hover:bg-white/20 transition"
+                  >
+                    <span className="material-symbols-outlined">arrow_back</span>
+                    Back to Profile
+                  </button>
+                  <FollowersPage username={profile?.username} />
+
+                </div>
               ) : page === "edit" ? (
-                <div className="glass-card m-3 p-6">
+                <div className="glass-card rounded-3xl m-3 p-6">
                   <button
                     onClick={() => setPage(null)}
                     className="flex items-center gap-2 w-full max-w-max px-4 py-2 rounded-lg mb-4 bg-white/10 hover:bg-white/20 transition"
@@ -406,7 +428,11 @@ const Profile = () => {
                       )}
                     </div>
                   </div>
-                  {/* <DownloadHistory /> */}
+                  <div>
+
+                  <NotFollowingBack />
+                  <DownloadHistory />
+                  </div>
                 </div>
               )}
             </Suspense>

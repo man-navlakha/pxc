@@ -425,7 +425,7 @@ export default function Listuser() {
             size="icon" 
             onClick={() => navigate('/')}
             aria-label="Go back"
-            className="text-white hover:bg-gray-800"
+            className="text-white hover:text-white hover:bg-gray-800"
           >
             <Undo2 size={20} />
           </Button>
@@ -504,10 +504,10 @@ export default function Listuser() {
                         transition={{ duration: 0.18 }}
                       >
                         <Card 
-                          className={`cursor-pointer transition-all border-gray-700 ${
+                          className={`cursor-pointer transition-all border-none ${
                             user.hasUnread 
-                              ? 'bg-gray-800 hover:bg-gray-750 border-l-4 border-l-blue-500' 
-                              : 'bg-gray-900 hover:bg-gray-800'
+                              ? 'bg-black hover:bg-gray-750 border-l-4 border-l-blue-500' 
+                              : 'bg-black hover:bg-gray-800'
                           }`}
                           onClick={() => handleChatNavigation(user.username)}
                         >
