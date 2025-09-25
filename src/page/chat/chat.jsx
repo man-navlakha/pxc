@@ -13,261 +13,17 @@ import { Clipboard } from "lucide-react"; // Assuming you use lucide-react
 
 import { verifiedUsernames } from "../../verifiedAccounts";
 import VerifiedBadge from "../../componet/VerifiedBadge";
+import { Button } from "../../components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "../../components/ui/avatar";
 
 
-const Check2 = () => (
-  <svg
-    fill="#ffffffb7"
-    width="14px"
-    height="14px"
-    viewBox="0 0 24 24"
-    id="check-double"
-    data-name="Line Color"
-    xmlns="http://www.w3.org/2000/svg"
-    className="icon line-color"
-  >
-    <line
-      id="secondary"
-      x1={13.22}
-      y1={16.5}
-      x2={21}
-      y2={7.5}
-      style={{
-        fill: "none",
-        stroke: "rgba(255, 255, 255, 1)",
-        strokeLinecap: "round",
-        strokeLinejoin: "round",
-        strokeWidth: 2,
-      }}
-    />
-    <polyline
-      id="primary"
-      points="3 11.88 7 16.5 14.78 7.5"
-      style={{
-        fill: "none",
-        stroke: "rgba(255, 255, 255, 1)",
-        strokeLinecap: "round",
-        strokeLinejoin: "round",
-        strokeWidth: 2,
-      }}
-    />
-  </svg>) 
+import LightboxModal from "./LightboxModal";
 
-
-const Clock = () => (
-   <svg
-    width="14px"
-    height="14px"
-    viewBox="0 0 1024 1024"
-    className="icon"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      fill="#ffffffff"
-      d="M512 896a384 384 0 100-768 384 384 0 000 768zm0 64a448 448 0 110-896 448 448 0 010 896z"
-    />
-    <path
-      fill="#ffffffff"
-      d="M480 256a32 32 0 0132 32v256a32 32 0 01-64 0V288a32 32 0 0132-32z"
-    />
-    <path
-      fill="#fff"
-      d="M480 512h256q32 0 32 32t-32 32H480q-32 0-32-32t32-32z"
-    />
-  </svg>) 
-
-const LinkPreview = ({ url, meta }) => {
-  // meta from link-preview-js: { title, description, images: [...] }
-  return (
-    <a
-      href={url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block rounded-xl overflow-hidden border border-gray-700 bg-gray-800 hover:bg-gray-700 transition max-w-[320px]"
-    >
-      {meta?.images?.[0] && (
-        <img src={meta.images[0]} alt={meta.title || "preview"} className="w-full h-40 object-cover" />
-      )}
-
-      <div className="p-2">
-        <p className="text-sm font-semibold text-white truncate">{meta?.title || url}</p>
-        {meta?.description && <p className="text-xs text-gray-400 line-clamp-2">{meta.description}</p>}
-        <p className="text-xs text-emerald-400 mt-1">{new URL(url).hostname}</p>
-      </div>
-    </a>
-  );
-};
-
-
-
-
-
-
-
-
-
-// helper ext detection
-const IMAGE_EXT = ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg", "avif"];
-const VIDEO_EXT = ["mp4", "webm", "ogg", "mov", "m4v"];
-const AUDIO_EXT = ["mp3", "wav", "ogg", "m4a", "aac", "flac"];
-const DOC_EXT = ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "csv", "md"];
-
-const getExtFromUrl = (raw) => {
-  try {
-    const u = new URL(raw);
-    const p = u.pathname.split("?")[0].split("#")[0];
-    const dot = p.lastIndexOf(".");
-    return dot > -1 ? p.slice(dot + 1).toLowerCase() : "";
-  } catch {
-    const q = raw.split("?")[0].split("#")[0];
-    const dot = q.lastIndexOf(".");
-    return dot > -1 ? q.slice(dot + 1).toLowerCase() : "";
-  }
-};
-
-const isYouTube = (url) => {
-  try {
-    const u = new URL(url);
-    const host = u.hostname.replace(/^www\./, "");
-    if (host === "youtube.com" || host === "m.youtube.com") {
-      const v = u.searchParams.get("v");
-      return v ? `https://www.youtube.com/embed/${v}` : null;
-    }
-    if (host === "youtu.be") {
-      const id = u.pathname.split("/").filter(Boolean)[0];
-      return id ? `https://www.youtube.com/embed/${id}` : null;
-    }
-    return null;
-  } catch { return null; }
-};
-
-// main renderer (raw: message text; linkMeta: { url: meta }; openLightbox: (url,type) => void)
-const renderMedia = (raw, linkMeta = {}, openLightbox) => {
-  if (!raw) return null;
-
-  const bubbleMediaWrapper =
-    "w-40 h-40 md:w-56 md:h-56 rounded-lg overflow-hidden cursor-pointer";
-
-  try {
-    const maybeUrl = new URL(raw);
-    const ext = getExtFromUrl(raw);
-
-    // 📷 Image bubble (cropped)
-    if (IMAGE_EXT.includes(ext)) {
-      return (
-        <img
-          src={raw}
-          alt="image"
-          onClick={() => openLightbox({ url: raw, type: "image" })}
-          className={`${bubbleMediaWrapper} object-cover hover:opacity-90`}
-        />
-      );
-    }
-
-    if (VIDEO_EXT.includes(ext)) {
-      return (
-        <video
-          controls
-          onClick={() => openLightbox({ url: raw, type: "video" })}
-          className={`${bubbleMediaWrapper} object-cover hover:opacity-90`}
-        >
-          <source src={raw} />
-        </video>
-      );
-    }
-
-    // 🎵 Audio
-    if (AUDIO_EXT.includes(ext)) {
-      return (
-        <audio controls className="w-56">
-          <source src={raw} />
-        </audio>
-      );
-    }
-
-    // 📄 Document
-    if (DOC_EXT.includes(ext)) {
-      return (
-        <a
-          href={raw}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 p-2 rounded-lg bg-gray-800 text-white hover:bg-gray-700"
-        >
-          📄 Open Document
-        </a>
-      );
-    }
-
-    // 🔗 Links (rich preview or fallback)
-    const meta = linkMeta[maybeUrl.href];
-    if (meta) {
-      return <LinkPreview url={maybeUrl.href} meta={meta} />;
-    }
-
-    return (
-      <a
-        href={raw}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="underline text-blue-400 break-words break-all"
-      >
-        {maybeUrl.href}
-      </a>
-    );
-  } catch {
-    return <p>{raw}</p>;
-  }
-};
-
-
-
-
-
-function LightboxModal({ openData, onClose }) {
-  return (
-    <AnimatePresence>
-      {openData?.url && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/70"
-            onClick={onClose}
-          />
-          <motion.div
-            initial={{ scale: 0.95, y: 20 }}
-            animate={{ scale: 1, y: 0 }}
-            exit={{ scale: 0.95, y: 20 }}
-            className="relative z-10 max-w-[90vw] max-h-[90vh]"
-          >
-            <div className="rounded-lg overflow-hidden bg-black">
-              {openData.type === "image" && (
-                <img
-                  src={openData.url}
-                  alt="preview"
-                  className="max-w-[90vw] max-h-[90vh] object-contain"
-                />
-              )}
-              {openData.type === "video" && (
-                <video controls className="max-w-[90vw] max-h-[90vh]">
-                  <source src={openData.url} />
-                </video>
-              )}
-            </div>
-            <button
-              className="absolute top-2 right-2 rounded-full bg-black/50 p-2 text-white"
-              onClick={onClose}
-            >
-              ✕
-            </button>
-          </motion.div>
-        </div>
-      )}
-    </AnimatePresence>
-  );
-}
+import Clock from '../../componet/svg/Clock'
+import Check2 from '../../componet/svg/Check2'
+import TrimSend from "@/componet/svg/TrimSend";
+import Photo from "@/componet/svg/Photo";
+import MediaRenderer from "./MediaRenderer";
 
 
 
@@ -278,102 +34,31 @@ export default function Chat() {
 
   const [ownProfile, setOwnProfile] = useState(null);
   const [receiverProfile, setReceiverProfile] = useState(null);
-
-
-
-
-
   const [linkMeta, setLinkMeta] = useState({});
   const loadingRef = useRef(new Set()); // track which urls are being fetched
-  const [lightbox, setLightbox] = useState({ url: null, type: null });
-
   // popup for image/url
   const [showImagePopup, setShowImagePopup] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
-
-
   const [lightboxData, setLightboxData] = useState(null);
-
-  // typing
-  const [isTyping, setIsTyping] = useState(false);
   const typingTimeoutRef = useRef(null);
-
   // sockets + scroll
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
   const listRef = useRef(null);
   const textareaRef = useRef(null);
-
   const { RECEIVER } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-
-
-useEffect(() => {
-  setMessages([]);
-}, [RECEIVER]);
-  // ---------- helpers ----------
-  const getExtFromUrl = (raw) => {
-    try {
-      const u = new URL(raw);
-      const path = u.pathname.toLowerCase();
-      // strip trailing slash
-      const clean = path.endsWith("/") ? path.slice(0, -1) : path;
-      const dot = clean.lastIndexOf(".");
-      return dot > -1 ? clean.slice(dot + 1) : "";
-    } catch {
-      // fallback – raw may already be a path
-      const q = raw.split("?")[0].split("#")[0];
-      const dot = q.lastIndexOf(".");
-      return dot > -1 ? q.slice(dot + 1).toLowerCase() : "";
-    }
-  };
-
-  const isYouTube = (url) => {
-    try {
-      const u = new URL(url);
-      const host = u.hostname.replace(/^www\./, "");
-      if (host === "youtube.com" || host === "m.youtube.com") {
-        const v = u.searchParams.get("v");
-        return v ? `https://www.youtube.com/embed/${v}` : null;
-      }
-      if (host === "youtu.be") {
-        const id = u.pathname.split("/").filter(Boolean)[0];
-        return id ? `https://www.youtube.com/embed/${id}` : null;
-      }
-      return null;
-    } catch {
-      return null;
-    }
-  };
-
-  const IMAGE_EXT = useMemo(
-    () => ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg", "avif"],
-    []
-  );
-  const VIDEO_EXT = useMemo(
-    () => ["mp4", "webm", "ogg", "mov", "m4v"],
-    []
-  );
-  const AUDIO_EXT = useMemo(
-    () => ["mp3", "wav", "ogg", "m4a", "aac", "flac"],
-    []
-  );
-  const DOC_EXT = useMemo(
-    () => ["pdf", "doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "csv", "md"],
-    []
-  );
-
-
-
   const [USERNAME, setUSERNAME] = useState(null);
-
-
-
-
   const [editingMessage, setEditingMessage] = useState(null);
   const [editText, setEditText] = useState("");
   const [showMessageMenu, setShowMessageMenu] = useState(null);
+
+
+
+  useEffect(() => {
+    setMessages([]);
+  }, [RECEIVER]);
 
   const handleEditMessage = async (messageId, newContent) => {
     try {
@@ -725,10 +410,10 @@ useEffect(() => {
       if (textareaRef.current) {
         textareaRef.current.style.height = "auto";
       }
-    // 3. THE FIX: Re-focus the textarea to keep the keyboard open
-    if (textareaRef.current) {
-      textareaRef.current.focus();
-    }
+      // 3. THE FIX: Re-focus the textarea to keep the keyboard open
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
     }
 
     setTimeout(() => scrollToBottom(true), 0);
@@ -746,9 +431,6 @@ useEffect(() => {
       );
     }
   };
-
-
-
   // ---------- Seen on scroll ----------
   useEffect(() => {
     if (!messages.length || !RECEIVER) return;
@@ -813,8 +495,6 @@ useEffect(() => {
   const openLightbox = (data) => setLightboxData(data); // data = { url, type }
   const closeLightbox = () => setLightboxData(null);
 
-
-
   const handleSendUrl = () => {
     const url = imageUrl.trim();
     if (!url || socketRef.current?.readyState !== WebSocket.OPEN) return;
@@ -839,11 +519,6 @@ useEffect(() => {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
-
-
-
-
-
   useEffect(() => {
     // on new messages, conditionally stick to bottom
     scrollToBottom();
@@ -862,15 +537,6 @@ useEffect(() => {
       }
     }
   }, [location.search]);
-
-  // console.log(receiverProfile)
-
-
-
-
-
-
-
   return (
     <div className="flex h-screen ccf bg-gray-900">
       {/* Left panel */}
@@ -882,29 +548,39 @@ useEffect(() => {
       {/* Right panel */}
       <div className="flex-1 flex flex-col text-white">
         {/* Header */}
-        {/* Header */}
         <div className="sticky top-0 bg-gray-900 overflow-hidden flex items-center gap-3 px-4 py-3 border-b border-gray-700">
-          <button onClick={() => navigate("/chat")} className="p-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/chat")}
+            className="p-2 hover:bg-gray-800"
+          >
             <Undo2 className="text-white" />
-          </button>
+          </Button>
 
-          <img
+          <Avatar
+            className="w-8 h-8 cursor-pointer border border-gray-600"
             onClick={() => navigate(`/profile/${receiverProfile?.username || RECEIVER}`)}
-            src={
-              receiverProfile?.profile_pic ||
-              "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"
-            }
-            className="w-8 h-8 rounded-full"
-          />
+          >
+            <AvatarImage
+              src={
+                receiverProfile?.profile_pic ||
+                "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"
+              }
+            />
+            <AvatarFallback className="bg-gray-700 text-white">
+              {receiverProfile?.username?.[0] || RECEIVER?.[0] || "U"}
+            </AvatarFallback>
+          </Avatar>
 
           <div
             onClick={() => navigate(`/profile/${receiverProfile?.username || RECEIVER}`)}
-            className="flex flex-col"
+            className="flex flex-col cursor-pointer"
           >
-            <span className="font-semibold flex items-center gap-1">
+            <span className="font-semibold flex items-center gap-1 text-white">
               {receiverProfile?.username || RECEIVER}
               {verifiedUsernames.has(receiverProfile?.username || RECEIVER) && (
-                <VerifiedBadge size={24} />
+                <VerifiedBadge size={16} />
               )}
             </span>
             <span className="text-xs text-gray-400">
@@ -914,8 +590,6 @@ useEffect(() => {
             </span>
           </div>
         </div>
-
-
 
         {/* Messages */}
         <div
@@ -986,8 +660,13 @@ useEffect(() => {
                       </div>
                     ) : (
                       // Normal message display
+
                       <div>
-                        {renderMedia(msg.message, linkMeta, openLightbox)}
+                        <MediaRenderer
+                          raw={msg.message}
+                          linkMeta={linkMeta}
+                          openLightbox={openLightbox}
+                        />
                         {msg.is_edited && (
                           <span className="text-xs text-gray-400 ml-2">(edited)</span>
                         )}
@@ -1058,7 +737,6 @@ useEffect(() => {
           })}
           <div ref={messagesEndRef} />
         </div>
-
 
 
         <AnimatePresence>
@@ -1141,18 +819,7 @@ useEffect(() => {
           )}
         </AnimatePresence>
 
-
-
         <LightboxModal openData={lightboxData} onClose={closeLightbox} />
-
-
-
-        {/* Typing indicator */}
-        {isTyping && (
-          <p className="text-xs text-neutral-400 italic px-4 mb-1">
-            typing...
-          </p>
-        )}
 
         <div className="sticky bottom-0 z-10 w-full p-4">
           <div className="absolute bottom-8 left-0 h-32 w-full bg-gradient-to-t from-gray-900 to-transparent pointer-events-none" />
@@ -1171,33 +838,20 @@ useEffect(() => {
               rows={1}
               placeholder="Type a message..."
               value={input}
-
               onChange={(e) => {
-
                 setInput(e.target.value);
-
                 setIsTyping(true);
                 const ta = e.target;
-
                 ta.style.height = "auto";
-
                 ta.style.height = `${ta.scrollHeight}px`;
                 if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-
                 typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1500);
-
               }}
-
               onKeyDown={(e) => {
-
                 if (e.key === "Enter" && !e.shiftKey) {
-
                   e.preventDefault();
-
                   sendMessage();
-
                 }
-
               }}
             />
 
@@ -1206,15 +860,14 @@ useEffect(() => {
               onClick={() => setShowImagePopup(true)}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-neutral-400 transition-colors duration-200 hover:bg-white/10 hover:text-white"
             >
-              {/* Replace with your ImageIcon component */}
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>
+              <Photo />
             </button>
             <button
-            type="submit"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:shadow-none"
-            disabled={!input.trim()}
+              type="submit"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:shadow-none"
+              disabled={!input.trim()}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z" /><path d="M22 2 11 13" /></svg>
+              <TrimSend />
             </button>
           </form>
         </div>

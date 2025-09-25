@@ -1,0 +1,23 @@
+
+const Clock = () => (
+  <svg
+    width="14px"
+    height="14px"
+    viewBox="0 0 1024 1024"
+    className="icon"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      fill="#ffffffff"
+      d="M512 896a384 384 0 100-768 384 384 0 000 768zm0 64a448 448 0 110-896 448 448 0 010 896z"
+    />
+    <path
+      fill="#ffffffff"
+      d="M480 256a32 32 0 0132 32v256a32 32 0 01-64 0V288a32 32 0 0132-32z"
+    />
+    <path
+      fill="#fff"
+      d="M480 512h256q32 0 32 32t-32 32H480q-32 0-32-32t32-32z"
+    />
+  </svg>)
+export default Clock;
