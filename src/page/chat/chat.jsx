@@ -24,6 +24,8 @@ import Check2 from '../../componet/svg/Check2'
 import TrimSend from "@/componet/svg/TrimSend";
 import Photo from "@/componet/svg/Photo";
 import MediaRenderer from "./MediaRenderer";
+import { handleDeleteMessage, handleEditMessage } from "./messageActions";
+
 
 
 
@@ -60,91 +62,6 @@ export default function Chat() {
     setMessages([]);
   }, [RECEIVER]);
 
-  const handleEditMessage = async (messageId, newContent) => {
-    try {
-      const response = await api.put(
-        `chatting/${messageId}/edit/`,
-        { content: newContent },
-        {
-          withCredentials: true,
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': Cookies.get('csrftoken')
-          }
-        }
-      );
-
-      if (response.data && response.data.id) {
-        setMessages(prev => prev.map(msg =>
-          msg.id === messageId
-            ? { ...msg, message: newContent, is_edited: true }
-            : msg
-        ));
-        setEditingMessage(null);
-        setEditText("");
-        return true;
-      }
-    } catch (error) {
-      console.error('Failed to edit message:', error);
-      console.error('Response data:', error.response?.data);
-
-      // If PUT fails, try POST as fallback
-      try {
-        const postResponse = await api.post(
-          `chatting/${messageId}/edit/`,
-          { content: newContent },
-          {
-            withCredentials: true,
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRFToken': Cookies.get('csrftoken')
-            }
-          }
-        );
-
-        if (postResponse.data && postResponse.data.id) {
-          setMessages(prev => prev.map(msg =>
-            msg.id === messageId
-              ? { ...msg, message: newContent, is_edited: true }
-              : msg
-          ));
-          setEditingMessage(null);
-          setEditText("");
-          return true;
-        }
-      } catch (postError) {
-        console.error('POST fallback also failed:', postError);
-        alert('Failed to edit message. Check console for details.');
-      }
-    }
-    return false;
-  };
-
-
-  // Delete message function
-  const handleDeleteMessage = async (messageId) => {
-    if (!confirm('Are you sure you want to delete this message?')) return;
-
-    try {
-      const response = await api.delete(`chatting/${messageId}/delete/`, {
-        withCredentials: true,
-        headers: {
-          'X-CSRFToken': Cookies.get('csrftoken')
-        }
-      });
-
-      if (response.data.success) {
-        setMessages(prev => prev.filter(msg => msg.id !== messageId));
-        setShowMessageMenu(null);
-      }
-    } catch (error) {
-      console.error('Failed to delete message:', error);
-      console.error('Response data:', error.response?.data);
-      alert('Failed to delete message. Check console for details.');
-    }
-  };
-
-
   // Start editing
   const startEditing = (msg) => {
     setEditingMessage(msg.id);
@@ -160,13 +77,21 @@ export default function Chat() {
 
   // Save edit
   const saveEdit = () => {
-    if (editText.trim() && editText.trim() !== messages.find(m => m.id === editingMessage)?.message) {
-      handleEditMessage(editingMessage, editText.trim());
+    if (
+      editText.trim() &&
+      editText.trim() !== messages.find((m) => m.id === editingMessage)?.message
+    ) {
+      handleEditMessage(
+        editingMessage,
+        editText.trim(),
+        setMessages,
+        setEditingMessage,
+        setEditText
+      );
     } else {
       cancelEditing();
     }
   };
-
   // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = () => {
@@ -705,8 +630,7 @@ export default function Chat() {
                     </button>
                     <button
                       onClick={() => {
-                        handleDeleteMessage(msg.id);
-                        setShowMessageMenu(null);
+                        handleDeleteMessage(msg.id, setMessages, setShowMessageMenu);
                       }}
                       className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-500/20 transition-colors"
                     >
@@ -840,12 +764,9 @@ export default function Chat() {
               value={input}
               onChange={(e) => {
                 setInput(e.target.value);
-                setIsTyping(true);
                 const ta = e.target;
                 ta.style.height = "auto";
                 ta.style.height = `${ta.scrollHeight}px`;
-                if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-                typingTimeoutRef.current = setTimeout(() => setIsTyping(false), 1500);
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter" && !e.shiftKey) {

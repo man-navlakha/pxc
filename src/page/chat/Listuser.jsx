@@ -119,7 +119,7 @@ const UnreadBadge = ({ count, isVisible }) => {
 
 
 const ChatUserSkeleton = () => (
-  <Card className="w-full bg-gray-800 border-gray-700">
+  <Card className="w-full bg-gray-800 border-y border-gray-700">
     <CardContent className="p-4">
       <div className="flex items-center gap-4">
         <Skeleton className="w-12 h-12 rounded-full bg-gray-700" />
