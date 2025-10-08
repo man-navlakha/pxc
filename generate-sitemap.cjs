@@ -1,7 +1,6 @@
-// generate-sitemap.js
+// generate-sitemap.cjs
 const { SitemapStream, streamToPromise } = require('sitemap');
 const { createWriteStream } = require('fs');
-const axios = require('axios');
 
 const BASE_URL = 'https://pixelclass.netlify.app/';
 
@@ -15,6 +14,27 @@ const staticRoutes = [
   '/search',
 ];
 
+// Hardcoded list of subjects for each semester
+const subjectsBySem = {
+  '4': [
+    'Environmental Science',
+    'Numerical Methods',
+    'Statistical Skills',
+    'Unified Modelling Language',
+    'Introduction to Python',
+    'Introduction to Operating System',
+    'Introduction to Core Java',
+  ],
+  '5': [
+    'Data Communication & Computer Network',
+    'HyperText Preprocessor',
+    'Network Security',
+    'Advanced Java',
+    'Linux',
+  ],
+  // Add other semesters and subjects here if needed
+};
+
 const sitemapStream = new SitemapStream({ hostname: BASE_URL });
 const writeStream = createWriteStream('./public/sitemap.xml');
 
@@ -25,19 +45,10 @@ const writeStream = createWriteStream('./public/sitemap.xml');
       sitemapStream.write({ url: route, changefreq: 'weekly', priority: 0.8 });
     }
 
-    // Fetch dynamic subject routes from your API
-    const response = await axios.post('https://pixel-classes.onrender.com/api/home/QuePdf/Get_Subjact', {
-      sem: 'all', // Or loop through semesters 3, 4, 5, 6 if your API supports it
-      course_name: 'B.C.A',
-    });
-
-    const subjects = response.data;
-
-    if (Array.isArray(subjects)) {
-      for (const subject of subjects) {
-        // Assuming your API returns semester information for each subject
-        const sem = subject.sem || '5'; // Use a default if 'sem' is not in the response
-        const subjectName = encodeURIComponent(subject.name);
+    // Add dynamic subject routes from the hardcoded list
+    for (const sem in subjectsBySem) {
+      for (const subject of subjectsBySem[sem]) {
+        const subjectName = encodeURIComponent(subject);
         sitemapStream.write({ url: `/${sem}/${subjectName}`, changefreq: 'weekly', priority: 0.9 });
       }
     }
