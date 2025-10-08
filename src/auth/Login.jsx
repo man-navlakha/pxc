@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { GoogleLogin } from '@react-oauth/google';
-import { useLocation, Link } from "react-router-dom"; 
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import api from "../utils/api"; // axios with withCredentials:true
 import '../new.css';
 
@@ -12,29 +12,25 @@ const Login = () => {
 
   const location = useLocation();
   const last = "username"; 
-  const redirectTo = new URLSearchParams(location.search).get("redirect") || "/";
+  const navigate = useNavigate();
+  const redirectTo = location.state?.from?.pathname || new URLSearchParams(location.search).get("redirect") || "/";
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
 
   // Check if already logged in
-  useEffect(() => {
+   useEffect(() => {
     const checkLogin = async () => {
       try {
-        // Only check login if not on login page
-        if (!window.location.pathname.includes("/auth/login")) return;
-
-        const res = await api.get("me/"); // proxy-ready
-        if (res.data.username) {
-          window.location.href = redirectTo;
-        }
+        await api.get("me/");
+        navigate(redirectTo, { replace: true }); // Use navigate
       } catch (err) {
         console.log("Not logged in");
       }
     };
     checkLogin();
-  }, [redirectTo]);
+  }, [redirectTo, navigate]);
 
   // Username/password login
   const logmein = async (e) => {
@@ -50,9 +46,9 @@ const Login = () => {
 
       if (res.data.message === "Login successful!") {
         setSuccess("Login successful! Redirecting...");
-        setTimeout(() => {
-          window.location.href = redirectTo;
-        }, 1500);
+         setTimeout(() => {
+          navigate(redirectTo, { replace: true }); // Use navigate
+        }, 1000);
       } else {
         setError("Invalid credentials");
       }
@@ -72,7 +68,7 @@ const Login = () => {
       if (res.data.message === "Login successful!") {
         setSuccess("Login successful! Redirecting...");
         setTimeout(() => {
-          window.location.href = redirectTo;
+          navigate(redirectTo, { replace: true }); // Use navigate
         }, 1500);
       } else {
         setError("Google login failed");
