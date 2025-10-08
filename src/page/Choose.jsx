@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import Cookies from 'js-cookie';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import api from '../utils/api'
@@ -185,6 +186,10 @@ const SubjectPage = () => {
 
     return (
         <div className="ccf mesh_ns min-h-screen text-white flex flex-col">
+            <Helmet>
+                <title>{`Pixel Class - ${subject} Notes - Semester ${sem}`}</title>
+                <meta name="description" content={`Download high-quality PDF notes for ${subject}, Semester ${sem}. Access assignments, important questions, and more.`} />
+            </Helmet>
             <Navbar />
             <div className="flex-1 w-full px-4 sm:px-6 md:px-10 py-4 max-w-6xl mx-auto">
                 <header className="mt-10 mb-8 text-center">
