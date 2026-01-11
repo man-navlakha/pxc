@@ -78,7 +78,7 @@ Make sure you have the following installed on your machine:
 This project was brought to life by:
 
 -   **Man Navlakha** - [GitHub](https://github.com/man-navlakha) | [Portfolio](https://man-navlakha.netlify.app/)
--   **Dhruv Panchal** - [GitHub](https://github.com/Dhruv9512) | [Portfolio](https://dhruv-portfolio-y8kt.onrender.com)
+-   **Dhruv Sharma** - [GitHub](https://github.com/Dhruv9512) | [Portfolio](https://dhruv-portfolio-y8kt.onrender.com)
 
 ---
 
