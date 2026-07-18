@@ -1,0 +1,113 @@
+- generic [active] [ref=f1e1]:
+  - main [ref=f1e3]:
+    - generic "Pixel Class navigation":
+      - link "Pixel Class home" [ref=f1e4] [cursor=pointer]:
+        - /url: /
+        - img "Pixel Class" [ref=f1e5]
+      - navigation "Landing sections" [ref=f1e6]:
+        - link "Home" [ref=f1e7] [cursor=pointer]:
+          - /url: "#home"
+        - link "Features" [ref=f1e8] [cursor=pointer]:
+          - /url: "#features"
+        - link "Pricing" [ref=f1e9] [cursor=pointer]:
+          - /url: "#pricing"
+        - link "Blog" [ref=f1e10] [cursor=pointer]:
+          - /url: "#blog"
+        - link "FAQ" [ref=f1e11] [cursor=pointer]:
+          - /url: "#faq"
+        - link "About Us" [ref=f1e12] [cursor=pointer]:
+          - /url: "#about"
+      - link "Login" [ref=f1e13] [cursor=pointer]:
+        - /url: /auth/login
+    - generic [ref=f1e20]:
+      - link "Flexible plans for you" [ref=f1e21] [cursor=pointer]:
+        - /url: "#pricing"
+      - heading "Study resources in seconds, not hours" [level=1] [ref=f1e24]
+      - paragraph [ref=f1e25]: Pixel Class puts notes, subject materials, and student connections in one clean place so you can get to the right resource quickly.
+      - generic [ref=f1e26]:
+        - link "Start learning" [ref=f1e27] [cursor=pointer]:
+          - /url: /auth/signup
+        - link "View features" [ref=f1e28] [cursor=pointer]:
+          - /url: "#features"
+    - generic [ref=f1e29]:
+      - generic [ref=f1e30]:
+        - generic [ref=f1e31]: Features
+        - heading "A public front door for the study platform." [level=2] [ref=f1e34]
+        - paragraph [ref=f1e35]: Visitors can understand what Pixel Class offers before signing in, then move into protected tools when they are ready.
+      - generic [ref=f1e36]:
+        - article [ref=f1e37]:
+          - heading "Find notes fast" [level=3] [ref=f1e42]
+          - paragraph [ref=f1e43]: Search curated PDFs, semester resources, and subject material without opening the full app.
+        - article [ref=f1e44]:
+          - heading "Semester-ready" [level=3] [ref=f1e50]
+          - paragraph [ref=f1e51]: Organized collections keep class content clean, current, and easy to scan before login.
+        - article [ref=f1e52]:
+          - heading "Community flow" [level=3] [ref=f1e56]
+          - paragraph [ref=f1e57]: Students can move from discovery to chat, sharing, and profile tools after signing in.
+    - generic [ref=f1e58]:
+      - generic [ref=f1e59]:
+        - generic [ref=f1e60]: Pricing
+        - heading "Simple access for students and class groups." [level=2] [ref=f1e63]
+      - generic [ref=f1e64]:
+        - article [ref=f1e65]:
+          - generic [ref=f1e66]:
+            - text: Starter
+            - strong [ref=f1e67]: Free
+            - paragraph [ref=f1e68]: Browse public updates and see how Pixel Class works.
+          - list [ref=f1e69]:
+            - listitem [ref=f1e70]: Public landing access
+            - listitem [ref=f1e73]: Resource previews
+            - listitem [ref=f1e76]: Community updates
+        - article [ref=f1e79]:
+          - generic [ref=f1e80]:
+            - text: Student
+            - strong [ref=f1e81]: Included
+            - paragraph [ref=f1e82]: Sign in to unlock downloads, uploads, and saved class flow.
+          - list [ref=f1e83]:
+            - listitem [ref=f1e84]: PDF downloads
+            - listitem [ref=f1e87]: Subject collections
+            - listitem [ref=f1e90]: Peer discovery
+        - article [ref=f1e93]:
+          - generic [ref=f1e94]:
+            - text: Campus
+            - strong [ref=f1e95]: Custom
+            - paragraph [ref=f1e96]: A cleaner hub for class groups, batches, and shared material.
+          - list [ref=f1e97]:
+            - listitem [ref=f1e98]: Shared resource hubs
+            - listitem [ref=f1e101]: Class coordination
+            - listitem [ref=f1e104]: Profile network
+    - generic [ref=f1e107]:
+      - generic [ref=f1e108]:
+        - generic [ref=f1e109]: Blog
+        - heading "Short notes on studying with less friction." [level=2] [ref=f1e110]
+        - paragraph [ref=f1e111]: A lightweight editorial area gives new visitors more context without hiding the core product behind authentication.
+      - generic [ref=f1e112]:
+        - article [ref=f1e113]:
+          - generic [ref=f1e114]: Guide
+          - heading "How to keep semester PDFs easy to find" [level=3] [ref=f1e115]
+        - article [ref=f1e118]:
+          - generic [ref=f1e119]: Update
+          - heading "A faster way to move from resources to classmates" [level=3] [ref=f1e120]
+        - article [ref=f1e123]:
+          - generic [ref=f1e124]: Workflow
+          - heading "Turning scattered notes into a reliable study system" [level=3] [ref=f1e125]
+    - generic [ref=f1e128]:
+      - generic [ref=f1e129]:
+        - generic [ref=f1e130]: FAQ
+        - heading "What visitors can see before login." [level=2] [ref=f1e131]
+      - generic [ref=f1e132]:
+        - group [ref=f1e133]:
+          - generic "Can visitors see this landing page without logging in?" [ref=f1e134] [cursor=pointer]
+        - group [ref=f1e135]:
+          - generic "Do I need an account to use the full app?" [ref=f1e136] [cursor=pointer]
+        - group [ref=f1e137]:
+          - generic "What is Pixel Class built for?" [ref=f1e138] [cursor=pointer]
+    - generic [ref=f1e139]:
+      - generic [ref=f1e140]:
+        - generic [ref=f1e141]: About Us
+        - heading "Built around the way students actually collect resources." [level=2] [ref=f1e145]
+        - paragraph [ref=f1e146]: Pixel Class turns scattered PDFs, peer help, and subject collections into a focused study hub. The landing page is public, and the deeper tools stay private behind login.
+      - link "Create account" [ref=f1e147] [cursor=pointer]:
+        - /url: /auth/signup
+  - button "Open Next.js Dev Tools" [ref=f1e153] [cursor=pointer]
+  - alert [ref=f1e157]

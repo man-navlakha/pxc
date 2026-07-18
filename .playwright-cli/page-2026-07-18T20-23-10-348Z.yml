@@ -1,0 +1,5 @@
+- generic [active] [ref=f4e1]:
+  - generic [ref=f4e3]:
+    - img "Pixel Class" [ref=f4e4]
+    - paragraph [ref=f4e5]: Loading Pixel Class...
+  - button "Open Next.js Dev Tools" [ref=f4e11] [cursor=pointer]

@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo, useRef, useCallback } from "react";
-import { Undo2, Search, Users, Bell, Check } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState, useMemo, useRef, useCallback, useDeferredValue } from "react";
+import { Check, MessageCircle, RefreshCw, Search, Undo2, Users } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 import api from "../../utils/api";
@@ -11,14 +11,29 @@ import VerifiedBadge from "../../componet/VerifiedBadge";
 // Shadcn/ui components
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
-import { Card, CardContent } from "../../components/ui/card";
 import { Badge } from "../../components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "../../components/ui/avatar";
 import { Skeleton } from "../../components/ui/skeleton";
-import { ScrollArea } from "../../components/ui/scroll-area";
 
 
 // Helpers
+const cx = (...classes) => classes.filter(Boolean).join(" ");
+
+function formatInboxTime(input) {
+  const iso = toISOStringCompat(input);
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+function getUserInitials(user) {
+  const first = user.first_name?.[0] || "";
+  const last = user.last_name?.[0] || "";
+  const fallback = (user.display_name || user.username || "U").trim()[0] || "U";
+  return `${first}${last}`.trim().toUpperCase() || fallback.toUpperCase();
+}
+
 function toISOStringCompat(input) {
   // Normalize many possible input shapes into a reliable ISO string, or return null
   if (!input && input !== 0) return null;
@@ -148,14 +163,14 @@ function sortInboxUsers(users) {
 const MessageStatus = ({ isOwnMessage, seenByOther }) => {
   if (!isOwnMessage) return null;
   return (
-    <span className="flex items-center ml-2">
+    <span className="ml-2 flex items-center">
       {seenByOther ? (
-        <span title="Seen" className="flex gap-0.5 items-center">
-          <Check size={12} className="text-green-400" />
-          <Check size={12} className="text-green-400" />
+        <span title="Seen" className="flex items-center gap-0.5">
+          <Check size={12} className="text-blue-300" />
+          <Check size={12} className="text-blue-300" />
         </span>
       ) : (
-        <Check size={14} className="text-muted-foreground" title="Sent" />
+        <Check size={14} className="text-zinc-500" title="Sent" />
       )}
     </span>
   );
@@ -171,7 +186,7 @@ const UnreadBadge = ({ count, isVisible }) => {
       animate={{ scale: 1 }}
       exit={{ scale: 0 }}
     >
-      <Badge variant="default" className="h-5 w-5 rounded-full p-0 flex items-center justify-center bg-primary text-primary-foreground">
+      <Badge variant="default" className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#3b82f6] px-1.5 text-[10px] font-bold text-white shadow-none">
         {count > 99 ? "99+" : count}
       </Badge>
     </motion.span>
@@ -180,50 +195,48 @@ const UnreadBadge = ({ count, isVisible }) => {
 
 
 const ChatUserSkeleton = () => (
-  <Card className="w-full bg-gray-800 border-y border-gray-700">
-    <CardContent className="p-4">
-      <div className="flex items-center gap-4">
-        <Skeleton className="w-12 h-12 rounded-full bg-gray-700" />
-        <div className="flex-1 space-y-2">
-          <Skeleton className="h-4 w-1/2 bg-gray-700" />
-          <Skeleton className="h-3 w-3/4 bg-gray-700" />
-        </div>
+  <div className="rounded-[18px] px-4 py-3">
+    <div className="flex items-center gap-4">
+      <Skeleton className="h-12 w-12 rounded-full bg-white/[0.12]" />
+      <div className="min-w-0 flex-1 space-y-2">
+        <Skeleton className="h-4 w-1/2 rounded-full bg-white/[0.12]" />
+        <Skeleton className="h-3 w-3/4 rounded-full bg-white/10" />
       </div>
-    </CardContent>
-  </Card>
+    </div>
+  </div>
 );
 
 
 const EmptyState = ({ onFindFriendsClick }) => (
-  <motion.div 
-    initial={{ opacity: 0, y: 20 }} 
-    animate={{ opacity: 1, y: 0 }} 
-    className="text-center py-20"
+  <motion.div
+    initial={{ opacity: 0, y: 18 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="flex flex-1 flex-col items-center justify-center px-5 py-16 text-center"
   >
-    <div className="w-48 h-48 mx-auto mb-6 flex items-center justify-center rounded-full bg-gray-800">
-      <svg width="96" height="96" viewBox="0 0 24 24" fill="none" className="text-gray-400">
-        <path d="M8 12H8.01M12 12H12.01M16 12H16.01M21 12C21 16.4183 16.9706 20 12 20C10.4607 20 9.01172 19.6565 7.74467 19.0511L3 20L4.39499 16.28C3.51156 15.0423 3 13.5743 3 12C3 7.58172 7.02944 4 12 4C16.9706 4 21 7.58172 21 12Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
+    <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-[22px] border border-white/[0.12] bg-white/[0.08] text-zinc-100">
+      <MessageCircle size={28} />
     </div>
 
-    <h3 className="mt-4 text-xl font-bold text-white">No conversations yet</h3>
-    <p className="mt-1 max-w-md mx-auto text-gray-400">
+    <h3 className="text-xl font-semibold text-white">No conversations yet</h3>
+    <p className="mx-auto mt-2 max-w-xs text-sm leading-6 text-zinc-400">
       Start a conversation by connecting with other users or finding friends.
     </p>
-    <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-      <Button onClick={onFindFriendsClick} className="gap-2 bg-blue-600 hover:bg-blue-700 text-white">
+    <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+      <Button onClick={onFindFriendsClick} className="h-11 gap-2 rounded-2xl bg-[#3b82f6] px-5 font-semibold text-white hover:bg-[#2f78ed]">
         <Users size={16} />
         Find Friends
       </Button>
-      <Button variant="outline" onClick={() => window.location.reload()} className="text-gray-300 border-gray-600 hover:bg-gray-800">
+      <Button variant="outline" onClick={() => window.location.reload()} className="h-11 rounded-2xl border-white/[0.12] bg-white/[0.06] px-5 text-zinc-200 hover:bg-white/10 hover:text-white">
+        <RefreshCw size={16} className="mr-2" />
         Refresh
       </Button>
     </div>
   </motion.div>
 );
 
-export default function Listuser() {
+export default function Listuser({ embedded = false }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // current user info
   const [currentUsername, setCurrentUsername] = useState("");
@@ -239,6 +252,8 @@ export default function Listuser() {
   const [refreshing, setRefreshing] = useState(false);
   const [pullToRefresh, setPullToRefresh] = useState({ active: false, startY: 0, distance: 0 });
   const [totalUnreadCount, setTotalUnreadCount] = useState(0);
+  const [filterMode, setFilterMode] = useState("inbox");
+  const deferredSearch = useDeferredValue(search);
 
   // Fetch current user details (username AND id)
   useEffect(() => {
@@ -267,12 +282,13 @@ export default function Listuser() {
 
   // Filter + sorting: unread first, then timestamp desc (SEARCH ONLY)
   const filteredUsers = useMemo(() => {
-    const searchTerm = search.toLowerCase().trim();
+    const searchTerm = deferredSearch.toLowerCase().trim();
     let filtered = allUsers.filter((user) => {
       const fullName = `${user.first_name || ""} ${user.last_name || ""}`.toLowerCase();
       const username = (user.username || "").toLowerCase();
       const displayName = (user.display_name || "").toLowerCase();
       const supportUsername = (user.support_username || "").toLowerCase();
+      if (filterMode === "unread" && !user.hasUnread) return false;
       const matchesSearch =
         !searchTerm ||
         username.includes(searchTerm) ||
@@ -285,7 +301,7 @@ export default function Listuser() {
     sortInboxUsers(filtered);
 
     return filtered;
-  }, [allUsers, search]);
+  }, [allUsers, deferredSearch, filterMode]);
 
   const unreadConversationsCount = useMemo(() => allUsers.filter(u => u.hasUnread).length, [allUsers]);
 
@@ -422,180 +438,215 @@ export default function Listuser() {
     };
   }, [currentUsername, currentUserId]);
 
-  const handleChatNavigation = useCallback((user) => {
+  const getChatUrl = useCallback((user) => {
     if (user.is_support_thread) {
       const query = user.support_username
         ? `?supportUser=${encodeURIComponent(user.support_username)}`
         : "";
-      navigate(`/chat/pixel${query}`);
-      return;
+      return `/chat/pixel${query}`;
     }
 
-    navigate(`/chat/${user.username}`);
-  }, [navigate]);
+    return `/chat/${user.username}`;
+  }, []);
+
+  const handleChatNavigation = useCallback((user) => {
+    navigate(getChatUrl(user));
+  }, [getChatUrl, navigate]);
+
+  const rootClass = embedded
+    ? "chat-font flex h-full w-full flex-col bg-[#4b4644] text-white"
+    : "chat-font flex min-h-[100dvh] flex-col bg-[#111111] text-white";
 
   return (
-    <div className="min-h-screen ccf  bg-black text-white flex flex-col">
-      {/* Header */}
-      <header className="sticky top-0 bg-black/95 backdrop-blur border-b border-gray-800 z-10">
-        <div className="flex items-center gap-3 px-6 py-4">
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => navigate('/')}
-            aria-label="Go back"
-            className="text-white hover:text-white hover:bg-gray-800"
-          >
-            <Undo2 size={20} />
-          </Button>
-
-          <div className="flex-1">
-            <h1 className="text-xl font-semibold text-white">Messages</h1>
-            {unreadConversationsCount > 0 && (
-              <p className="text-sm text-gray-300">
-                {unreadConversationsCount} unread conversation{unreadConversationsCount > 1 ? 's' : ''}
+    <div className={rootClass}>
+      <header className="shrink-0 border-b border-white/10 bg-white/[0.035] backdrop-blur-xl">
+        {embedded ? (
+          <div className="flex h-[64px] items-center justify-between px-5">
+          
+            <div className="flex items-center gap-2 text-zinc-300">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/search")}
+                aria-label="Find people"
+                className="h-9 w-9 rounded-xl text-zinc-300 hover:bg-white/10 hover:text-white"
+              >
+                <Users size={18} />
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <div className="flex h-[72px] items-center gap-3 px-4 sm:px-6">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/")}
+              aria-label="Go back"
+              className="h-10 w-10 rounded-2xl text-zinc-200 hover:bg-white/[0.08] hover:text-white"
+            >
+              <Undo2 size={19} />
+            </Button>
+            <div className="min-w-0 flex-1">
+              <h1 className="truncate text-xl font-semibold text-white">Messages</h1>
+              <p className="truncate text-sm text-zinc-400">
+                {totalUnreadCount || unreadConversationsCount
+                  ? `${totalUnreadCount || unreadConversationsCount} unread`
+                  : "Inbox and direct messages"}
               </p>
-            )}
+            </div>
+          </div>
+        )}
+
+        <div className="px-4 pb-4 sm:px-5">
+          <div className="mb-3 flex items-center gap-2">
+            {[
+              ["inbox", "Inbox"],
+              ["unread", "Unread"],
+            ].map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setFilterMode(value)}
+                className={cx(
+                  "rounded-xl px-3 py-2 text-sm font-semibold transition",
+                  filterMode === value
+                    ? "bg-white text-[#2f2a28]"
+                    : "text-zinc-300 hover:bg-white/[0.08] hover:text-white"
+                )}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={17} />
+            <Input
+              className="h-11 rounded-2xl border-white/10 bg-black/[0.18] pl-10 pr-4 text-sm text-white placeholder:text-zinc-400 focus-visible:ring-1 focus-visible:ring-white/20"
+              placeholder="Search conversations"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
         </div>
       </header>
 
-      <main 
-        ref={listRef} 
-        onTouchStart={handleTouchStart} 
-        onTouchMove={handleTouchMove} 
-        onTouchEnd={handleTouchEnd} 
-        className="flex-1 flex flex-col p-6"
+      <main
+        ref={listRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        className="chat-scrollbar flex min-h-0 flex-1 flex-col overflow-y-auto px-3 py-3"
       >
-        {/* Pull to refresh indicator */}
         <div className="overflow-hidden" style={{ height: pullToRefresh.distance }}>
-          <div className="flex items-center justify-center h-12">
-            {pullToRefresh.distance > 50 ? (
+          <div className="flex h-12 items-center justify-center text-sm text-zinc-300">
+            {pullToRefresh.distance > 50 || refreshing ? (
               <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: "linear" }}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="text-gray-400">
-                  <path d="M12 2V6M12 18V22M6 12H2M22 12H18M19.0784 19.0784L16.25 16.25M19.0784 4.99994L16.25 7.82837M4.92157 19.0784L7.75 16.25M4.92157 4.99994L7.75 7.82837" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
+                <RefreshCw size={18} />
               </motion.div>
             ) : (
-              <span className="text-gray-400">Pull to refresh</span>
+              <span>Pull to refresh</span>
             )}
           </div>
         </div>
 
+        {error && (
+          <div className="mb-3 rounded-2xl border border-red-300/20 bg-red-400/10 px-4 py-3 text-sm text-red-100">
+            {error}
+          </div>
+        )}
+
         {loading ? (
-          <div className="space-y-4">
-            {Array.from({ length: 6 }).map((_, i) => <ChatUserSkeleton key={i} />)}
+          <div className="space-y-2">
+            {Array.from({ length: 7 }).map((_, i) => <ChatUserSkeleton key={i} />)}
           </div>
         ) : allUsers.length === 0 ? (
-          <EmptyState onFindFriendsClick={() => navigate('/search')} />
+          <EmptyState onFindFriendsClick={() => navigate("/search")} />
         ) : (
-          <div className="flex flex-col h-full gap-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <Input
-                className="pl-10 bg-gray-900 border-gray-700 text-white placeholder:text-gray-400"
-                placeholder="Search conversations..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-            </div>
+          <motion.div layout className="space-y-1.5 pb-4">
+            <AnimatePresence mode="popLayout">
+              {filteredUsers.map((user) => {
+                const chatUrl = getChatUrl(user);
+                const isActive = location.pathname + location.search === chatUrl;
+                const timeString = formatInboxTime(
+                  user.timestamp ?? user.latest_message?.timestamp ?? user.latest_message?.created_at ?? null
+                );
+                const latestText =
+                  (user.isOwnMessage && user.latest_message ? "You: " : "") +
+                  (getLatestMessageText(user.latest_message) ||
+                    `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
+                    user.username ||
+                    "New conversation");
 
-            {/* List */}
-            <ScrollArea className="flex-1">
-              <motion.div layout className="space-y-3">
-                <AnimatePresence mode="popLayout">
-                  {filteredUsers.map((user) => {
-                    const iso = toISOStringCompat(user.timestamp ?? user.latest_message?.timestamp ?? user.latest_message?.created_at ?? null);
-                    let timeString = "";
-                    if (iso) {
-                      const d = new Date(iso);
-                      if (!isNaN(d.getTime())) timeString = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                    }
+                return (
+                  <motion.button
+                    key={user.conversation_key || user.username}
+                    type="button"
+                    layout
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.18 }}
+                    onClick={() => handleChatNavigation(user)}
+                    className={cx(
+                      "group w-full rounded-[18px] px-4 py-3 text-left transition",
+                      isActive
+                        ? "bg-[#3b82f6] text-white shadow-lg shadow-blue-950/25"
+                        : "text-zinc-100 hover:bg-white/[0.08]",
+                      user.hasUnread && !isActive && "bg-white/[0.055]"
+                    )}
+                  >
+                    <div className="flex min-w-0 items-center gap-4">
+                      <div className="relative shrink-0">
+                        <Avatar className="h-12 w-12 border border-white/[0.16]">
+                          <AvatarImage src={user.profile_pic || `https://i.pravatar.cc/150?u=${user.username}`} />
+                          <AvatarFallback className="bg-black/[0.24] text-sm font-semibold text-white">
+                            {getUserInitials(user)}
+                          </AvatarFallback>
+                        </Avatar>
+                        {user.is_online && (
+                          <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-[#4b4644] bg-[#34d399]" />
+                        )}
+                      </div>
 
-                    return (
-                      <motion.div 
-                        key={user.conversation_key || user.username}
-                        layout
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.18 }}
-                      >
-                        <Card 
-                          className={`cursor-pointer transition-all border-none ${
-                            user.hasUnread 
-                              ? 'bg-black hover:bg-gray-750 border-l-4 border-l-blue-500' 
-                              : 'bg-black hover:bg-gray-800'
-                          }`}
-                          onClick={() => handleChatNavigation(user)}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-center gap-4">
-                              <div className="relative">
-                                <Avatar className="w-12 h-12 border-2 border-gray-800">
-                                  <AvatarImage src={user.profile_pic || `https://i.pravatar.cc/150?u=${user.username}`} />
-                                  <AvatarFallback className="bg-gray-700 text-white">
-                                    {user.first_name?.[0]}{user.last_name?.[0]}
-                                  </AvatarFallback>
-                                </Avatar>
-                                {user.is_online && (
-                                  <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-400 border-2 border-gray-900" />
-                                )}
-                              </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-1 flex min-w-0 items-center gap-2">
+                          <span
+                            className={cx(
+                              "min-w-0 flex-1 truncate text-[15px] font-semibold",
+                              isActive ? "text-white" : user.hasUnread ? "text-white" : "text-zinc-100"
+                            )}
+                          >
+                            {user.display_name || user.username}
+                          </span>
+                          {!user.is_support_thread && verifiedUsernames.has(user?.username) && <VerifiedBadge size={15} />}
+                          {timeString && (
+                            <span className={cx("shrink-0 text-xs", isActive ? "text-blue-100" : "text-zinc-300")}>
+                              {timeString}
+                            </span>
+                          )}
+                        </div>
 
-                              <div className="flex-1 min-w-0">
-                                <div className="flex justify-between items-center mb-1">
-                                  <div className="flex items-center gap-2">
-                                    <span className={`font-semibold truncate ${
-                                      user.hasUnread ? 'text-white' : 'text-gray-200'
-                                    }`}>
-                                      {user.display_name || user.username}
-                                    </span>
-                                    {!user.is_support_thread && verifiedUsernames.has(user?.username) && <VerifiedBadge size={16} />}
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    {timeString && (
-                                      <span className="text-xs text-gray-400 whitespace-nowrap">
-                                        {timeString}
-                                      </span>
-                                    )}
-                                    <UnreadBadge count={user.unreadCount || 0} isVisible={user.hasUnread} />
-                                  </div>
-                                </div>
+                        <div className="flex min-w-0 items-center gap-2">
+                          <p className={cx("min-w-0 flex-1 truncate text-sm", isActive ? "text-blue-50" : user.hasUnread ? "text-zinc-100" : "text-zinc-300")}>
+                            {latestText}
+                          </p>
+                          <MessageStatus isOwnMessage={user.isOwnMessage} seenByOther={user.seenByOther} />
+                          <UnreadBadge count={user.unreadCount || 0} isVisible={user.hasUnread && !isActive} />
+                        </div>
+                      </div>
+                    </div>
+                  </motion.button>
+                );
+              })}
+            </AnimatePresence>
 
-                                <div className="flex items-center gap-2">
-                                  <p className={`text-sm truncate flex-1 ${
-                                    user.hasUnread ? 'text-gray-200' : 'text-gray-400'
-                                  }`}>
-                                    {user.isOwnMessage && user.latest_message ? 
-                                      `You: ${getLatestMessageText(user.latest_message)}` : 
-                                      getLatestMessageText(user.latest_message) || 
-                                      `${user.first_name || ''} ${user.last_name || ''}`.trim()
-                                    }
-                                  </p>
-                                  <MessageStatus 
-                                    isOwnMessage={user.isOwnMessage} 
-                                    seenByOther={user.seenByOther} 
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </motion.div>
-                    );
-                  })}
-                </AnimatePresence>
-
-                {filteredUsers.length === 0 && (
-                  <div className="text-center py-10 text-gray-400">
-                    No conversations found {search ? `for "${search}"` : ''}
-                  </div>
-                )}
-              </motion.div>
-            </ScrollArea>
-          </div>
+            {filteredUsers.length === 0 && (
+              <div className="px-4 py-12 text-center text-sm text-zinc-300">
+                {filterMode === "unread" ? "No unread conversations" : `No conversations found${search ? ` for "${search}"` : ""}`}
+              </div>
+            )}
+          </motion.div>
         )}
       </main>
     </div>

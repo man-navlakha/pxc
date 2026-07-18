@@ -1,15 +1,23 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
-import Cookies from "js-cookie";
-import { Send, Undo2, Image as ImageIcon, MoreVertical, Edit3, Trash2, Check, X } from "lucide-react";
+import {
+  ArrowUp,
+  Check,
+  Clipboard,
+  Clock3,
+  Edit3,
+  Info,
+  MoreVertical,
+  Trash2,
+  Undo2,
+  X,
+} from "lucide-react";
 import axios from "axios";
 
 import api from "../../utils/api";
 
 import Listuser from "./Listuser";
 import { motion, AnimatePresence } from "framer-motion";
-import { Clipboard } from "lucide-react"; // Assuming you use lucide-react
-
 import { verifiedUsernames } from "../../verifiedAccounts";
 import VerifiedBadge from "../../componet/VerifiedBadge";
 import { Button } from "../../components/ui/button";
@@ -20,7 +28,6 @@ import LightboxModal from "./LightboxModal";
 
 import Clock from '../../componet/svg/Clock'
 import Check2 from '../../componet/svg/Check2'
-import TrimSend from "@/componet/svg/TrimSend";
 import Photo from "@/componet/svg/Photo";
 import MediaRenderer from "./MediaRenderer";
 import { handleDeleteMessage, handleEditMessage } from "./messageActions";
@@ -33,12 +40,17 @@ const PIXEL_SUPPORT_PROFILE = {
   last_seen: "support is online",
 };
 
+const cx = (...classes) => classes.filter(Boolean).join(" ");
+
+const getProfileInitial = (profile, fallback) =>
+  (profile?.display_name || profile?.username || fallback || "U").trim()[0]?.toUpperCase() || "U";
+
 
 export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
-  const [ownProfile, setOwnProfile] = useState(null);
+  const [, setOwnProfile] = useState(null);
   const [receiverProfile, setReceiverProfile] = useState(null);
   const [linkMeta, setLinkMeta] = useState({});
   const loadingRef = useRef(new Set()); // track which urls are being fetched
@@ -46,7 +58,6 @@ export default function Chat() {
   const [showImagePopup, setShowImagePopup] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [lightboxData, setLightboxData] = useState(null);
-  const typingTimeoutRef = useRef(null);
   // sockets + scroll
   const socketRef = useRef(null);
   const messagesEndRef = useRef(null);
@@ -510,289 +521,373 @@ export default function Chat() {
       }
     }
   }, [location.search]);
+
+  const receiverInitial = getProfileInitial(receiverProfile, RECEIVER);
+  const statusLabel = isPixelSupportChat
+    ? supportUser
+      ? `Support thread for ${supportUser}`
+      : "Project help and custom work"
+    : receiverProfile?.last_seen
+    ? `Last seen ${receiverProfile.last_seen}`
+    : "Last seen recently";
+  const canOpenReceiverProfile = !isPixelSupportChat;
+  const openReceiverProfile = () => {
+    if (canOpenReceiverProfile) {
+      navigate(`/profile/${receiverProfile?.username || RECEIVER}`);
+    }
+  };
+
   return (
-    <div className="flex h-screen ccf bg-gray-900">
-      {/* Left panel */}
-      <div className="resize-x min-w-[269px]  max-w-[469px] overflow-y-auto border-r border-gray-700 hidden lg:block">
+    <div className="chat-dm-stage chat-font flex min-h-[100dvh] items-center justify-center bg-black text-zinc-50 lg:p-6">
+      <div className="chat-dm-frame flex h-[100dvh] w-full overflow-hidden bg-[#151515] shadow-[0_30px_120px_rgba(0,0,0,0.65)] lg:h-[min(88dvh,900px)] lg:min-h-[620px] lg:max-w-[1480px] lg:rounded-[24px] lg:border lg:border-white/[0.14]">
+      <aside className="chat-resize-rail hidden w-[clamp(20rem,30vw,29rem)] min-w-[18rem] max-w-[34rem] resize-x overflow-hidden border-r border-white/[0.14] bg-[#4b4644] lg:flex">
+        <Listuser embedded />
+      </aside>
 
-        <Listuser />
-      </div>
-
-      {/* Right panel */}
-      <div className="flex-1 flex flex-col text-white">
-        {/* Header */}
-        <div className="sticky top-0 bg-gray-900 overflow-hidden flex items-center gap-3 px-4 py-3 border-b border-gray-700">
+      <main className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[#141414]">
+        <header className="flex h-[72px] shrink-0 items-center gap-3 border-b border-white/10 bg-[#222222]/92 px-3 backdrop-blur-xl sm:px-5">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate("/chat")}
-            className="p-2 hover:bg-gray-800"
+            aria-label="Back to inbox"
+            className="h-10 w-10 shrink-0 rounded-2xl text-zinc-300 hover:bg-white/[0.08] hover:text-white lg:hidden"
           >
-            <Undo2 className="text-white" />
+            <Undo2 size={18} />
           </Button>
 
           <Avatar
-            className={`w-8 h-8 border border-gray-600 ${isPixelSupportChat ? "" : "cursor-pointer"}`}
-            onClick={() => {
-              if (!isPixelSupportChat) {
-                navigate(`/profile/${receiverProfile?.username || RECEIVER}`);
-              }
-            }}
+            className={cx(
+              "h-12 w-12 shrink-0 border border-white/20 shadow-[0_10px_30px_rgba(0,0,0,0.24)]",
+              canOpenReceiverProfile && "cursor-pointer"
+            )}
+            onClick={openReceiverProfile}
           >
             <AvatarImage
               src={
                 receiverProfile?.profile_pic ||
                 "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"
               }
+              alt={receiverDisplayName}
             />
-            <AvatarFallback className="bg-gray-700 text-white">
-              {receiverProfile?.username?.[0] || RECEIVER?.[0] || "U"}
+            <AvatarFallback className="bg-[#3b82f6]/20 text-sm font-semibold text-blue-100">
+              {receiverInitial}
             </AvatarFallback>
           </Avatar>
 
-          <div
-            onClick={() => {
-              if (!isPixelSupportChat) {
-                navigate(`/profile/${receiverProfile?.username || RECEIVER}`);
-              }
-            }}
-            className={`flex flex-col ${isPixelSupportChat ? "" : "cursor-pointer"}`}
+          <button
+            type="button"
+            onClick={openReceiverProfile}
+            disabled={!canOpenReceiverProfile}
+            className={cx(
+              "min-w-0 flex-1 text-left",
+              canOpenReceiverProfile ? "cursor-pointer" : "cursor-default"
+            )}
           >
-            <span className="font-semibold flex items-center gap-1 text-white">
-              {receiverDisplayName}
-              {!isPixelSupportChat && verifiedUsernames.has(receiverProfile?.username || RECEIVER) && (
-                <VerifiedBadge size={16} />
-              )}
+            <span className="flex min-w-0 items-center gap-2 text-[17px] font-semibold leading-5 text-white">
+              <span className="truncate">{receiverDisplayName}</span>
+              {!isPixelSupportChat &&
+                verifiedUsernames.has(receiverProfile?.username || RECEIVER) && (
+                  <VerifiedBadge size={16} />
+                )}
             </span>
-            <span className="text-xs text-gray-400">
-              {isPixelSupportChat
-                ? supportUser
-                  ? `support thread for ${supportUser}`
-                  : "project help and custom work"
-                : receiverProfile?.last_seen
-                ? `last seen ${receiverProfile.last_seen}`
-                : "last seen recently"}
+            <span className="mt-1 block truncate text-xs font-medium text-zinc-400">
+              {statusLabel}
             </span>
-          </div>
-        </div>
+          </button>
 
-        {/* Messages */}
+          <div className="ml-auto flex shrink-0 items-center gap-1.5">
+            <span
+              title={socketReady ? "Connected" : "Connecting"}
+              className={cx(
+                "hidden h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 md:flex",
+                socketReady ? "text-blue-300" : "text-zinc-400"
+              )}
+            >
+              {socketReady ? <Check size={19} /> : <Clock3 size={19} />}
+            </span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={openReceiverProfile}
+              disabled={!canOpenReceiverProfile}
+              aria-label="View profile"
+              className="h-10 w-10 rounded-2xl text-zinc-300 hover:bg-white/[0.08] hover:text-white disabled:cursor-default disabled:opacity-40"
+            >
+              <Info size={19} />
+            </Button>
+          </div>
+        </header>
+
         <div
           ref={listRef}
-          className="flex flex-1 flex-col overflow-y-auto px-4 py-4 space-y-1"
+          className="chat-scrollbar flex flex-1 flex-col overflow-y-auto bg-[#141414] px-4 py-6 sm:px-7 lg:px-8"
         >
-          {messages.map((msg, i) => {
-            const isOwn = msg.sender === USERNAME;
-            const prevMsg = messages[i - 1];
-            const nextMsg = messages[i + 1];
-            const isFirstOfGroup = !prevMsg || prevMsg.sender !== msg.sender;
-            const isLastOfGroup = !nextMsg || nextMsg.sender !== msg.sender;
+          {messages.length === 0 ? (
+            <div className="flex flex-1 items-center justify-center px-4 py-12">
+              <div className="max-w-sm text-center">
+                <Avatar className="mx-auto mb-5 h-20 w-20 border border-white/[0.18] shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
+                  <AvatarImage
+                    src={
+                      receiverProfile?.profile_pic ||
+                      "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"
+                    }
+                    alt={receiverDisplayName}
+                  />
+                  <AvatarFallback className="bg-[#3b82f6]/20 text-xl font-semibold text-blue-100">
+                    {receiverInitial}
+                  </AvatarFallback>
+                </Avatar>
+                <h2 className="text-xl font-semibold text-white">
+                  {socketReady ? `Message ${receiverDisplayName}` : "Opening chat"}
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-zinc-400">
+                  {socketReady
+                    ? "Start with a message or share media in this conversation."
+                    : "Messages will appear as soon as the secure connection is ready."}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="mx-auto flex w-full max-w-5xl flex-col gap-1.5">
+              {messages.map((msg, i) => {
+                const isOwn = msg.sender === USERNAME;
+                const prevMsg = messages[i - 1];
+                const nextMsg = messages[i + 1];
+                const isFirstOfGroup = !prevMsg || prevMsg.sender !== msg.sender;
+                const isLastOfGroup = !nextMsg || nextMsg.sender !== msg.sender;
+                const isEditing = editingMessage === msg.id;
 
-            let bubbleClasses = "rounded-2xl";
-            if (isOwn) {
-              if (isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-br-sm";
-              else if (!isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-r-sm";
-              else if (!isFirstOfGroup && isLastOfGroup) bubbleClasses = "rounded-2xl rounded-tr-sm";
-            } else {
-              if (isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-bl-sm";
-              else if (!isFirstOfGroup && !isLastOfGroup) bubbleClasses = "rounded-2xl rounded-l-sm";
-              else if (!isFirstOfGroup && isLastOfGroup) bubbleClasses = "rounded-2xl rounded-tl-sm";
-            }
+                let bubbleShape = "rounded-[22px]";
+                if (isOwn) {
+                  if (isFirstOfGroup && !isLastOfGroup) bubbleShape = "rounded-[22px] rounded-br-md";
+                  else if (!isFirstOfGroup && !isLastOfGroup) bubbleShape = "rounded-[22px] rounded-r-md";
+                  else if (!isFirstOfGroup && isLastOfGroup) bubbleShape = "rounded-[22px] rounded-tr-md";
+                } else {
+                  if (isFirstOfGroup && !isLastOfGroup) bubbleShape = "rounded-[22px] rounded-bl-md";
+                  else if (!isFirstOfGroup && !isLastOfGroup) bubbleShape = "rounded-[22px] rounded-l-md";
+                  else if (!isFirstOfGroup && isLastOfGroup) bubbleShape = "rounded-[22px] rounded-tl-md";
+                }
 
-            const isEditing = editingMessage === msg.id;
+                return (
+                  <div
+                    key={`${msg.id ?? msg.temp_id ?? "temp"}-${i}`}
+                    className={cx("flex w-full flex-col", isOwn ? "items-end" : "items-start")}
+                  >
+                    <div className={cx("flex max-w-[min(78%,42rem)] flex-col", isOwn ? "items-end" : "items-start")}>
+                      <div
+                        id={msg.id ? `msg-${msg.id}` : undefined}
+                        className={cx(
+                          "group relative w-fit max-w-full overflow-visible px-4 py-2.5 text-[15px] leading-6 transition",
+                          "whitespace-pre-wrap break-words",
+                          bubbleShape,
+                          isOwn
+                            ? "bg-[#3b82f6] text-white shadow-[0_8px_24px_rgba(59,130,246,0.18)]"
+                            : "bg-[#2b2b2b] text-zinc-100"
+                        )}
+                      >
+                        {isEditing ? (
+                          <div className="flex min-w-[14rem] flex-col gap-3">
+                            <textarea
+                              value={editText}
+                              onChange={(e) => setEditText(e.target.value)}
+                              className="min-h-11 w-full resize-none rounded-2xl border border-white/[0.12] bg-black/25 px-3 py-2 text-sm text-white placeholder-zinc-400 outline-none transition focus:border-blue-300/60 focus:ring-2 focus:ring-blue-300/20"
+                              rows={Math.max(1, editText.split("\n").length)}
+                              autoFocus
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && !e.shiftKey) {
+                                  e.preventDefault();
+                                  saveEdit();
+                                } else if (e.key === "Escape") {
+                                  cancelEditing();
+                                }
+                              }}
+                            />
+                            <div className="flex justify-end gap-2">
+                              <button
+                                type="button"
+                                onClick={cancelEditing}
+                                aria-label="Cancel edit"
+                                className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-zinc-100 transition hover:bg-white/15"
+                              >
+                                <X size={15} />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={saveEdit}
+                                aria-label="Save edit"
+                                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3b82f6] text-white transition hover:bg-[#2f78ed]"
+                              >
+                                <Check size={15} />
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="min-w-0">
+                            <MediaRenderer
+                              raw={msg.message}
+                              linkMeta={linkMeta}
+                              openLightbox={openLightbox}
+                            />
+                            {msg.is_edited && (
+                              <span className={cx("ml-2 text-xs", isOwn ? "text-blue-100" : "text-zinc-400")}>
+                                Edited
+                              </span>
+                            )}
+                          </div>
+                        )}
 
-            return (
-              <div key={`${msg.id ?? "temp"}-${i}`} className={`flex flex-col ${isOwn ? 'items-end' : 'items-start'} `}>
-                <div
-                  id={msg.id ? `msg-${msg.id}` : undefined}
-                  className={`group relative w-fit max-w-[75%] h-fit overflow-x-auto shadow-md whitespace-pre-wrap break-words text-sm md:text-base ${bubbleClasses} ${isOwn ? "ml-auto bg-emerald-500/30 text-white flex-end" : "mr-auto bg-gray-200/10 text-white"
-                    }`}
-                >
-                  {/* Message Content */}
-                  <div className="px-4 py-3">
-                    {isEditing ? (
-                      // Edit mode
-                      <div className="flex flex-col gap-2 min-w-[200px]">
-                        <textarea
-                          value={editText}
-                          onChange={(e) => setEditText(e.target.value)}
-                          className="w-full bg-transparent border border-gray-500 rounded px-2 py-1 text-white placeholder-gray-400 focus:outline-none focus:border-emerald-400 resize-none"
-                          rows={Math.max(1, editText.split('\n').length)}
-                          autoFocus
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                              e.preventDefault();
-                              saveEdit();
-                            } else if (e.key === 'Escape') {
-                              cancelEditing();
-                            }
-                          }}
-                        />
-                        <div className="flex gap-1 justify-end">
+                        {isOwn && !isEditing && msg.id && !String(msg.id).startsWith("temp-") && (
                           <button
-                            onClick={cancelEditing}
-                            className="p-1 rounded hover:bg-gray-600 text-gray-300 hover:text-white"
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowMessageMenu(showMessageMenu === msg.id ? null : msg.id);
+                            }}
+                            aria-label="Message options"
+                            className="absolute -right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-[#2a2a2a] text-zinc-300 opacity-0 shadow-lg shadow-black/30 transition hover:bg-[#333333] hover:text-white group-hover:opacity-100 focus:opacity-100"
                           >
-                            <X size={16} />
+                            <MoreVertical size={16} />
                           </button>
-                          <button
-                            onClick={saveEdit}
-                            className="p-1 rounded hover:bg-emerald-600 text-emerald-400 hover:text-white"
-                          >
-                            <Check size={16} />
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      // Normal message display
-
-                      <div>
-                        <MediaRenderer
-                          raw={msg.message}
-                          linkMeta={linkMeta}
-                          openLightbox={openLightbox}
-                        />
-                        {msg.is_edited && (
-                          <span className="text-xs text-gray-400 ml-2">(edited)</span>
                         )}
                       </div>
-                    )}
-                  </div>
 
-                  {/* Message Options Menu (only for own messages) */}
-                  {isOwn && !isEditing && msg.id && !String(msg.id).startsWith("temp-") && (
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowMessageMenu(showMessageMenu === msg.id ? null : msg.id);
-                        }}
-                        className="p-1 rounded-full hover:bg-black/20 text-gray-300 hover:text-white"
-                      >
-                        <MoreVertical size={16} />
-                      </button>
+                      <AnimatePresence>
+                        {showMessageMenu === msg.id && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -4 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -4 }}
+                            transition={{ duration: 0.16 }}
+                            className="mt-2 overflow-hidden rounded-2xl border border-white/10 bg-[#242424] p-1 shadow-2xl shadow-black/35"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <button
+                              type="button"
+                              onClick={() => startEditing(msg)}
+                              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-zinc-100 transition hover:bg-white/[0.08]"
+                            >
+                              <Edit3 size={14} />
+                              Edit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleDeleteMessage(msg.id, setMessages, setShowMessageMenu);
+                              }}
+                              className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm text-red-300 transition hover:bg-red-400/10"
+                            >
+                              <Trash2 size={14} />
+                              Delete
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {isOwn && isLastOfGroup && (
+                        <div className="mt-1 flex justify-end text-xs text-zinc-500">
+                          {msg.status === "seen" && msg.seen ? (
+                            <span className="inline-flex items-center gap-1">
+                              <Check2 />
+                              Seen
+                            </span>
+                          ) : msg.status === "sending" ? (
+                            <span className="inline-flex items-center gap-1">
+                              <Clock />
+                              Sending
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1">
+                              <Clock />
+                              Sent
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-
-                {/* Dropdown Menu */}
-                {showMessageMenu === msg.id && (
-                  <div
-                    className="block right-2 top-8  m-2 bg-gray-800 border border-gray-600 rounded-lg shadow-lg py-1 z-10 max-w-64 min-w-[120px]"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      onClick={() => startEditing(msg)}
-                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-white hover:bg-gray-700 transition-colors"
-                    >
-                      <Edit3 size={14} />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleDeleteMessage(msg.id, setMessages, setShowMessageMenu);
-                      }}
-                      className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-400 hover:bg-red-500/20 transition-colors"
-                    >
-                      <Trash2 size={14} />
-                      Delete
-                    </button>
                   </div>
-                )}
-
-                {/* Avatar and status info */}
-                {!isOwn && isLastOfGroup && (
-                  <div className="flex items-center left-0 gap-1 mt-1">
-                    <img
-                      src={receiverProfile?.profile_pic || "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png"}
-                      alt="receiver avatar"
-                      className="w-5 h-5 rounded-full"
-                    />
-                  </div>
-                )}
-
-                {isOwn && isLastOfGroup && (
-                  <p className="text-right text-xs text-gray-400 mt-1">
-                    {msg.status === "seen" && msg.seen ? <div className="flex gap-1 items-center"><Check2 /> Seen ${msg.seen}</div> : <div className="flex gap-1 items-center"><Clock /> Sent</div>}
-                  </p>
-                )}
-              </div>
-            );
-          })}
+                );
+              })}
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
-
 
         <AnimatePresence>
           {showImagePopup && (
             <div
               className="fixed inset-0 z-50 flex items-center justify-center p-4"
-              // Use this onClick to close the modal when clicking the backdrop
               onClick={() => setShowImagePopup(false)}
             >
-              {/* Backdrop with Blur */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                className="absolute inset-0 bg-black/70 backdrop-blur-md"
               />
 
-              {/* Modal Panel */}
               <motion.div
-                // Stop propagation to prevent closing when clicking inside the modal
                 onClick={(e) => e.stopPropagation()}
-                initial={{ y: 50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 50, opacity: 0 }}
-                transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                className="relative z-10 flex w-full max-w-md flex-col gap-4 rounded-2xl border border-white/10 bg-black/30 p-6 shadow-2xl shadow-black/40 backdrop-blur-xl"
+                initial={{ y: 24, scale: 0.98, opacity: 0 }}
+                animate={{ y: 0, scale: 1, opacity: 1 }}
+                exit={{ y: 24, scale: 0.98, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 320, damping: 32 }}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="share-media-title"
+                className="relative z-10 flex w-full max-w-md flex-col gap-5 rounded-[24px] border border-white/[0.12] bg-[#242424] p-5 shadow-2xl shadow-black/50 sm:p-6"
               >
-                <div className="flex flex-col">
-                  <h2 className="text-lg font-semibold text-white">Share Media</h2>
-                  <p className="text-sm text-neutral-400">
-                    Paste a link to an image, video, or YouTube URL.
+                <div>
+                  <h2 id="share-media-title" className="text-lg font-semibold text-white">
+                    Share media
+                  </h2>
+                  <p className="mt-1 text-sm leading-6 text-zinc-400">
+                    Paste a direct image, video, document, or YouTube link.
                   </p>
                 </div>
 
-                {/* Input with Paste Button */}
-                <div className="relative flex w-full items-center">
-                  <input
-                    type="text"
-                    placeholder="https://... or youtu.be/..."
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    // Auto-focus the input when the modal opens
-                    autoFocus
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 pr-10 text-white placeholder-neutral-500 focus:border-emerald-500/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
-                  />
-                  <button
-                    onClick={async () => {
-                      try {
-                        const text = await navigator.clipboard.readText();
-                        setImageUrl(text);
-                      } catch (err) {
-                        console.error("Failed to read clipboard contents: ", err);
-                      }
-                    }}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-neutral-400 transition hover:text-white"
-                    title="Paste from clipboard"
-                  >
-                    <Clipboard size={18} />
-                  </button>
-                </div>
+                <label className="flex flex-col gap-2">
+                  <span className="text-xs font-semibold text-zinc-300">Media URL</span>
+                  <div className="relative flex w-full items-center">
+                    <input
+                      type="text"
+                      placeholder="https://..."
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      autoFocus
+                      className="h-12 w-full rounded-2xl border border-white/[0.12] bg-black/[0.24] px-4 pr-11 text-sm text-white outline-none transition placeholder:text-zinc-500 focus:border-blue-300/60 focus:ring-2 focus:ring-blue-300/20"
+                    />
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          const text = await navigator.clipboard.readText();
+                          setImageUrl(text);
+                        } catch (err) {
+                          console.error("Failed to read clipboard contents: ", err);
+                        }
+                      }}
+                      className="absolute right-2 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-zinc-400 transition hover:bg-white/10 hover:text-white"
+                      title="Paste from clipboard"
+                      aria-label="Paste from clipboard"
+                    >
+                      <Clipboard size={17} />
+                    </button>
+                  </div>
+                </label>
 
-                {/* Action Buttons */}
                 <div className="flex justify-end gap-3">
                   <button
+                    type="button"
                     onClick={() => setShowImagePopup(false)}
-                    className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-neutral-300 transition hover:bg-white/20"
+                    className="h-10 rounded-2xl border border-white/[0.12] bg-white/[0.06] px-4 text-sm font-semibold text-zinc-200 transition hover:bg-white/10"
                   >
                     Cancel
                   </button>
                   <button
+                    type="button"
                     onClick={handleSendUrl}
-                    className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-neutral-600 disabled:opacity-50 disabled:shadow-none"
+                    className="h-10 rounded-2xl bg-[#3b82f6] px-5 text-sm font-semibold text-white shadow-lg shadow-blue-950/30 transition hover:bg-[#2f78ed] disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400 disabled:shadow-none"
                     disabled={!imageUrl.trim() || !socketReady}
                   >
                     Send
@@ -805,54 +900,58 @@ export default function Chat() {
 
         <LightboxModal openData={lightboxData} onClose={closeLightbox} />
 
-        <div className="sticky bottom-0 z-10 w-full p-4">
-          <div className="absolute bottom-8 left-0 h-32 w-full bg-gradient-to-t from-gray-900 to-transparent pointer-events-none" />
-
+        <div className="shrink-0 border-t border-white/10 bg-[#151515] px-3 py-3 sm:px-5">
           <form
             onSubmit={(e) => {
               e.preventDefault();
               sendMessage();
             }}
-            className="relative flex items-end gap-2 rounded-xl border border-white/20 bg-gray-900/30 p-2 shadow-2xl shadow-black/40 backdrop-blur-xl transition-all duration-300 focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/30"
+            className="mx-auto flex w-full max-w-5xl items-end gap-3"
           >
-            <textarea
-              ref={textareaRef}
-              style={{ maxHeight: "200px", overflowY: "auto" }}
-              className="flex-1 resize-none bg-transparent px-3 py-2 text-base text-neutral-100 placeholder-neutral-400 transition-colors duration-200 focus:outline-none"
-              rows={1}
-              placeholder={socketReady ? "Type a message..." : "Connecting..."}
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value);
-                const ta = e.target;
-                ta.style.height = "auto";
-                ta.style.height = `${ta.scrollHeight}px`;
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  sendMessage();
-                }
-              }}
-            />
-
             <button
               type="button"
               onClick={() => setShowImagePopup(true)}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-neutral-400 transition-colors duration-200 hover:bg-white/10 hover:text-white"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-zinc-400 transition hover:bg-white/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-45"
               disabled={!socketReady}
+              aria-label="Attach media"
             >
               <Photo />
             </button>
+
+            <div className="flex min-h-12 flex-1 items-end rounded-[24px] border border-[#464646] bg-[#171717] px-4 transition focus-within:border-[#5f5f5f]">
+              <textarea
+                ref={textareaRef}
+                style={{ maxHeight: "170px", overflowY: "auto" }}
+                className="chat-scrollbar min-h-12 flex-1 resize-none bg-transparent py-3 text-[15px] leading-6 text-zinc-100 outline-none placeholder:text-zinc-500"
+                rows={1}
+                placeholder={socketReady ? `Message ${receiverDisplayName}` : "Connecting"}
+                value={input}
+                onChange={(e) => {
+                  setInput(e.target.value);
+                  const ta = e.target;
+                  ta.style.height = "auto";
+                  ta.style.height = `${ta.scrollHeight}px`;
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                  }
+                }}
+              />
+            </div>
+
             <button
               type="submit"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:shadow-none"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#3b82f6] text-white shadow-[0_10px_28px_rgba(59,130,246,0.26)] transition hover:bg-[#2f78ed] disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400 disabled:shadow-none"
               disabled={!input.trim() || !socketReady}
+              aria-label="Send message"
             >
-              <TrimSend />
+              <ArrowUp size={21} strokeWidth={2.4} />
             </button>
           </form>
         </div>
+      </main>
       </div>
     </div>
   );
