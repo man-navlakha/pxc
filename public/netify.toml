@@ -1,8 +1,0 @@
-
-[[redirect]]
-from="/*"
-to="/index.html"
-status=200
-
-/*
-  Cross-Origin-Opener-Policy:
