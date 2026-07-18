@@ -6,7 +6,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import Navbar from '../../componet/Navbar';
 import Footer from '../../componet/Footer';
 import SharePopup from '../../componet/SharePopup';
-import '../../new.css';
 
 // hook: useHandleQueryParams
 function useHandleQueryParams() {
@@ -159,6 +158,10 @@ function useShareHandler() {
 
 const Ns = () => {
     const navigate = useNavigate();
+    const { osubject, ochoose } = useParams();
+    const sem = Cookies.get("latest_sem");
+    const Subject = osubject || Cookies.get("sub");
+    const choose = ochoose || Cookies.get("choose");
     const [showPopup, setShowPopup] = useState(false);
 
     // Hooks

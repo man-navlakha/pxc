@@ -6,8 +6,6 @@ import React,
 }
     from "react";
 import Cookies from "js-cookie";
-import axios from "axios";
-import '../new.css';
 import {
     useNavigate
 }
@@ -20,9 +18,38 @@ import {
 
 import api from "../utils/api";
 
+function normalizeSubjectList(payload) {
+    const source = Array.isArray(payload)
+        ? payload
+        : Array.isArray(payload?.data)
+            ? payload.data
+            : Array.isArray(payload?.subjects)
+                ? payload.subjects
+                : Array.isArray(payload?.results)
+                    ? payload.results
+                    : [];
+
+    return source
+        .map((subject, index) => {
+            if (typeof subject === "string") {
+                return { id: subject || index, name: subject };
+            }
+
+            const name = subject?.name || subject?.sub || subject?.subject || subject?.title;
+            if (!name) return null;
+
+            return {
+                ...subject,
+                id: subject?.id ?? `${name}-${index}`,
+                name,
+            };
+        })
+        .filter(Boolean);
+}
+
 const Semester = () => {
     const [selectedSem, setSelectedSem] = useState(Cookies.get("latest_sem") || null);
-    const [apiResponse, setApiResponse] = useState(null);
+    const [apiResponse, setApiResponse] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const nav = useNavigate();
@@ -37,10 +64,10 @@ const Semester = () => {
 
                 try {
                     const response = await api.post("/home/QuePdf/Get_Subjact", { sem: selectedSem, course_name: "B.C.A" });
-                    setApiResponse(response.data);
+                    setApiResponse(normalizeSubjectList(response.data));
                 } catch (err) {
                     setError("Failed to load subjects. Please try again.");
-                    setApiResponse(null);
+                    setApiResponse([]);
                 } finally {
                     setLoading(false);
                 }
@@ -152,7 +179,7 @@ const Semester = () => {
                             <div className="text-center py-12 text-red-400">{error}</div>
                         )}
 
-                        {!loading && !error && apiResponse && (
+                        {!loading && !error && selectedSem && (
                             apiResponse.length > 0 ? (
                                 <motion.div
                                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"

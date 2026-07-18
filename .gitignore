@@ -10,17 +10,15 @@ lerna-debug.log*
 
 # new log
 
-#new man saved
-package-lock.json
-yarn.lock
-package.json
-
 node_modules
 node_modules/*
 !node_modules/.bin
+.next
 dist
 dist-ssr
 *.local
+.env*
+!.env.example
 
 # Editor directories and files
 .vscode/*

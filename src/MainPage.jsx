@@ -8,13 +8,13 @@ import Faq from "./componet/Faq";
 import Semester from "./page/Sem";
 import Loading from "./componet/Loading";
 import api from "./utils/api"; // axios with withCredentials:true
-import "./new.css";
 import Cookies from "js-cookie";
 
 const MainPage = () => {
-  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const token = Cookies.get("Logged")
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    () => Cookies.get("Logged") === "true"
+  );
 
 useEffect(() => {
   const checkAuth = async () => {
@@ -23,22 +23,19 @@ useEffect(() => {
       const res = await api.get("/me/working"); // Checks if user is logged in
       console.log("working", res.data);
       Cookies.set("Logged", "true"); // Set to string for cookie compatibility
+      setIsAuthenticated(true);
     } catch (err) {
       console.error("Authentication check failed:", err);
       Cookies.set("Logged", "false"); // Cookies only store strings
+      setIsAuthenticated(false);
     } finally {
       setLoading(false);
     }
   };
 
-  // Only run checkAuth if token is not explicitly false
-  if (token !== false) {
-    console.log("Check Auth");
-    checkAuth();
-  } else {
-    setLoading(false);
-  }
-}, [token]);
+  console.log("Check Auth");
+  checkAuth();
+}, []);
 
 
   if (loading) return <Loading />; // Show spinner while checking auth
@@ -47,7 +44,7 @@ useEffect(() => {
     <div className="bg-black ccf text-white">
       <Navbar />
 
-      {token ? (
+      {isAuthenticated ? (
         <Semester /> // Logged-in view
       ) : (
         <>

@@ -65,7 +65,7 @@ Tired of searching for notes and assignments at the last minute? Pixel Class is 
 
 ## 🛠️ Tech Stack
 
--   **Client:** ![Tech Stack Icons](https://img-server-theta.vercel.app/icons?i=react%2Cvite&theme=dark&perline=15)
+-   **Client:** ![Tech Stack Icons](https://img-server-theta.vercel.app/icons?i=nextjs%2Creact&theme=dark&perline=15)
 -   **Styling:** ![Tech Stack Icons](https://img-server-theta.vercel.app/icons?i=tailwindcss&theme=dark&perline=15)
 
 ---
@@ -78,7 +78,7 @@ To get a local copy up and running, follow these simple steps.
 
 Make sure you have the following installed on your machine:
 * ![Tech Stack Icons](https://img-server-theta.vercel.app/icons?i=git)
-* [![Tech Stack Icons](https://img-server-theta.vercel.app/icons?i=nodejs)](https://nodejs.org/en/) (v16 or higher)
+* [![Tech Stack Icons](https://img-server-theta.vercel.app/icons?i=nodejs)](https://nodejs.org/en/) (v20.9 or higher)
 * [![Tech Stack Icons](https://img-server-theta.vercel.app/icons?i=npm)](https://www.npmjs.com/) (comes with Node.js)
 
 ### Installation & Setup
@@ -102,12 +102,7 @@ Make sure you have the following installed on your machine:
     ```sh
     npm run dev
     ```
-    The application will be available at `http://localhost:5173`.
-
-    *To expose the server on your local network, use the `--host` flag:*
-    ```sh
-    npm run dev -- --host
-    ```
+    The application will be available at `http://localhost:3000`.
 
 ---
 

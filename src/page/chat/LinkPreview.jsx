@@ -1,6 +1,3 @@
-import { useState, useEffect } from "react";
-import { getLinkPreview } from "link-preview-js"; // npm install link-preview-js
-
 // ---------- Preview Card ----------
 const LinkPreview = ({ url, meta }) => {
   // meta from link-preview-js: { title, description, images: [...] }

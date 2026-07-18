@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import api from "../utils/api";
-import "../new.css";
 
 const Forgetpassword = () => {
   const [email, setEmail] = useState("");

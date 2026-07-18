@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import api from "../utils/api"; // your Axios instance
+import { buildWebSocketUrl } from "../utils/ws";
 
 export default function FloatingMessagesButton() {
   const USERNAME = Cookies.get("username");
@@ -12,7 +13,7 @@ export default function FloatingMessagesButton() {
     let socket = null;
 
     async function initWebSocket() {
-
+      if (!USERNAME || Cookies.get("Logged") !== "true") return;
 
       try {
         // Step 1: Get short-lived WS token using api.get()
@@ -28,11 +29,11 @@ export default function FloatingMessagesButton() {
         }
 
         // Step 2: Connect to WebSocket with token
-        const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
-        const wsUrl = `${wsScheme}://pixel-classes.onrender.com/ws/notifications/?token=${wsToken}`;
+        const wsUrl = buildWebSocketUrl("/ws/notifications");
+        wsUrl.searchParams.set("token", wsToken);
         // console.log("[WS CONNECT]: ", wsUrl);
 
-        socket = new WebSocket(wsUrl);
+        socket = new WebSocket(wsUrl.toString());
 
         socket.onopen = () => {
           // console.log("[WS CONNECT] Connected to notifications WebSocket", wsUrl);

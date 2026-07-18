@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import "../new.css";
 
 import api from "../utils/api"; // <-- Your axios instance
 

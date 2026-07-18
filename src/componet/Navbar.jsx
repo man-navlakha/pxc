@@ -2,7 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { Home, MessageSquare, Search, User, Menu, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
+import Cookies from "js-cookie";
 import api from "../utils/api"; // axios instance
+import { buildWebSocketUrl } from "../utils/ws";
 
 // 🔑 Hook to manage unread chat count via WS
 const useChatSummary = (wsToken) => {
@@ -11,9 +13,9 @@ const useChatSummary = (wsToken) => {
   useEffect(() => {
     if (!wsToken) return;
 
-    const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
-    const wsUrl = `${wsScheme}://pixel-classes.onrender.com/ws/notifications/?token=${wsToken}`;
-    const socket = new WebSocket(wsUrl);
+    const wsUrl = buildWebSocketUrl("/ws/notifications");
+    wsUrl.searchParams.set("token", wsToken);
+    const socket = new WebSocket(wsUrl.toString());
 
     socket.onmessage = (event) => {
       try {
@@ -53,6 +55,12 @@ export default function Navbar() {
   // --- Fetch Profile & WS Token ---
   useEffect(() => {
     const fetchProfileAndToken = async () => {
+      if (Cookies.get("Logged") !== "true") {
+        setProfile(null);
+        setLoading(false);
+        return;
+      }
+
       try {
         // ✅ Get current user's profile
         const details = await api.post("/Profile/details/", {username:undefined});

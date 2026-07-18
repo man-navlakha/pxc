@@ -3,11 +3,10 @@ import axios from "axios";
 import { GoogleLogin } from '@react-oauth/google';
 import Cookies from "js-cookie";
 import { useNavigate, useLocation, Link } from "react-router-dom";
-import '../new.css'
 
 import api from "../utils/api"; // axios with withCredentials:true
 
-const signup = () => {
+const Signup = () => {
 
 
     const [loading, setLoading] = useState(false);
@@ -39,6 +38,7 @@ const signup = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
         const fileInput = document.getElementById("profile_pic");
         const email = document.getElementById("email").value; // ✅ Define it here
@@ -50,10 +50,6 @@ const signup = () => {
             return;
 
         }
-        console.log("Username:", username);
-        console.log("Pass:", password);
-        console.log("Email:", email); // ✅ Log email to check its value
-
         // ✅ Now it's safe to use `email` here
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
@@ -82,7 +78,9 @@ const signup = () => {
             });
 
             console.log("Signup success:", response.data);
-            navigate("/auth/verification", { state: { user: { username, email } } });
+            Cookies.set("Logged", "true", { expires: 30 });
+            Cookies.set("username", response.data.username || username, { expires: 30 });
+            navigate("/", { replace: true });
         } catch (err) {
             console.error("Signup error:", err.response?.data || err.message);
             alert(err.response?.data?.error || "Registration failed.");
@@ -289,4 +287,4 @@ aspect-square w-8 flex justify-center items-center text-yellow-700"></div>
     )
 }
 
-export default signup
+export default Signup

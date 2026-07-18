@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { GoogleLogin } from '@react-oauth/google';
 import { useLocation, Link, useNavigate } from "react-router-dom";
 import api from "../utils/api"; // axios with withCredentials:true
-import '../new.css';
 
 const Login = () => {
   const [loading, setLoading] = useState(false);

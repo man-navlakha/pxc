@@ -3,7 +3,6 @@ import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Cookies from "js-cookie";
 import { Send, Undo2, Image as ImageIcon, MoreVertical, Edit3, Trash2, Check, X } from "lucide-react";
 import axios from "axios";
-import "../../new.css";
 
 import api from "../../utils/api";
 
@@ -25,9 +24,14 @@ import TrimSend from "@/componet/svg/TrimSend";
 import Photo from "@/componet/svg/Photo";
 import MediaRenderer from "./MediaRenderer";
 import { handleDeleteMessage, handleEditMessage } from "./messageActions";
+import { buildWebSocketUrl } from "../../utils/ws";
 
-
-
+const PIXEL_SUPPORT_PROFILE = {
+  username: "pixel",
+  display_name: "Pixel Help Buddy",
+  profile_pic: "https://ik.imagekit.io/pxc/pixel%20class%20fav-02.png",
+  last_seen: "support is online",
+};
 
 
 export default function Chat() {
@@ -55,12 +59,20 @@ export default function Chat() {
   const [editingMessage, setEditingMessage] = useState(null);
   const [editText, setEditText] = useState("");
   const [showMessageMenu, setShowMessageMenu] = useState(null);
+  const [socketReady, setSocketReady] = useState(false);
+  const supportUser = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get("supportUser") || params.get("support_user") || "";
+  }, [location.search]);
+  const isPixelSupportChat = String(RECEIVER || "").toLowerCase() === "pixel";
+  const receiverDisplayName =
+    receiverProfile?.display_name || receiverProfile?.username || RECEIVER;
 
 
 
   useEffect(() => {
     setMessages([]);
-  }, [RECEIVER]);
+  }, [RECEIVER, supportUser]);
 
   // Start editing
   const startEditing = (msg) => {
@@ -107,12 +119,15 @@ export default function Chat() {
   useEffect(() => {
     if (!RECEIVER) return;
 
+    if (isPixelSupportChat) {
+      setReceiverProfile(PIXEL_SUPPORT_PROFILE);
+      return;
+    }
+
     const fetchProfile = async () => {
       try {
-        console.warn(RECEIVER)
         const res = await api.post(`/Profile/details/?username=${RECEIVER}`);
         setReceiverProfile(res.data);
-        console.warn(res.data)
       } catch (err) {
         console.warn("[Profile GET failed, trying POST fallback]", err);
 
@@ -120,13 +135,14 @@ export default function Chat() {
     };
 
     fetchProfile();
-  }, [RECEIVER]);
+  }, [RECEIVER, isPixelSupportChat]);
 
   // ---------- WebSocket + history ----------
   useEffect(() => {
     if (!RECEIVER) return;
 
     let socket;
+    setSocketReady(false);
 
     const initWebSocket = async () => {
       try {
@@ -147,14 +163,18 @@ export default function Chat() {
           console.warn("⚠️ Failed to fetch own profile details", err);
         }
 
-        // Fetch receiver profile details
-        try {
-          const receiverDetails = await api.post(`/Profile/details/`, {
-            username: RECEIVER, // Use targetUser instead of userToFetch
-          });
-          setReceiverProfile(receiverDetails.data);
-        } catch (err) {
-          console.warn("⚠️ Failed to fetch receiver profile details", err);
+        if (isPixelSupportChat) {
+          setReceiverProfile(PIXEL_SUPPORT_PROFILE);
+        } else {
+          // Fetch receiver profile details
+          try {
+            const receiverDetails = await api.post(`/Profile/details/`, {
+              username: RECEIVER,
+            });
+            setReceiverProfile(receiverDetails.data);
+          } catch (err) {
+            console.warn("⚠️ Failed to fetch receiver profile details", err);
+          }
         }
 
         // Step 1: request short-lived ws_token
@@ -167,19 +187,28 @@ export default function Chat() {
         }
 
         // Step 2: build WebSocket URL
-        const wsUrl = `wss://pixel-classes.onrender.com/ws/chat/?token=${wsToken}&receiver=${RECEIVER}`;
-        socket = new WebSocket(wsUrl);
+        const wsUrl = buildWebSocketUrl("/ws/chat");
+        wsUrl.searchParams.set("token", wsToken);
+        wsUrl.searchParams.set("receiver", RECEIVER);
+        if (isPixelSupportChat && supportUser) {
+          wsUrl.searchParams.set("support_user", supportUser);
+        }
+
+        socket = new WebSocket(wsUrl.toString());
         socketRef.current = socket;
 
-        console.log("🌐 Connecting to:", wsUrl);
+        console.log("🌐 Connecting to chat WebSocket");
 
         socket.onopen = async () => {
-          console.log("✅ Connected to chat WebSocket:", wsUrl);
+          console.log("✅ Connected to chat WebSocket");
 
           try {
             // Fetch chat history via REST
             const res = await api.get(`chatting/${RECEIVER}/`, {
               withCredentials: true,
+              params: isPixelSupportChat && supportUser
+                ? { support_user: supportUser }
+                : undefined,
             });
 
             const data = res.data;
@@ -188,11 +217,12 @@ export default function Chat() {
                 .map((msg) => ({
                   id: msg.id,
                   sender: msg.sender,
-                  receiver: msg.receiver, // Make sure this is included
+                  receiver: msg.receiver,
                   message: msg.content,
                   seen: msg.seen_at,
                   status: msg.is_seen ? "seen" : "sent",
-                  created_at: msg.created_at
+                  created_at: msg.created_at,
+                  is_edited: msg.is_edited,
                 }))
                 .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
@@ -207,6 +237,15 @@ export default function Chat() {
         socket.onmessage = (e) => {
           const data = JSON.parse(e.data);
           console.log("📨 Received WebSocket message:", data);
+
+          if (data.type === "ready") {
+            setSocketReady(true);
+            return;
+          }
+
+          if (data.type === "connecting") {
+            return;
+          }
 
           if (data.type === "seen") {
             setMessages((prev) =>
@@ -276,6 +315,7 @@ export default function Chat() {
 
         socket.onclose = () => {
           console.log("❌ Disconnected from chat WebSocket");
+          setSocketReady(false);
         };
 
         socket.onerror = (error) => {
@@ -290,17 +330,23 @@ export default function Chat() {
     initWebSocket();
 
     return () => {
+      setSocketReady(false);
       if (socket && socket.readyState === WebSocket.OPEN) {
         socket.close();
       }
     };
-  }, [RECEIVER]);
+  }, [RECEIVER, supportUser, isPixelSupportChat]);
 
   // Updated sendMessage function
   const sendMessage = (messageText = null) => {
     const messageContent = messageText || input.trim();
 
-    if (!messageContent || socketRef.current?.readyState !== WebSocket.OPEN || !USERNAME) {
+    if (
+      !messageContent ||
+      socketRef.current?.readyState !== WebSocket.OPEN ||
+      !socketReady ||
+      !USERNAME
+    ) {
       return;
     }
 
@@ -324,6 +370,7 @@ export default function Chat() {
       temp_id,
       sender: USERNAME,
       receiver: RECEIVER,
+      support_user: isPixelSupportChat ? supportUser : undefined,
       message: messageContent,
     };
 
@@ -351,7 +398,8 @@ export default function Chat() {
         JSON.stringify({
           type: "seen",
           message_id: messageId,
-          seen_by: USERNAME
+          seen_by: USERNAME,
+          support_user: isPixelSupportChat ? supportUser : undefined,
         })
       );
     }
@@ -365,7 +413,7 @@ export default function Chat() {
       messages
         .filter(
           (m) =>
-            m.sender === RECEIVER &&
+            m.sender !== USERNAME &&
             m.status !== "seen" &&
             m.id &&
             !String(m.id).startsWith("temp-")
@@ -381,7 +429,7 @@ export default function Chat() {
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [messages, RECEIVER]);
+  }, [messages, RECEIVER, USERNAME, isPixelSupportChat, supportUser]);
 
   // ---------- Auto scroll (smart) ----------
   const isAtBottom = () => {
@@ -422,7 +470,7 @@ export default function Chat() {
 
   const handleSendUrl = () => {
     const url = imageUrl.trim();
-    if (!url || socketRef.current?.readyState !== WebSocket.OPEN) return;
+    if (!url || socketRef.current?.readyState !== WebSocket.OPEN || !socketReady) return;
 
     // This reuses the sendMessage logic from your main component
     sendMessage(url);
@@ -484,8 +532,12 @@ export default function Chat() {
           </Button>
 
           <Avatar
-            className="w-8 h-8 cursor-pointer border border-gray-600"
-            onClick={() => navigate(`/profile/${receiverProfile?.username || RECEIVER}`)}
+            className={`w-8 h-8 border border-gray-600 ${isPixelSupportChat ? "" : "cursor-pointer"}`}
+            onClick={() => {
+              if (!isPixelSupportChat) {
+                navigate(`/profile/${receiverProfile?.username || RECEIVER}`);
+              }
+            }}
           >
             <AvatarImage
               src={
@@ -499,17 +551,25 @@ export default function Chat() {
           </Avatar>
 
           <div
-            onClick={() => navigate(`/profile/${receiverProfile?.username || RECEIVER}`)}
-            className="flex flex-col cursor-pointer"
+            onClick={() => {
+              if (!isPixelSupportChat) {
+                navigate(`/profile/${receiverProfile?.username || RECEIVER}`);
+              }
+            }}
+            className={`flex flex-col ${isPixelSupportChat ? "" : "cursor-pointer"}`}
           >
             <span className="font-semibold flex items-center gap-1 text-white">
-              {receiverProfile?.username || RECEIVER}
-              {verifiedUsernames.has(receiverProfile?.username || RECEIVER) && (
+              {receiverDisplayName}
+              {!isPixelSupportChat && verifiedUsernames.has(receiverProfile?.username || RECEIVER) && (
                 <VerifiedBadge size={16} />
               )}
             </span>
             <span className="text-xs text-gray-400">
-              {receiverProfile?.last_seen
+              {isPixelSupportChat
+                ? supportUser
+                  ? `support thread for ${supportUser}`
+                  : "project help and custom work"
+                : receiverProfile?.last_seen
                 ? `last seen ${receiverProfile.last_seen}`
                 : "last seen recently"}
             </span>
@@ -733,7 +793,7 @@ export default function Chat() {
                   <button
                     onClick={handleSendUrl}
                     className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-neutral-600 disabled:opacity-50 disabled:shadow-none"
-                    disabled={!imageUrl.trim()}
+                    disabled={!imageUrl.trim() || !socketReady}
                   >
                     Send
                   </button>
@@ -760,7 +820,7 @@ export default function Chat() {
               style={{ maxHeight: "200px", overflowY: "auto" }}
               className="flex-1 resize-none bg-transparent px-3 py-2 text-base text-neutral-100 placeholder-neutral-400 transition-colors duration-200 focus:outline-none"
               rows={1}
-              placeholder="Type a message..."
+              placeholder={socketReady ? "Type a message..." : "Connecting..."}
               value={input}
               onChange={(e) => {
                 setInput(e.target.value);
@@ -780,13 +840,14 @@ export default function Chat() {
               type="button"
               onClick={() => setShowImagePopup(true)}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-neutral-400 transition-colors duration-200 hover:bg-white/10 hover:text-white"
+              disabled={!socketReady}
             >
               <Photo />
             </button>
             <button
               type="submit"
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-all duration-200 hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-neutral-700 disabled:shadow-none"
-              disabled={!input.trim()}
+              disabled={!input.trim() || !socketReady}
             >
               <TrimSend />
             </button>

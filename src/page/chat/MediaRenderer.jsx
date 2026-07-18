@@ -1,4 +1,5 @@
 import React from "react";
+import LinkPreview from "./LinkPreview";
 
 // Supported extensions
 const IMAGE_EXT = ["png", "jpg", "jpeg", "gif", "webp", "bmp", "svg", "avif"];

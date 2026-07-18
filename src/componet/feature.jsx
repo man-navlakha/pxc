@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Book, Edit, MessageSquare, FileQuestion, GraduationCap, Users, Lock, ChevronRight } from 'lucide-react';
-import '../new.css'; // Your base styles
 
 // --- Animation Variants ---
 // Defined here so the component can access them

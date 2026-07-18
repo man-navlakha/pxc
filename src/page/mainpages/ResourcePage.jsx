@@ -4,7 +4,6 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '../../componet/Navbar';
 import Footer from '../../componet/Footer';
-import '../../new.css';
 
 // --- SUB-COMPONENT 1: The List View ---
 const QuestionListView = ({ loading, list, sizes, choose, onSelectQuestion }) => (

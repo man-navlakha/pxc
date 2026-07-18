@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react'; // Import Lucide React icons
-import '../new.css'; // Assuming new.css contains your base styles and the .mesh_2 class
 
 const Faq = () => {
   const [openSection, setOpenSection] = useState(null);

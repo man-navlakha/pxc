@@ -2,9 +2,9 @@ import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { Undo2, Search, Users, Bell, Check } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import "../../new.css";
 
 import api from "../../utils/api";
+import { buildWebSocketUrl } from "../../utils/ws";
 import { verifiedUsernames } from "../../verifiedAccounts";
 import VerifiedBadge from "../../componet/VerifiedBadge";
 
@@ -81,6 +81,67 @@ function getLatestMessageText(latest) {
     latest?.body ??
     (typeof latest === "object" ? JSON.stringify(latest).slice(0, 120) : "")
   );
+}
+
+function processInboxUser(u, currentUsername) {
+  const latest = u.latest_message && typeof u.latest_message === "object"
+    ? u.latest_message
+    : null;
+  const serverUnread = u.unread_count ?? null;
+  const isOwnMessage = !!(
+    latest &&
+    latest.sender_username &&
+    String(latest.sender_username) === String(currentUsername)
+  );
+  const seenByOther = isOwnMessage ? !!latest?.is_seen : null;
+
+  let hasUnread = false;
+  let unreadCount = 0;
+  if (serverUnread != null) {
+    hasUnread = Number(serverUnread) > 0;
+    unreadCount = Number(serverUnread);
+  } else if (latest) {
+    if (isOwnMessage) {
+      hasUnread = false;
+      unreadCount = 0;
+    } else {
+      hasUnread = !latest?.is_seen;
+      unreadCount = hasUnread ? 1 : 0;
+    }
+  }
+
+  return {
+    id: u.id,
+    username: u.username,
+    display_name: u.display_name,
+    profile_pic: u.profile_pic,
+    first_name: u.first_name ?? "",
+    last_name: u.last_name ?? "",
+    latest_message: latest || u.latest_message,
+    timestamp: u.timestamp ?? latest?.timestamp ?? null,
+    isOwnMessage,
+    seenByOther,
+    hasUnread,
+    unreadCount,
+    is_online: u.is_online ?? false,
+    is_support_thread: Boolean(u.is_support_thread),
+    support_username: u.support_username || "",
+    conversation_key: u.conversation_key || u.username,
+    is_pinned: Boolean(u.is_pinned),
+  };
+}
+
+function sortInboxUsers(users) {
+  return users.sort((a, b) => {
+    if (a.is_pinned && !b.is_pinned) return -1;
+    if (!a.is_pinned && b.is_pinned) return 1;
+    if (a.hasUnread && !b.hasUnread) return -1;
+    if (!a.hasUnread && b.hasUnread) return 1;
+
+    const ta = a.timestamp ? new Date(toISOStringCompat(a.timestamp)).getTime() : 0;
+    const tb = b.timestamp ? new Date(toISOStringCompat(b.timestamp)).getTime() : 0;
+    return tb - ta;
+  });
 }
 
 // Small presentational components
@@ -210,18 +271,18 @@ export default function Listuser() {
     let filtered = allUsers.filter((user) => {
       const fullName = `${user.first_name || ""} ${user.last_name || ""}`.toLowerCase();
       const username = (user.username || "").toLowerCase();
-      const matchesSearch = !searchTerm || username.includes(searchTerm) || fullName.includes(searchTerm);
+      const displayName = (user.display_name || "").toLowerCase();
+      const supportUsername = (user.support_username || "").toLowerCase();
+      const matchesSearch =
+        !searchTerm ||
+        username.includes(searchTerm) ||
+        fullName.includes(searchTerm) ||
+        displayName.includes(searchTerm) ||
+        supportUsername.includes(searchTerm);
       return matchesSearch;
     });
 
-    filtered.sort((a, b) => {
-      if (a.hasUnread && !b.hasUnread) return -1;
-      if (!a.hasUnread && b.hasUnread) return 1;
-      // If timestamps missing, treat as older
-      const ta = a.timestamp ? new Date(toISOStringCompat(a.timestamp)).getTime() : 0;
-      const tb = b.timestamp ? new Date(toISOStringCompat(b.timestamp)).getTime() : 0;
-      return tb - ta;
-    });
+    sortInboxUsers(filtered);
 
     return filtered;
   }, [allUsers, search]);
@@ -265,14 +326,33 @@ export default function Listuser() {
     let ws;
     let loadTimeout;
     let mounted = true;
+    const processUser = (u) => processInboxUser(u, currentUsername);
+    const applyInbox = (inbox, totalUnreadCountValue = null) => {
+      const processed = sortInboxUsers((inbox || []).map(processUser));
+      if (!mounted) return;
+      setAllUsers(processed);
+      if (totalUnreadCountValue != null) {
+        setTotalUnreadCount(totalUnreadCountValue);
+      }
+      setLoading(false);
+    };
+    const loadInboxSnapshot = async () => {
+      const inboxRes = await api.get("/chatting/inbox/", { withCredentials: true });
+      applyInbox(inboxRes.data?.inbox || [], inboxRes.data?.total_unread_count ?? 0);
+    };
 
     const connectWS = async () => {
       try {
+        await loadInboxSnapshot();
+
         const res = await api.get("/ws-token/", { withCredentials: true });
         const wsToken = res.data?.ws_token;
         if (!wsToken) throw new Error("No ws token");
 
-        ws = new WebSocket(`wss://pixel-classes.onrender.com/ws/message-inbox/?token=${wsToken}`);
+        const wsUrl = buildWebSocketUrl("/ws/message-inbox");
+        wsUrl.searchParams.set("token", wsToken);
+
+        ws = new WebSocket(wsUrl.toString());
         wsRef.current = ws;
 
 
@@ -284,94 +364,20 @@ export default function Listuser() {
           try {
             const data = JSON.parse(event.data);
 
-            // Helper to process a single user payload into our ui model
-            // currentUsername is from state (ensure closure captures it)
-            const processUser = (u) => {
-              // backend now returns u.latest_message as an object OR null
-              const latest = (u.latest_message && typeof u.latest_message === "object") ? u.latest_message : null;
-
-              // server-provided unread_count takes priority if present
-              const serverUnread = u.unread_count ?? null;
-
-              // Determine whether the latest message was sent by the current user
-              const isOwnMessage = !!(latest && latest.sender_username && String(latest.sender_username) === String(currentUsername));
-
-              // If I sent the last message, seenByOther := whether the other person has seen it
-              const seenByOther = isOwnMessage ? !!latest?.is_seen : null;
-
-              // Compute hasUnread / unreadCount:
-              let hasUnread = false;
-              let unreadCount = 0;
-              if (serverUnread != null) {
-                hasUnread = Number(serverUnread) > 0;
-                unreadCount = Number(serverUnread);
-              } else if (latest) {
-                if (isOwnMessage) {
-                  // I sent last -> it's not "unread for me"
-                  hasUnread = false;
-                  unreadCount = 0;
-                } else {
-                  // They sent last -> it's unread for me if I haven't seen it
-                  const seenByMe = !!latest?.is_seen; // backend 'is_seen' on latest_msg means receiver has seen it
-                  hasUnread = !seenByMe;
-                  unreadCount = hasUnread ? 1 : 0;
-                }
-              }
-
-              return {
-                username: u.username,
-                profile_pic: u.profile_pic,
-                first_name: u.first_name ?? "",
-                last_name: u.last_name ?? "",
-                latest_message: latest ? latest : u.latest_message, // keep shape for your getLatestMessageText
-                timestamp: u.timestamp ?? (latest && latest.timestamp) ?? null,
-                isOwnMessage,
-                seenByOther,
-                hasUnread,
-                unreadCount,
-                is_online: u.is_online ?? false,
-              };
-            };
-
-
-
-
-
             // Full inbox payload
             if (data.type === "inbox_data" && Array.isArray(data.inbox)) {
               clearTimeout(loadTimeout);
-              const processed = data.inbox.map(u => processUser(u));
-
-              // sort reliably by timestamp (missing timestamps become 0)
-              const sorted = processed.sort((a, b) => {
-                const ta = a.timestamp ? new Date(toISOStringCompat(a.timestamp)).getTime() : 0;
-                const tb = b.timestamp ? new Date(toISOStringCompat(b.timestamp)).getTime() : 0;
-                if (a.hasUnread && !b.hasUnread) return -1;
-                if (!a.hasUnread && b.hasUnread) return 1;
-                return tb - ta;
-              });
-
-              if (mounted) {
-                setAllUsers(sorted);
-                setLoading(false);
-              }
+              applyInbox(data.inbox, data.total_unread_count ?? null);
             }
 
             // Single update
             if (data.type === "inbox_update" && data.user) {
               setAllUsers(prev => {
-                const updated = processUser({ ...(data.user || {}), latest_message: data.latest_message, unread_count: data.unread_count, is_seen: data.is_seen }, { timestamp: data.timestamp });
-
-                const copy = prev.filter(p => p.username !== updated.username);
+                const updated = processUser({ ...(data.user || {}), latest_message: data.latest_message, unread_count: data.unread_count, is_seen: data.is_seen, timestamp: data.timestamp });
+                const updatedKey = updated.conversation_key || updated.username;
+                const copy = prev.filter(p => (p.conversation_key || p.username) !== updatedKey);
                 copy.unshift(updated);
-                copy.sort((a, b) => {
-                  const ta = a.timestamp ? new Date(toISOStringCompat(a.timestamp)).getTime() : 0;
-                  const tb = b.timestamp ? new Date(toISOStringCompat(b.timestamp)).getTime() : 0;
-                  if (a.hasUnread && !b.hasUnread) return -1;
-                  if (!a.hasUnread && b.hasUnread) return 1;
-                  return tb - ta;
-                });
-                return copy;
+                return sortInboxUsers(copy);
               });
             }
 
@@ -398,7 +404,12 @@ export default function Listuser() {
 
       } catch (err) {
         console.error("Failed to connect WS", err);
-        if (mounted) setLoading(false);
+        try {
+          await loadInboxSnapshot();
+        } catch (snapshotError) {
+          console.error("Failed to load inbox snapshot", snapshotError);
+          if (mounted) setLoading(false);
+        }
       }
     };
 
@@ -411,8 +422,16 @@ export default function Listuser() {
     };
   }, [currentUsername, currentUserId]);
 
-  const handleChatNavigation = useCallback((username) => {
-    navigate(`/chat/${username}`);
+  const handleChatNavigation = useCallback((user) => {
+    if (user.is_support_thread) {
+      const query = user.support_username
+        ? `?supportUser=${encodeURIComponent(user.support_username)}`
+        : "";
+      navigate(`/chat/pixel${query}`);
+      return;
+    }
+
+    navigate(`/chat/${user.username}`);
   }, [navigate]);
 
   return (
@@ -486,7 +505,7 @@ export default function Listuser() {
             <ScrollArea className="flex-1">
               <motion.div layout className="space-y-3">
                 <AnimatePresence mode="popLayout">
-                  {filteredUsers.map((user, idx) => {
+                  {filteredUsers.map((user) => {
                     const iso = toISOStringCompat(user.timestamp ?? user.latest_message?.timestamp ?? user.latest_message?.created_at ?? null);
                     let timeString = "";
                     if (iso) {
@@ -496,7 +515,7 @@ export default function Listuser() {
 
                     return (
                       <motion.div 
-                        key={user.username}
+                        key={user.conversation_key || user.username}
                         layout
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -509,7 +528,7 @@ export default function Listuser() {
                               ? 'bg-black hover:bg-gray-750 border-l-4 border-l-blue-500' 
                               : 'bg-black hover:bg-gray-800'
                           }`}
-                          onClick={() => handleChatNavigation(user.username)}
+                          onClick={() => handleChatNavigation(user)}
                         >
                           <CardContent className="p-4">
                             <div className="flex items-center gap-4">
@@ -531,9 +550,9 @@ export default function Listuser() {
                                     <span className={`font-semibold truncate ${
                                       user.hasUnread ? 'text-white' : 'text-gray-200'
                                     }`}>
-                                      {user.username}
+                                      {user.display_name || user.username}
                                     </span>
-                                    {verifiedUsernames.has(user?.username) && <VerifiedBadge size={16} />}
+                                    {!user.is_support_thread && verifiedUsernames.has(user?.username) && <VerifiedBadge size={16} />}
                                   </div>
                                   <div className="flex items-center gap-2">
                                     {timeString && (

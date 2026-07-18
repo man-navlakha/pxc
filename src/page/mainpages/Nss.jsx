@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import '../../new.css';
 import Cookies from "js-cookie";
 import Navbar from '../../componet/Navbar';
 import Footer from '../../componet/Footer';

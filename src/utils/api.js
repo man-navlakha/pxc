@@ -23,8 +23,12 @@ function subscribeTokenRefresh(cb) {
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config;
-    const isRefreshRequest = originalRequest.url.includes("/token/refresh/");
+    const originalRequest = error.config || {};
+    const requestUrl = String(originalRequest.url || "");
+    const isRefreshRequest = requestUrl.includes("/token/refresh/");
+    const isQuietAuthProbe =
+      requestUrl.includes("/ws-token/") ||
+      requestUrl.includes("/Profile/details/");
 
     if (error.response?.status === 401 && !originalRequest._retry && !isRefreshRequest) {
       if (isRefreshing) {
@@ -48,7 +52,11 @@ api.interceptors.response.use(
 
         // --- CORRECTED REDIRECT LOGIC ---
         // Redirect to login but include the page the user was trying to access
-        if (!window.location.pathname.includes("/auth/login")) {
+        if (
+          !isQuietAuthProbe &&
+          typeof window !== "undefined" &&
+          !window.location.pathname.includes("/auth/login")
+        ) {
           const intendedPath = window.location.pathname + window.location.search;
           window.location.href = `/auth/login?redirect=${encodeURIComponent(intendedPath)}`;
         }

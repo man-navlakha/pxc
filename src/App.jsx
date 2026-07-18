@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState, useMemo } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Routes, Route } from "react-router-dom";
-import './App.css';
-import './index.css';
 
 // --- Page & Component Imports ---
 import MainPage from "./MainPage";
@@ -28,7 +28,9 @@ import ResourcePage from "./page/mainpages/ResourcePage";
 import Protected from "./ProtectedRoute_new";
 
 function App() {
-    const [isOnline, setIsOnline] = useState(navigator.onLine);
+    const [isOnline, setIsOnline] = useState(() =>
+        typeof navigator === "undefined" ? true : navigator.onLine
+    );
 
     // Effect for handling online/offline status
     useEffect(() => {

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, Suspense, lazy } from "react";
-import "../new.css";
 import Cookies from "js-cookie";
 import Navbar from "../componet/Navbar";
 import Footer from "../componet/Footer";

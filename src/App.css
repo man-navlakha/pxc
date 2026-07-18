@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 .s-loading {
     border: 4px solid #ffffff75; /* Light grey */
     border-top: 4px solid #ffffff; /* Blue */

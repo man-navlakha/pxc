@@ -19,15 +19,13 @@ html.dark {
 
 @font-face {
   font-family: 'CustomFont';
-  src: url('./fonts/nm2d.woff2') format('woff2'),
-  url('./fonts/nm.woff') format('woff');
+  src: url('./fonts/nm2d.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
 @font-face {
   font-family: 'ff';
-  src: url('./fonts/jur.woff2') format('woff2'),
-       url('../fonts/jur.woff2') format('woff');
+  src: url('./fonts/jur.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
@@ -67,10 +65,6 @@ html.dark {
   font-family: 'neue-bold', sans-serif;
   font-weight: bolder;
 }
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 body {
   margin: 0;
   overflow-x: hidden;
