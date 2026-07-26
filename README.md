@@ -119,7 +119,7 @@ NEXT_PUBLIC_WS_URL=https://pixel-classes.onrender.com
 ```
 
 The app converts `https://` to `wss://` automatically for WebSocket connections.
-If this variable is missing on a `*.vercel.app` deployment, chat falls back to REST history/send without live updates.
+If this variable is missing on a `*.vercel.app` deployment, chat falls back to REST history/send with short polling. Messages will still appear automatically, but true instant push needs the WebSocket server URL.
 
 ---
 

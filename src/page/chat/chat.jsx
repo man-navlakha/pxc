@@ -119,6 +119,39 @@ const normalizeChatMessage = (msg) => ({
   is_edited: msg.is_edited,
 });
 
+const sortMessagesByTime = (items) =>
+  [...items].sort(
+    (a, b) =>
+      new Date(a.created_at || Date.now()) - new Date(b.created_at || Date.now())
+  );
+
+const mergePolledMessages = (previous, incoming) => {
+  const byId = new Map();
+  incoming.forEach((msg) => {
+    if (msg.id) byId.set(String(msg.id), msg);
+  });
+
+  previous
+    .filter((msg) => msg.temp_id && ["sending", "failed"].includes(msg.status))
+    .forEach((pending) => {
+      const alreadySaved = incoming.some((msg) => {
+        const delta = Math.abs(
+          new Date(msg.created_at || Date.now()) -
+            new Date(pending.created_at || Date.now())
+        );
+        return (
+          msg.sender === pending.sender &&
+          msg.message === pending.message &&
+          delta < 10000
+        );
+      });
+
+      if (!alreadySaved) byId.set(pending.temp_id, pending);
+    });
+
+  return sortMessagesByTime(Array.from(byId.values()));
+};
+
 function ChatMessageSkeleton() {
   return (
     <div
@@ -282,9 +315,7 @@ export default function Chat() {
 
         const data = res.data;
         if (Array.isArray(data)) {
-          const hist = data
-            .map(normalizeChatMessage)
-            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+          const hist = sortMessagesByTime(data.map(normalizeChatMessage));
 
           if (!cancelled) setMessages(hist);
           setTimeout(() => scrollToBottom(true), 0);
@@ -491,6 +522,39 @@ export default function Chat() {
       }
     };
   }, [RECEIVER, supportUser, isPixelSupportChat]);
+
+  useEffect(() => {
+    if (!restFallback || !RECEIVER || !USERNAME) return;
+
+    let cancelled = false;
+    let intervalId;
+
+    const pollMessages = async () => {
+      try {
+        const res = await api.get(`chatting/${RECEIVER}/`, {
+          withCredentials: true,
+          params: isPixelSupportChat && supportUser
+            ? { support_user: supportUser }
+            : undefined,
+        });
+
+        if (cancelled || !Array.isArray(res.data)) return;
+
+        const latest = sortMessagesByTime(res.data.map(normalizeChatMessage));
+        setMessages((prev) => mergePolledMessages(prev, latest));
+      } catch (err) {
+        console.error("REST chat polling failed", err);
+      }
+    };
+
+    pollMessages();
+    intervalId = window.setInterval(pollMessages, 2500);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
+    };
+  }, [RECEIVER, USERNAME, isPixelSupportChat, restFallback, supportUser]);
 
   // Updated sendMessage function
   const sendMessage = async (messageText = null) => {

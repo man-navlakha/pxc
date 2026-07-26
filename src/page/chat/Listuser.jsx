@@ -341,6 +341,7 @@ export default function Listuser({ embedded = false }) {
 
     let ws;
     let loadTimeout;
+    let pollInterval;
     let mounted = true;
     const processUser = (u) => processInboxUser(u, currentUsername);
     const applyInbox = (inbox, totalUnreadCountValue = null) => {
@@ -356,6 +357,14 @@ export default function Listuser({ embedded = false }) {
       const inboxRes = await api.get("/chatting/inbox/", { withCredentials: true });
       applyInbox(inboxRes.data?.inbox || [], inboxRes.data?.total_unread_count ?? 0);
     };
+    const startInboxPolling = () => {
+      if (pollInterval) return;
+      pollInterval = window.setInterval(() => {
+        loadInboxSnapshot().catch((err) => {
+          console.error("Failed to poll inbox snapshot", err);
+        });
+      }, 5000);
+    };
 
     const connectWS = async () => {
       try {
@@ -363,6 +372,7 @@ export default function Listuser({ embedded = false }) {
 
         if (!shouldAttemptWebSocket()) {
           console.warn("Inbox WebSocket skipped. Configure NEXT_PUBLIC_WS_URL for live inbox updates in production.");
+          startInboxPolling();
           return;
         }
 
@@ -414,12 +424,14 @@ export default function Listuser({ embedded = false }) {
         ws.onerror = (err) => {
           console.error("WebSocket error", err);
           clearTimeout(loadTimeout);
+          startInboxPolling();
           if (mounted) setLoading(false);
         };
 
         ws.onclose = () => {
           console.log("WebSocket closed");
           clearTimeout(loadTimeout);
+          startInboxPolling();
           if (mounted) setLoading(false);
         };
 
@@ -431,6 +443,7 @@ export default function Listuser({ embedded = false }) {
           console.error("Failed to load inbox snapshot", snapshotError);
           if (mounted) setLoading(false);
         }
+        startInboxPolling();
       }
     };
 
@@ -439,6 +452,7 @@ export default function Listuser({ embedded = false }) {
     return () => {
       mounted = false;
       clearTimeout(loadTimeout);
+      window.clearInterval(pollInterval);
       if (ws) ws.close();
     };
   }, [currentUsername, currentUserId]);
