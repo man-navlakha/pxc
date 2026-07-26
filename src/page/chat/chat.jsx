@@ -7,6 +7,7 @@ import {
   Clock3,
   Edit3,
   Info,
+  MessageCircle,
   MoreVertical,
   Trash2,
   Undo2,
@@ -46,6 +47,93 @@ const getProfileInitial = (profile, fallback) =>
   (profile?.display_name || profile?.username || fallback || "U").trim()[0]?.toUpperCase() || "U";
 
 
+const desktopChatSidebarClass =
+  "chat-resize-rail hidden w-[clamp(20rem,30vw,29rem)] min-w-[18rem] max-w-[34rem] resize-x overflow-hidden border-r border-white/[0.14] bg-[#4b4644] lg:flex";
+
+const responsiveChatSidebarClass =
+  "chat-resize-rail flex min-w-0 flex-1 overflow-hidden bg-[#4b4644] lg:w-[clamp(20rem,30vw,29rem)] lg:min-w-[18rem] lg:max-w-[34rem] lg:flex-none lg:resize-x lg:border-r lg:border-white/[0.14]";
+
+function ChatShell({ children, sidebarClassName = desktopChatSidebarClass }) {
+  return (
+    <div className="chat-dm-stage chat-font flex min-h-[100dvh] w-full bg-[#141414] text-zinc-50">
+      <div className="chat-dm-frame flex h-[100dvh] min-h-[100dvh] w-full overflow-hidden bg-[#151515]">
+        <aside className={sidebarClassName}>
+          <Listuser embedded />
+        </aside>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+export function ChatHome() {
+  return (
+    <ChatShell sidebarClassName={responsiveChatSidebarClass}>
+      <main className="hidden min-w-0 flex-1 flex-col overflow-hidden bg-[#141414] lg:flex">
+        <header className="flex h-[72px] shrink-0 items-center gap-3 border-b border-white/10 bg-[#222222]/92 px-5 backdrop-blur-xl">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-zinc-300">
+            <MessageCircle size={19} />
+          </div>
+          <div className="min-w-0">
+            <h1 className="truncate text-[17px] font-semibold leading-5 text-white">
+              Messages
+            </h1>
+            <p className="mt-1 truncate text-xs font-medium text-zinc-400">
+              No conversation selected
+            </p>
+          </div>
+        </header>
+
+        <div className="flex flex-1 items-center justify-center px-8 text-center">
+          <div className="max-w-sm">
+            <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-[24px] border border-white/[0.12] bg-white/[0.06] text-zinc-200 shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
+              <MessageCircle size={32} />
+            </div>
+            <h2 className="text-xl font-semibold text-white">
+              No chat selected
+            </h2>
+          </div>
+        </div>
+      </main>
+    </ChatShell>
+  );
+}
+
+const chatSkeletonRows = [
+  ["start", "w-24"],
+  ["start", "w-52"],
+  ["end", "w-32"],
+  ["start", "w-64"],
+  ["end", "w-44"],
+  ["start", "w-36"],
+];
+
+function ChatMessageSkeleton() {
+  return (
+    <div
+      className="mx-auto flex min-h-full w-full max-w-5xl flex-col justify-end gap-4 py-4"
+      role="status"
+      aria-label="Loading messages"
+    >
+      {chatSkeletonRows.map(([align, width], index) => (
+        <div
+          key={`${align}-${width}-${index}`}
+          className={cx("flex w-full", align === "end" ? "justify-end" : "justify-start")}
+        >
+          <div
+            className={cx(
+              "h-11 max-w-[74%] animate-pulse rounded-[22px] bg-white/[0.08]",
+              align === "end" ? "bg-[#3b82f6]/30" : "bg-white/[0.08]",
+              width
+            )}
+            style={{ animationDelay: `${index * 90}ms` }}
+          />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function Chat() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -63,6 +151,7 @@ export default function Chat() {
   const messagesEndRef = useRef(null);
   const listRef = useRef(null);
   const textareaRef = useRef(null);
+  const autoSendRef = useRef("");
   const { RECEIVER } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -71,6 +160,7 @@ export default function Chat() {
   const [editText, setEditText] = useState("");
   const [showMessageMenu, setShowMessageMenu] = useState(null);
   const [socketReady, setSocketReady] = useState(false);
+  const [chatLoading, setChatLoading] = useState(true);
   const supportUser = useMemo(() => {
     const params = new URLSearchParams(location.search);
     return params.get("supportUser") || params.get("support_user") || "";
@@ -83,6 +173,7 @@ export default function Chat() {
 
   useEffect(() => {
     setMessages([]);
+    setChatLoading(true);
   }, [RECEIVER, supportUser]);
 
   // Start editing
@@ -153,14 +244,22 @@ export default function Chat() {
     if (!RECEIVER) return;
 
     let socket;
+    let cancelled = false;
+    const finishChatLoading = () => {
+      if (!cancelled) setChatLoading(false);
+    };
+
     setSocketReady(false);
+    setChatLoading(true);
 
     const initWebSocket = async () => {
       try {
         // Step 0: fetch logged-in user
         const meRes = await api.get("/me/", { withCredentials: true });
+        if (cancelled) return;
         if (!meRes.data?.username) {
           console.error("❌ Failed to fetch logged-in user");
+          finishChatLoading();
           return;
         }
         const currentUsername = meRes.data.username;
@@ -190,10 +289,12 @@ export default function Chat() {
 
         // Step 1: request short-lived ws_token
         const res = await api.get("/ws-token/", { withCredentials: true });
+        if (cancelled) return;
         const wsToken = res.data.ws_token;
 
         if (!wsToken) {
           console.error("❌ Failed to get WS token");
+          finishChatLoading();
           return;
         }
 
@@ -211,6 +312,7 @@ export default function Chat() {
         console.log("🌐 Connecting to chat WebSocket");
 
         socket.onopen = async () => {
+          if (cancelled) return;
           console.log("✅ Connected to chat WebSocket");
 
           try {
@@ -237,15 +339,18 @@ export default function Chat() {
                 }))
                 .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
 
-              setMessages(hist);
+              if (!cancelled) setMessages(hist);
               setTimeout(() => scrollToBottom(true), 0);
             }
           } catch (e) {
             console.error("history load failed", e);
+          } finally {
+            finishChatLoading();
           }
         };
 
         socket.onmessage = (e) => {
+          if (cancelled) return;
           const data = JSON.parse(e.data);
           console.log("📨 Received WebSocket message:", data);
 
@@ -325,25 +430,34 @@ export default function Chat() {
         };
 
         socket.onclose = () => {
+          if (cancelled) return;
           console.log("❌ Disconnected from chat WebSocket");
           setSocketReady(false);
+          finishChatLoading();
         };
 
         socket.onerror = (error) => {
+          if (cancelled) return;
           console.error("❌ WebSocket error:", error);
+          finishChatLoading();
         };
 
       } catch (err) {
         console.error("❌ Failed to init WebSocket:", err);
+        finishChatLoading();
       }
     };
 
     initWebSocket();
 
     return () => {
+      cancelled = true;
       setSocketReady(false);
-      if (socket && socket.readyState === WebSocket.OPEN) {
+      if (socket && socket.readyState !== WebSocket.CLOSED) {
         socket.close();
+      }
+      if (socketRef.current === socket) {
+        socketRef.current = null;
       }
     };
   }, [RECEIVER, supportUser, isPixelSupportChat]);
@@ -513,14 +627,34 @@ export default function Chat() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const prefill = params.get("prefillMessage");
-    if (prefill) {
-      setInput(decodeURIComponent(prefill));
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
-        textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
-      }
+    if (!prefill) return;
+
+    const decodedPrefill = decodeURIComponent(prefill);
+    const shouldAutoSend = params.get("autoSend") === "1";
+    const autoSendKey = `${RECEIVER || ""}:${supportUser}:${decodedPrefill}`;
+
+    setInput(decodedPrefill);
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
     }
-  }, [location.search]);
+
+    if (!shouldAutoSend || !socketReady || chatLoading || autoSendRef.current === autoSendKey) {
+      return;
+    }
+
+    autoSendRef.current = autoSendKey;
+    sendMessage(decodedPrefill);
+    setInput("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
+    params.delete("prefillMessage");
+    params.delete("autoSend");
+    params.delete("source");
+    const nextSearch = params.toString();
+    navigate(`${location.pathname}${nextSearch ? `?${nextSearch}` : ""}`, { replace: true });
+  }, [RECEIVER, chatLoading, location.pathname, location.search, navigate, socketReady, supportUser]);
 
   const receiverInitial = getProfileInitial(receiverProfile, RECEIVER);
   const statusLabel = isPixelSupportChat
@@ -536,14 +670,10 @@ export default function Chat() {
       navigate(`/profile/${receiverProfile?.username || RECEIVER}`);
     }
   };
+  const showChatSkeleton = messages.length === 0 && (chatLoading || !socketReady);
 
   return (
-    <div className="chat-dm-stage chat-font flex min-h-[100dvh] items-center justify-center bg-black text-zinc-50 lg:p-6">
-      <div className="chat-dm-frame flex h-[100dvh] w-full overflow-hidden bg-[#151515] shadow-[0_30px_120px_rgba(0,0,0,0.65)] lg:h-[min(88dvh,900px)] lg:min-h-[620px] lg:max-w-[1480px] lg:rounded-[24px] lg:border lg:border-white/[0.14]">
-      <aside className="chat-resize-rail hidden w-[clamp(20rem,30vw,29rem)] min-w-[18rem] max-w-[34rem] resize-x overflow-hidden border-r border-white/[0.14] bg-[#4b4644] lg:flex">
-        <Listuser embedded />
-      </aside>
-
+    <ChatShell>
       <main className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[#141414]">
         <header className="flex h-[72px] shrink-0 items-center gap-3 border-b border-white/10 bg-[#222222]/92 px-3 backdrop-blur-xl sm:px-5">
           <Button
@@ -623,7 +753,9 @@ export default function Chat() {
           ref={listRef}
           className="chat-scrollbar flex flex-1 flex-col overflow-y-auto bg-[#141414] px-4 py-6 sm:px-7 lg:px-8"
         >
-          {messages.length === 0 ? (
+          {showChatSkeleton ? (
+            <ChatMessageSkeleton />
+          ) : messages.length === 0 ? (
             <div className="flex flex-1 items-center justify-center px-4 py-12">
               <div className="max-w-sm text-center">
                 <Avatar className="mx-auto mb-5 h-20 w-20 border border-white/[0.18] shadow-[0_18px_50px_rgba(0,0,0,0.35)]">
@@ -639,17 +771,15 @@ export default function Chat() {
                   </AvatarFallback>
                 </Avatar>
                 <h2 className="text-xl font-semibold text-white">
-                  {socketReady ? `Message ${receiverDisplayName}` : "Opening chat"}
+                  {`Message ${receiverDisplayName}`}
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-zinc-400">
-                  {socketReady
-                    ? "Start with a message or share media in this conversation."
-                    : "Messages will appear as soon as the secure connection is ready."}
+                  Start with a message or share media in this conversation.
                 </p>
               </div>
             </div>
           ) : (
-            <div className="mx-auto flex w-full max-w-5xl flex-col gap-1.5">
+            <div className="mx-auto mt-auto flex w-full max-w-5xl flex-col gap-1.5">
               {messages.map((msg, i) => {
                 const isOwn = msg.sender === USERNAME;
                 const prevMsg = messages[i - 1];
@@ -952,7 +1082,6 @@ export default function Chat() {
           </form>
         </div>
       </main>
-      </div>
-    </div>
+    </ChatShell>
   );
 }

@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route } from "react-router-dom";
 
 // --- Page & Component Imports ---
 import MainPage from "./MainPage";
@@ -13,8 +12,10 @@ import Search_user from './page/user_search';
 import Page from './page/Choose';
 import FollowingPage from "./page/FollowingPage";
 import FollowersPage from "./page/FollowersPage";
-import Chat from './page/chat/chat';
-import Chatlist from './page/chat/Listuser';
+import Chat, { ChatHome } from './page/chat/chat';
+import ProjectDetail from "./page/ProjectDetail";
+import Projects from "./page/Projects";
+import ProjectRequest from "./page/ProjectRequest";
 import Password from './auth/password';
 import Verification from './auth/verification';
 import Signup from './auth/signup';
@@ -26,6 +27,36 @@ import Nss from "./page/mainpages/Nss";
 import Select from "./page/mainpages/Select";
 import ResourcePage from "./page/mainpages/ResourcePage";
 import Protected from "./ProtectedRoute_new";
+
+function HomeRoute() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [checkedAuth, setCheckedAuth] = useState(false);
+
+    useEffect(() => {
+        let active = true;
+
+        fetch("/api/me", { credentials: "include" })
+            .then((response) => {
+                if (active) setIsLoggedIn(response.ok);
+            })
+            .catch(() => {
+                if (active) setIsLoggedIn(false);
+            })
+            .finally(() => {
+                if (active) setCheckedAuth(true);
+            });
+
+        return () => {
+            active = false;
+        };
+    }, []);
+
+    if (checkedAuth && isLoggedIn) {
+        return <Navigate to="/projects" replace />;
+    }
+
+    return <MainPage />;
+}
 
 function App() {
     const [isOnline, setIsOnline] = useState(() =>
@@ -45,14 +76,13 @@ function App() {
             window.removeEventListener('offline', handleOffline);
         };
     }, []);
-function ChatWrapper() {
-  const { RECEIVER } = useParams();
-  return (
-    <Protected>
-      <Chat key={RECEIVER} />
-    </Protected>
-  );
-}
+	function ChatWrapper() {
+	  return (
+	    <Protected>
+	      <Chat />
+	    </Protected>
+	  );
+	}
     return (
         <>
             {!isOnline && (
@@ -64,7 +94,7 @@ function ChatWrapper() {
             <div className="App transition-all duration-500 ease-in-out bg-black">
                 <Routes>
                     {/* --- Main & Public Routes --- */}
-                    <Route path="/" element={<MainPage />} />
+	                    <Route path="/" element={<HomeRoute />} />
                     <Route path="/auth/login" element={<Blogin />} />
                     <Route path="/auth/signup" element={<Signup />} />
                     <Route path="/auth/verification" element={<Verification />} />
@@ -76,8 +106,11 @@ function ChatWrapper() {
                     <Route path="/sem" element={<Protected><Sem /></Protected>} />
                     <Route path="/search" element={<Protected><Search_user /></Protected>} />
                     <Route path="/following" element={<Protected><FollowingPage /></Protected>} />
-                    <Route path="/followers" element={<Protected><FollowersPage /></Protected>} />
-                    <Route path="/chat" element={<Protected><Chatlist /></Protected>} />
+	                    <Route path="/followers" element={<Protected><FollowersPage /></Protected>} />
+		                    <Route path="/projects" element={<Protected><Projects /></Protected>} />
+		                    <Route path="/projects/:projectId" element={<Protected><ProjectDetail /></Protected>} />
+		                    <Route path="/request-project" element={<Protected><ProjectRequest /></Protected>} />
+	                    <Route path="/chat" element={<Protected><ChatHome /></Protected>} />
                     {/* <Route path="/chat/:RECEIVER" element={<Protected><Chat /></Protected>} /> */}
                     <Route path="/chat/:RECEIVER" element={<ChatWrapper />} />
                     <Route path="/profile" element={<Protected><Prof /></Protected>} />

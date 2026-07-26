@@ -19,6 +19,7 @@ dist-ssr
 *.local
 .env*
 !.env.example
+public/project-requirements/
 
 # Editor directories and files
 .vscode/*

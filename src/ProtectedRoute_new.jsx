@@ -1,7 +1,7 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import api from "./utils/api";
-import Loading from "./componet/Loading"; // A good loading component enhances UX
+import Loading from "./componet/Loading";
 
 const ProtectedRoute = ({ children }) => {
   const [authStatus, setAuthStatus] = useState('loading'); // Use a string state: 'loading', 'authenticated', 'unauthenticated'
@@ -13,7 +13,7 @@ const ProtectedRoute = ({ children }) => {
         // This is the single source of truth. If the token is valid, this will succeed.
         await api.get("/me/");
         setAuthStatus('authenticated');
-      } catch (error) {
+      } catch {
         // If the token is invalid or missing, the api.js interceptor will catch
         // the 401 error and this will run.
         setAuthStatus('unauthenticated');

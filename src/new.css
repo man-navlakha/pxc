@@ -46,6 +46,12 @@
   background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08));
 }
 
+@media (max-width: 1023px) {
+  .chat-resize-rail::after {
+    display: none;
+  }
+}
+
 .chat-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.22) transparent;

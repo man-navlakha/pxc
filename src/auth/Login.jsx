@@ -12,7 +12,10 @@ const Login = () => {
   const location = useLocation();
   const last = "username"; 
   const navigate = useNavigate();
-  const redirectTo = location.state?.from?.pathname || new URLSearchParams(location.search).get("redirect") || "/";
+  const redirectTo =
+    location.state?.from?.pathname ||
+    new URLSearchParams(location.search).get("redirect") ||
+    "/projects";
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!passwordVisible);
