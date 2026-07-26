@@ -104,6 +104,23 @@ Make sure you have the following installed on your machine:
     ```
     The application will be available at `http://localhost:3000`.
 
+### Production WebSocket Setup
+
+The chat WebSocket server is implemented in `server.mjs`. If the frontend is deployed on Vercel and the WebSocket server runs on a separate Node host, set this Vercel environment variable:
+
+```sh
+NEXT_PUBLIC_WS_URL=wss://your-websocket-server.example.com
+```
+
+For example, if the Node server is hosted on Render:
+
+```sh
+NEXT_PUBLIC_WS_URL=https://pixel-classes.onrender.com
+```
+
+The app converts `https://` to `wss://` automatically for WebSocket connections.
+If this variable is missing on a `*.vercel.app` deployment, chat falls back to REST history/send without live updates.
+
 ---
 
 ## 👥 Authors

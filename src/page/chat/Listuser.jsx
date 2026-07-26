@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 import api from "../../utils/api";
-import { buildWebSocketUrl } from "../../utils/ws";
+import { buildWebSocketUrl, shouldAttemptWebSocket } from "../../utils/ws";
 import { verifiedUsernames } from "../../verifiedAccounts";
 import VerifiedBadge from "../../componet/VerifiedBadge";
 
@@ -360,6 +360,11 @@ export default function Listuser({ embedded = false }) {
     const connectWS = async () => {
       try {
         await loadInboxSnapshot();
+
+        if (!shouldAttemptWebSocket()) {
+          console.warn("Inbox WebSocket skipped. Configure NEXT_PUBLIC_WS_URL for live inbox updates in production.");
+          return;
+        }
 
         const res = await api.get("/ws-token/", { withCredentials: true });
         const wsToken = res.data?.ws_token;

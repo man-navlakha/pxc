@@ -32,7 +32,7 @@ import Check2 from '../../componet/svg/Check2'
 import Photo from "@/componet/svg/Photo";
 import MediaRenderer from "./MediaRenderer";
 import { handleDeleteMessage, handleEditMessage } from "./messageActions";
-import { buildWebSocketUrl } from "../../utils/ws";
+import { buildWebSocketUrl, shouldAttemptWebSocket } from "../../utils/ws";
 
 const PIXEL_SUPPORT_PROFILE = {
   username: "pixel",
@@ -108,6 +108,17 @@ const chatSkeletonRows = [
   ["start", "w-36"],
 ];
 
+const normalizeChatMessage = (msg) => ({
+  id: msg.id,
+  sender: msg.sender,
+  receiver: msg.receiver,
+  message: msg.content ?? msg.message,
+  seen: msg.seen_at,
+  status: msg.is_seen ? "seen" : "sent",
+  created_at: msg.created_at,
+  is_edited: msg.is_edited,
+});
+
 function ChatMessageSkeleton() {
   return (
     <div
@@ -160,6 +171,7 @@ export default function Chat() {
   const [editText, setEditText] = useState("");
   const [showMessageMenu, setShowMessageMenu] = useState(null);
   const [socketReady, setSocketReady] = useState(false);
+  const [restFallback, setRestFallback] = useState(false);
   const [chatLoading, setChatLoading] = useState(true);
   const supportUser = useMemo(() => {
     const params = new URLSearchParams(location.search);
@@ -168,12 +180,14 @@ export default function Chat() {
   const isPixelSupportChat = String(RECEIVER || "").toLowerCase() === "pixel";
   const receiverDisplayName =
     receiverProfile?.display_name || receiverProfile?.username || RECEIVER;
+  const chatReady = socketReady || restFallback;
 
 
 
   useEffect(() => {
     setMessages([]);
     setChatLoading(true);
+    setRestFallback(false);
   }, [RECEIVER, supportUser]);
 
   // Start editing
@@ -245,10 +259,51 @@ export default function Chat() {
 
     let socket;
     let cancelled = false;
+    let historyLoaded = false;
     const finishChatLoading = () => {
       if (!cancelled) setChatLoading(false);
     };
 
+    const loadChatHistory = async () => {
+      if (historyLoaded) {
+        finishChatLoading();
+        return;
+      }
+
+      historyLoaded = true;
+
+      try {
+        const res = await api.get(`chatting/${RECEIVER}/`, {
+          withCredentials: true,
+          params: isPixelSupportChat && supportUser
+            ? { support_user: supportUser }
+            : undefined,
+        });
+
+        const data = res.data;
+        if (Array.isArray(data)) {
+          const hist = data
+            .map(normalizeChatMessage)
+            .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+
+          if (!cancelled) setMessages(hist);
+          setTimeout(() => scrollToBottom(true), 0);
+        }
+      } catch (e) {
+        console.error("history load failed", e);
+      } finally {
+        finishChatLoading();
+      }
+    };
+
+    const enableRestFallback = async () => {
+      if (cancelled) return;
+      setRestFallback(true);
+      setSocketReady(false);
+      await loadChatHistory();
+    };
+
+    setRestFallback(false);
     setSocketReady(false);
     setChatLoading(true);
 
@@ -287,6 +342,12 @@ export default function Chat() {
           }
         }
 
+        if (!shouldAttemptWebSocket()) {
+          console.warn("Chat WebSocket skipped. Configure NEXT_PUBLIC_WS_URL for live chat in production.");
+          await enableRestFallback();
+          return;
+        }
+
         // Step 1: request short-lived ws_token
         const res = await api.get("/ws-token/", { withCredentials: true });
         if (cancelled) return;
@@ -294,7 +355,7 @@ export default function Chat() {
 
         if (!wsToken) {
           console.error("❌ Failed to get WS token");
-          finishChatLoading();
+          await enableRestFallback();
           return;
         }
 
@@ -314,39 +375,8 @@ export default function Chat() {
         socket.onopen = async () => {
           if (cancelled) return;
           console.log("✅ Connected to chat WebSocket");
-
-          try {
-            // Fetch chat history via REST
-            const res = await api.get(`chatting/${RECEIVER}/`, {
-              withCredentials: true,
-              params: isPixelSupportChat && supportUser
-                ? { support_user: supportUser }
-                : undefined,
-            });
-
-            const data = res.data;
-            if (Array.isArray(data)) {
-              const hist = data
-                .map((msg) => ({
-                  id: msg.id,
-                  sender: msg.sender,
-                  receiver: msg.receiver,
-                  message: msg.content,
-                  seen: msg.seen_at,
-                  status: msg.is_seen ? "seen" : "sent",
-                  created_at: msg.created_at,
-                  is_edited: msg.is_edited,
-                }))
-                .sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-
-              if (!cancelled) setMessages(hist);
-              setTimeout(() => scrollToBottom(true), 0);
-            }
-          } catch (e) {
-            console.error("history load failed", e);
-          } finally {
-            finishChatLoading();
-          }
+          setRestFallback(false);
+          await loadChatHistory();
         };
 
         socket.onmessage = (e) => {
@@ -356,6 +386,7 @@ export default function Chat() {
 
           if (data.type === "ready") {
             setSocketReady(true);
+            setRestFallback(false);
             return;
           }
 
@@ -432,19 +463,18 @@ export default function Chat() {
         socket.onclose = () => {
           if (cancelled) return;
           console.log("❌ Disconnected from chat WebSocket");
-          setSocketReady(false);
-          finishChatLoading();
+          enableRestFallback();
         };
 
         socket.onerror = (error) => {
           if (cancelled) return;
           console.error("❌ WebSocket error:", error);
-          finishChatLoading();
+          enableRestFallback();
         };
 
       } catch (err) {
         console.error("❌ Failed to init WebSocket:", err);
-        finishChatLoading();
+        await enableRestFallback();
       }
     };
 
@@ -463,15 +493,12 @@ export default function Chat() {
   }, [RECEIVER, supportUser, isPixelSupportChat]);
 
   // Updated sendMessage function
-  const sendMessage = (messageText = null) => {
+  const sendMessage = async (messageText = null) => {
     const messageContent = messageText || input.trim();
+    const canUseSocket =
+      socketRef.current?.readyState === WebSocket.OPEN && socketReady && !restFallback;
 
-    if (
-      !messageContent ||
-      socketRef.current?.readyState !== WebSocket.OPEN ||
-      !socketReady ||
-      !USERNAME
-    ) {
+    if (!messageContent || !USERNAME || (!canUseSocket && !restFallback)) {
       return;
     }
 
@@ -489,7 +516,19 @@ export default function Chat() {
 
     setMessages((prev) => [...prev, tempMessage]);
 
-    // Send message via WebSocket
+    // Clear input only if sending from input field
+    if (!messageText) {
+      setInput("");
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "auto";
+      }
+      if (textareaRef.current) {
+        textareaRef.current.focus();
+      }
+    }
+
+    setTimeout(() => scrollToBottom(true), 0);
+
     const wsMessage = {
       type: "chat",
       temp_id,
@@ -499,21 +538,33 @@ export default function Chat() {
       message: messageContent,
     };
 
-    socketRef.current.send(JSON.stringify(wsMessage));
-
-    // Clear input only if sending from input field
-    if (!messageText) {
-      setInput("");
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
-      }
-      // 3. THE FIX: Re-focus the textarea to keep the keyboard open
-      if (textareaRef.current) {
-        textareaRef.current.focus();
+    if (canUseSocket) {
+      socketRef.current.send(JSON.stringify(wsMessage));
+    } else {
+      try {
+        const res = await api.post(
+          `chatting/${RECEIVER}/`,
+          {
+            content: messageContent,
+            support_user: isPixelSupportChat ? supportUser : undefined,
+          },
+          { withCredentials: true }
+        );
+        const savedMessage = normalizeChatMessage(res.data);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.temp_id === temp_id ? { ...savedMessage, status: "sent" } : msg
+          )
+        );
+      } catch (err) {
+        console.error("REST chat send failed", err);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.temp_id === temp_id ? { ...msg, status: "failed" } : msg
+          )
+        );
       }
     }
-
-    setTimeout(() => scrollToBottom(true), 0);
   };
 
   // Updated sendSeenStatus function
@@ -595,7 +646,7 @@ export default function Chat() {
 
   const handleSendUrl = () => {
     const url = imageUrl.trim();
-    if (!url || socketRef.current?.readyState !== WebSocket.OPEN || !socketReady) return;
+    if (!url || !chatReady) return;
 
     // This reuses the sendMessage logic from your main component
     sendMessage(url);
@@ -639,7 +690,7 @@ export default function Chat() {
       textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
     }
 
-    if (!shouldAutoSend || !socketReady || chatLoading || autoSendRef.current === autoSendKey) {
+    if (!shouldAutoSend || !chatReady || chatLoading || autoSendRef.current === autoSendKey) {
       return;
     }
 
@@ -654,7 +705,7 @@ export default function Chat() {
     params.delete("source");
     const nextSearch = params.toString();
     navigate(`${location.pathname}${nextSearch ? `?${nextSearch}` : ""}`, { replace: true });
-  }, [RECEIVER, chatLoading, location.pathname, location.search, navigate, socketReady, supportUser]);
+  }, [RECEIVER, chatLoading, chatReady, location.pathname, location.search, navigate, supportUser]);
 
   const receiverInitial = getProfileInitial(receiverProfile, RECEIVER);
   const statusLabel = isPixelSupportChat
@@ -670,7 +721,12 @@ export default function Chat() {
       navigate(`/profile/${receiverProfile?.username || RECEIVER}`);
     }
   };
-  const showChatSkeleton = messages.length === 0 && (chatLoading || !socketReady);
+  const connectionLabel = socketReady
+    ? "Connected"
+    : restFallback
+    ? "Connected without live updates"
+    : "Connecting";
+  const showChatSkeleton = messages.length === 0 && chatLoading;
 
   return (
     <ChatShell>
@@ -728,13 +784,13 @@ export default function Chat() {
 
           <div className="ml-auto flex shrink-0 items-center gap-1.5">
             <span
-              title={socketReady ? "Connected" : "Connecting"}
+              title={connectionLabel}
               className={cx(
                 "hidden h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 md:flex",
-                socketReady ? "text-blue-300" : "text-zinc-400"
+                chatReady ? "text-blue-300" : "text-zinc-400"
               )}
             >
-              {socketReady ? <Check size={19} /> : <Clock3 size={19} />}
+              {chatReady ? <Check size={19} /> : <Clock3 size={19} />}
             </span>
             <Button
               variant="ghost"
@@ -926,6 +982,11 @@ export default function Chat() {
                               <Clock />
                               Sending
                             </span>
+                          ) : msg.status === "failed" ? (
+                            <span className="inline-flex items-center gap-1 text-red-300">
+                              <X size={12} />
+                              Failed
+                            </span>
                           ) : (
                             <span className="inline-flex items-center gap-1">
                               <Clock />
@@ -1018,7 +1079,7 @@ export default function Chat() {
                     type="button"
                     onClick={handleSendUrl}
                     className="h-10 rounded-2xl bg-[#3b82f6] px-5 text-sm font-semibold text-white shadow-lg shadow-blue-950/30 transition hover:bg-[#2f78ed] disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400 disabled:shadow-none"
-                    disabled={!imageUrl.trim() || !socketReady}
+                    disabled={!imageUrl.trim() || !chatReady}
                   >
                     Send
                   </button>
@@ -1042,7 +1103,7 @@ export default function Chat() {
               type="button"
               onClick={() => setShowImagePopup(true)}
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-zinc-400 transition hover:bg-white/[0.08] hover:text-white disabled:cursor-not-allowed disabled:opacity-45"
-              disabled={!socketReady}
+              disabled={!chatReady}
               aria-label="Attach media"
             >
               <Photo />
@@ -1054,7 +1115,7 @@ export default function Chat() {
                 style={{ maxHeight: "170px", overflowY: "auto" }}
                 className="chat-scrollbar min-h-12 flex-1 resize-none bg-transparent py-3 text-[15px] leading-6 text-zinc-100 outline-none placeholder:text-zinc-500"
                 rows={1}
-                placeholder={socketReady ? `Message ${receiverDisplayName}` : "Connecting"}
+                placeholder={chatReady ? `Message ${receiverDisplayName}` : "Connecting"}
                 value={input}
                 onChange={(e) => {
                   setInput(e.target.value);
@@ -1074,7 +1135,7 @@ export default function Chat() {
             <button
               type="submit"
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#3b82f6] text-white shadow-[0_10px_28px_rgba(59,130,246,0.26)] transition hover:bg-[#2f78ed] disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-400 disabled:shadow-none"
-              disabled={!input.trim() || !socketReady}
+              disabled={!input.trim() || !chatReady}
               aria-label="Send message"
             >
               <ArrowUp size={21} strokeWidth={2.4} />

@@ -3,7 +3,10 @@ export function buildWebSocketUrl(pathname) {
   const normalizedPath = pathname.startsWith("/") ? pathname : `/${pathname}`;
 
   if (configuredBase) {
-    return new URL(normalizedPath, configuredBase);
+    const base = new URL(configuredBase);
+    if (base.protocol === "https:") base.protocol = "wss:";
+    if (base.protocol === "http:") base.protocol = "ws:";
+    return new URL(normalizedPath, base);
   }
 
   const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
@@ -15,4 +18,10 @@ export function buildWebSocketUrl(pathname) {
   }
 
   return url;
+}
+
+export function shouldAttemptWebSocket() {
+  if (process.env.NEXT_PUBLIC_WS_URL) return true;
+  if (typeof window === "undefined") return false;
+  return !window.location.hostname.endsWith(".vercel.app");
 }
