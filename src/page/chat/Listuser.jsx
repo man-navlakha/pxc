@@ -369,10 +369,10 @@ export default function Listuser({ embedded = false }) {
     const connectWS = async () => {
       try {
         await loadInboxSnapshot();
+        startInboxPolling();
 
         if (!shouldAttemptWebSocket()) {
           console.warn("Inbox WebSocket skipped. Configure NEXT_PUBLIC_WS_URL for live inbox updates in production.");
-          startInboxPolling();
           return;
         }
 

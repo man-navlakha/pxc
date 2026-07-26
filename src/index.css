@@ -153,7 +153,7 @@ html {
 }
 
 .landing-header {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -161,6 +161,7 @@ html {
   display: grid;
   grid-template-columns: minmax(44px, 1fr) auto minmax(44px, 1fr);
   align-items: center;
+  box-sizing: border-box;
   width: 100%;
   padding: 30px clamp(16px, 4vw, 54px) 12px;
   pointer-events: none;
@@ -171,9 +172,11 @@ html {
     width 220ms ease,
     padding 220ms ease,
     transform 220ms ease,
+    max-width 220ms ease,
     border-color 220ms ease,
     background-color 220ms ease,
     box-shadow 220ms ease;
+  will-change: transform, top, width, padding;
 }
 
 .landing-header > * {
@@ -248,24 +251,27 @@ html {
 
 @media (min-width: 681px) {
   .landing-header.is-combined {
-    position: fixed;
-    top: 22px;
-    left: clamp(16px, 4vw, 54px);
+    top: 18px;
+    left: 50%;
     right: auto;
-    grid-template-columns: auto auto auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     justify-content: center;
-    gap: 12px;
-    width: max-content;
-    max-width: calc(100vw - 32px);
+    gap: 10px;
+    width: min(760px, calc(100vw - 32px));
+    max-width: none;
     padding: 8px 10px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 999px;
-    background: linear-gradient(180deg, rgba(42, 42, 42, 0.9), rgba(12, 12, 15, 0.92));
+    background:
+      linear-gradient(180deg, rgba(45, 45, 49, 0.92), rgba(9, 10, 15, 0.94)),
+      rgba(4, 6, 12, 0.86);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.14),
-      0 18px 52px rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(18px);
-    transform: translateX(0);
+      0 18px 54px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(97, 228, 255, 0.04);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    transform: translateX(-50%);
   }
 
   .landing-header.is-combined .landing-logo {
@@ -284,22 +290,26 @@ html {
   }
 
   .landing-header.is-combined .landing-nav {
-    max-width: none;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    box-shadow: none;
+    min-width: 0;
+    max-width: 100%;
+    padding: 3px;
+    border-color: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.035);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
     backdrop-filter: none;
   }
 
   .landing-header.is-combined .landing-nav a {
-    padding: 9px 11px;
+    padding: 9px 10px;
   }
 
   .landing-header.is-combined .landing-login {
     justify-self: auto;
-    padding: 9px 11px;
+    padding: 10px 12px;
+    border: 1px solid rgba(97, 228, 255, 0.2);
     border-radius: 999px;
+    background: rgba(97, 228, 255, 0.08);
+    color: #eafcff;
   }
 
   .landing-header.is-combined .landing-login:hover {

@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import {
+  ArrowDown,
   ArrowUp,
   Check,
   Clipboard,
@@ -42,6 +43,7 @@ const PIXEL_SUPPORT_PROFILE = {
 };
 
 const cx = (...classes) => classes.filter(Boolean).join(" ");
+const BOTTOM_SCROLL_THRESHOLD = 96;
 
 const getProfileInitial = (profile, fallback) =>
   (profile?.display_name || profile?.username || fallback || "U").trim()[0]?.toUpperCase() || "U";
@@ -149,7 +151,39 @@ const mergePolledMessages = (previous, incoming) => {
       if (!alreadySaved) byId.set(pending.temp_id, pending);
     });
 
-  return sortMessagesByTime(Array.from(byId.values()));
+  const merged = sortMessagesByTime(Array.from(byId.values()));
+
+  if (
+    previous.length === merged.length &&
+    previous.every((message, index) => {
+      const next = merged[index];
+      return (
+        message.id === next.id &&
+        message.temp_id === next.temp_id &&
+        message.sender === next.sender &&
+        message.receiver === next.receiver &&
+        message.message === next.message &&
+        message.status === next.status &&
+        message.seen === next.seen &&
+        message.created_at === next.created_at &&
+        message.is_edited === next.is_edited
+      );
+    })
+  ) {
+    return previous;
+  }
+
+  return merged;
+};
+
+const getLatestMessageKey = (message) => {
+  if (!message) return "";
+  return [
+    message.id ?? message.temp_id ?? "",
+    message.sender ?? "",
+    message.created_at ?? "",
+    message.message ?? "",
+  ].join(":");
 };
 
 function ChatMessageSkeleton() {
@@ -206,6 +240,10 @@ export default function Chat() {
   const [socketReady, setSocketReady] = useState(false);
   const [restFallback, setRestFallback] = useState(false);
   const [chatLoading, setChatLoading] = useState(true);
+  const [showJumpToLatest, setShowJumpToLatest] = useState(false);
+  const wasAtBottomRef = useRef(true);
+  const messageCountRef = useRef(0);
+  const latestMessageKeyRef = useRef("");
   const supportUser = useMemo(() => {
     const params = new URLSearchParams(location.search);
     return params.get("supportUser") || params.get("support_user") || "";
@@ -213,7 +251,7 @@ export default function Chat() {
   const isPixelSupportChat = String(RECEIVER || "").toLowerCase() === "pixel";
   const receiverDisplayName =
     receiverProfile?.display_name || receiverProfile?.username || RECEIVER;
-  const chatReady = socketReady || restFallback;
+  const chatReady = Boolean(USERNAME) && (!chatLoading || socketReady || restFallback);
 
 
 
@@ -221,6 +259,10 @@ export default function Chat() {
     setMessages([]);
     setChatLoading(true);
     setRestFallback(false);
+    setShowJumpToLatest(false);
+    wasAtBottomRef.current = true;
+    messageCountRef.current = 0;
+    latestMessageKeyRef.current = "";
   }, [RECEIVER, supportUser]);
 
   // Start editing
@@ -292,6 +334,8 @@ export default function Chat() {
 
     let socket;
     let cancelled = false;
+    let fallbackTimeout;
+    let receivedReady = false;
     let historyLoaded = false;
     const finishChatLoading = () => {
       if (!cancelled) setChatLoading(false);
@@ -329,6 +373,7 @@ export default function Chat() {
 
     const enableRestFallback = async () => {
       if (cancelled) return;
+      window.clearTimeout(fallbackTimeout);
       setRestFallback(true);
       setSocketReady(false);
       await loadChatHistory();
@@ -400,6 +445,9 @@ export default function Chat() {
 
         socket = new WebSocket(wsUrl.toString());
         socketRef.current = socket;
+        fallbackTimeout = window.setTimeout(() => {
+          if (!receivedReady) enableRestFallback();
+        }, 5000);
 
         console.log("🌐 Connecting to chat WebSocket");
 
@@ -416,6 +464,8 @@ export default function Chat() {
           console.log("📨 Received WebSocket message:", data);
 
           if (data.type === "ready") {
+            receivedReady = true;
+            window.clearTimeout(fallbackTimeout);
             setSocketReady(true);
             setRestFallback(false);
             return;
@@ -513,6 +563,7 @@ export default function Chat() {
 
     return () => {
       cancelled = true;
+      window.clearTimeout(fallbackTimeout);
       setSocketReady(false);
       if (socket && socket.readyState !== WebSocket.CLOSED) {
         socket.close();
@@ -524,7 +575,7 @@ export default function Chat() {
   }, [RECEIVER, supportUser, isPixelSupportChat]);
 
   useEffect(() => {
-    if (!restFallback || !RECEIVER || !USERNAME) return;
+    if (!RECEIVER || !USERNAME) return;
 
     let cancelled = false;
     let intervalId;
@@ -554,7 +605,7 @@ export default function Chat() {
       cancelled = true;
       window.clearInterval(intervalId);
     };
-  }, [RECEIVER, USERNAME, isPixelSupportChat, restFallback, supportUser]);
+  }, [RECEIVER, USERNAME, isPixelSupportChat, supportUser]);
 
   // Updated sendMessage function
   const sendMessage = async (messageText = null) => {
@@ -562,7 +613,7 @@ export default function Chat() {
     const canUseSocket =
       socketRef.current?.readyState === WebSocket.OPEN && socketReady && !restFallback;
 
-    if (!messageContent || !USERNAME || (!canUseSocket && !restFallback)) {
+    if (!messageContent || !USERNAME) {
       return;
     }
 
@@ -672,21 +723,36 @@ export default function Chat() {
   }, [messages, RECEIVER, USERNAME, isPixelSupportChat, supportUser]);
 
   // ---------- Auto scroll (smart) ----------
-  const isAtBottom = () => {
+  const isAtBottom = useCallback(() => {
     const el = listRef.current;
     if (!el) return true;
-    const threshold = 500; // px
-    return el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
-    // (works because we'll set container to overflow-y-auto)
-  };
+    return el.scrollHeight - el.scrollTop - el.clientHeight <= BOTTOM_SCROLL_THRESHOLD;
+  }, []);
 
-  const scrollToBottom = (force = false) => {
+  const updateScrollState = useCallback(() => {
+    const atBottom = isAtBottom();
+    const shouldShowJumpButton = !atBottom;
+    wasAtBottomRef.current = atBottom;
+    setShowJumpToLatest((current) =>
+      current === shouldShowJumpButton ? current : shouldShowJumpButton
+    );
+    return atBottom;
+  }, [isAtBottom]);
+
+  const scrollToBottom = useCallback((force = false) => {
     const el = listRef.current;
     if (!el) return;
-    if (force || isAtBottom()) {
-      el.scrollTop = el.scrollHeight;
+    const shouldScroll = force || wasAtBottomRef.current || isAtBottom();
+
+    if (!shouldScroll) {
+      setShowJumpToLatest(true);
+      return;
     }
-  };
+
+    el.scrollTop = el.scrollHeight;
+    wasAtBottomRef.current = true;
+    setShowJumpToLatest(false);
+  }, [isAtBottom]);
 
   useEffect(() => {
     messages.forEach((m) => {
@@ -733,9 +799,33 @@ export default function Chat() {
     };
   }, []);
   useEffect(() => {
-    // on new messages, conditionally stick to bottom
-    scrollToBottom();
-  }, [messages]);
+    const latestMessage = messages[messages.length - 1];
+    const latestMessageKey = getLatestMessageKey(latestMessage);
+    const previousCount = messageCountRef.current;
+    const previousLatestMessageKey = latestMessageKeyRef.current;
+    const hasNewLatestMessage =
+      messages.length > previousCount ||
+      (Boolean(previousLatestMessageKey) && latestMessageKey !== previousLatestMessageKey);
+    const sentByCurrentUser = latestMessage?.sender === USERNAME;
+
+    messageCountRef.current = messages.length;
+    latestMessageKeyRef.current = latestMessageKey;
+
+    if (!messages.length) {
+      setShowJumpToLatest(false);
+      wasAtBottomRef.current = true;
+      return;
+    }
+
+    if (!hasNewLatestMessage) return;
+
+    if (previousCount === 0 || sentByCurrentUser || wasAtBottomRef.current) {
+      window.requestAnimationFrame(() => scrollToBottom(true));
+      return;
+    }
+
+    setShowJumpToLatest(true);
+  }, [messages, scrollToBottom, USERNAME]);
 
 
 
@@ -794,7 +884,7 @@ export default function Chat() {
 
   return (
     <ChatShell>
-      <main className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[#141414]">
+      <main className="relative flex min-w-0 flex-1 flex-col overflow-hidden bg-[#141414]">
         <header className="flex h-[72px] shrink-0 items-center gap-3 border-b border-white/10 bg-[#222222]/92 px-3 backdrop-blur-xl sm:px-5">
           <Button
             variant="ghost"
@@ -871,6 +961,7 @@ export default function Chat() {
 
         <div
           ref={listRef}
+          onScroll={updateScrollState}
           className="chat-scrollbar flex flex-1 flex-col overflow-y-auto bg-[#141414] px-4 py-6 sm:px-7 lg:px-8"
         >
           {showChatSkeleton ? (
@@ -1067,6 +1158,24 @@ export default function Chat() {
           )}
           <div ref={messagesEndRef} />
         </div>
+
+        <AnimatePresence>
+          {showJumpToLatest && messages.length > 0 && (
+            <motion.button
+              type="button"
+              initial={{ opacity: 0, y: 8, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.96 }}
+              transition={{ duration: 0.16 }}
+              onClick={() => scrollToBottom(true)}
+              className="absolute bottom-24 right-4 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-[#2a2a2a]/95 text-white shadow-2xl shadow-black/40 transition hover:bg-[#333333] focus:outline-none focus:ring-2 focus:ring-blue-300/50 sm:right-6"
+              aria-label="Jump to latest message"
+              title="Jump to latest message"
+            >
+              <ArrowDown size={20} strokeWidth={2.4} />
+            </motion.button>
+          )}
+        </AnimatePresence>
 
         <AnimatePresence>
           {showImagePopup && (

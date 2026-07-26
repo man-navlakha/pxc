@@ -12,8 +12,12 @@ export function buildWebSocketUrl(pathname) {
   const wsScheme = window.location.protocol === "https:" ? "wss" : "ws";
   const url = new URL(`${wsScheme}://${window.location.host}${normalizedPath}`);
   const localHosts = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
+  const isDevelopment = process.env.NODE_ENV === "development";
 
-  if (window.location.protocol === "http:" && localHosts.has(window.location.hostname)) {
+  if (
+    window.location.protocol === "http:" &&
+    (localHosts.has(window.location.hostname) || isDevelopment)
+  ) {
     url.port = process.env.NEXT_PUBLIC_WS_PORT || "3001";
   }
 

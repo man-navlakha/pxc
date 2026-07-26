@@ -6,6 +6,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   skipTrailingSlashRedirect: true,
+  allowedDevOrigins: [
+    "172.20.10.8",
+    "http://172.20.10.8",
+    "http://172.20.10.8:3000",
+  ],
   turbopack: {
     root: __dirname,
   },

@@ -100,7 +100,7 @@ const MainPage = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsCombinedNav(window.scrollY >= 600);
+      setIsCombinedNav(window.scrollY >= 96);
     };
 
     handleScroll();
